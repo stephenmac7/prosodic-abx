@@ -1,0 +1,5 @@
+MFCC
+HUBERT_BASE
+chinese_hubert_large
+WAVLM_BASE_PLUS
+wav2vec2-large-xlsr-53-japanese

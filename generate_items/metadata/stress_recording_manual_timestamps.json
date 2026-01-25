@@ -1,0 +1,15 @@
+{
+  "S005_discharge_B_1.wav": {"onset": 0.344, "offset": 0.760},
+  "S004_discount_B_1.wav": {"onset": 0.402, "offset": 0.773},
+  "S006_discount_A_2.wav": {"onset": 0.585, "offset": 1.014},
+  "S008_discount_A_2.wav": {"onset": 0.617, "offset": 1.090},
+  "S009_discount_A_2.wav": {"onset": 0.690, "offset": 1.112},
+  "S010_discount_A_2.wav": {"onset": 0.688, "offset": 1.186},
+  "S008_impact_B_2.wav": {"onset": 0.823, "offset": 1.251},
+  "S004_insult_A_1.wav": {"onset": 0.716, "offset": 1.067},
+  "S004_insult_A_2.wav": {"onset": 0.498, "offset": 0.876},
+  "S009_insult_A_2.wav": {"onset": 0.794, "offset": 1.128},
+  "S002_survey_A_1.wav": {"onset": 0.335, "offset": 0.680},
+  "S003_survey_B_2.wav": {"onset": 0.630, "offset": 0.943},
+  "S001_transfer_A_2.wav": {"onset": 0.256, "offset": 0.706}
+}
