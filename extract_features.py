@@ -50,6 +50,8 @@ HF_MODELS = {
     "japanese-hubert-base": "yky-h/japanese-hubert-base",
     "japanese-hubert-large": "yky-h/japanese-hubert-large",
     "wav2vec2-large-xlsr-53-japanese": "jonatasgrosman/wav2vec2-large-xlsr-53-japanese",
+    # Multilingual
+    "w2v-bert-2.0": "facebook/w2v-bert-2.0",
 }
 
 

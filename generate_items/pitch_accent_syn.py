@@ -30,7 +30,7 @@ from pathlib import Path
 # ============================================================
 
 AUDIO_ROOT = Path("/home/sunhaitong/ABX_syn/data/standard_Japanese_accent")
-OUTPUT_DIR = Path("/home/sunhaitong/fastabx/abx_items/pitch_accent_syn")
+OUTPUT_DIR = Path("abx_items/pitch_accent_syn")
 
 # ============================================================
 # Filename parsing (logic preserved, slots changed)

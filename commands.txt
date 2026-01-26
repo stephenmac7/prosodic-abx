@@ -9,7 +9,8 @@ while IFS= read -r model; do uv run extract_features.py abx_items/mandarin_tone/
 
 run_abx.py configurations
 -------------------------
-run_abx.py abx_items/stress/ features/ --model MODEL --ax-match context_set part_of_word
+run_abx.py abx_items/stress/ features/ --model MODEL
+  # --ax-match context_set part_of_word <- not using ax constraint anymore
 run_abx.py abx_items/mandarin_tone/ features/ --model MODEL --max-size-group 3
 
 Others:

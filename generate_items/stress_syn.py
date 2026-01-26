@@ -36,7 +36,7 @@ from pathlib import Path
 # ============================================================
 
 AUDIO_ROOT = Path("/home/sunhaitong/ABX_syn/data/standard_english_stress")
-OUTPUT_DIR = Path("/home/sunhaitong/fastabx/abx_items/stress_syn")
+OUTPUT_DIR = Path("abx_items/stress_syn")
 
 # ============================================================
 # Filename parsing (stress logic, slot-based)

@@ -38,7 +38,7 @@ from pathlib import Path
 
 
 AUDIO_ROOT = Path("/home/sunhaitong/ABX_syn/data/standard_mandarin_syllable")
-OUTPUT_DIR = Path("/home/sunhaitong/fastabx/abx_items/mandarin_tone_syn")
+OUTPUT_DIR = Path("abx_items/mandarin_tone_syn")
 
 
 
