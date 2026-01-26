@@ -38,13 +38,7 @@ KALDI_FREQUENCY = 100.0
 MFCC_SAMPLE_RATE = 16_000
 HF_MODELS = {
     # English
-    "wavlm_base": "microsoft/wavlm-base",
-    "wavlm_base_plus": "microsoft/wavlm-base-plus",
-    "wavlm_large": "microsoft/wavlm-large",
-    "hubert-base-ls960": "facebook/hubert-base-ls960",
-    "hubert-large-ll60k": "facebook/hubert-large-ll60k",
     "wav2vec2-large-xlsr-53-english": "jonatasgrosman/wav2vec2-large-xlsr-53-english",
-    "wav2vec2_large_960": "facebook/wav2vec2-large-960h",
     # Chinese
     "chinese_hubert_large": "TencentGameMate/chinese-hubert-large",
     "chinese_hubert_base": "TencentGameMate/chinese-hubert-base",
@@ -56,8 +50,6 @@ HF_MODELS = {
     "japanese-hubert-base": "yky-h/japanese-hubert-base",
     "japanese-hubert-large": "yky-h/japanese-hubert-large",
     "wav2vec2-large-xlsr-53-japanese": "jonatasgrosman/wav2vec2-large-xlsr-53-japanese",
-    # Multilingual
-    "wav2vec2-large-xlsr-53": "facebook/wav2vec2-large-xlsr-53",
 }
 
 
@@ -186,11 +178,11 @@ def extract_features(
             # Two-phase extraction: save per-file to temp, then consolidate layer-by-layer
             # Reduces peak memory but reads temp files num_layers times
             import os
-            import tempfile
             local_user_dir = Path(f"/localdisk/{os.environ.get('USER', 'tmp')}")
             temp_base = local_user_dir / "fastabx_temp"
-            temp_base.mkdir(exist_ok=True, parents=True)
-            temp_dir = Path(tempfile.mkdtemp(dir=temp_base))
+            # Use deterministic temp dir name based on dataset/model for resumability
+            temp_dir = temp_base / f"{output_root.parent.name}_{output_root.name}"
+            temp_dir.mkdir(exist_ok=True, parents=True)
             print(f"Using low-memory mode (temp dir: {temp_dir})")
 
             # Phase 1: Extract and save per-file
