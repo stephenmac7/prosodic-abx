@@ -109,7 +109,7 @@ def compute_abx(
     max_size_group: int | None,
     max_x_across: int | None,
     subsample_seed: int,
-) -> float:
+) -> tuple[float, pl.DataFrame]:
     """Compute ABX error rate from a preloaded dataset."""
     # Build task
     # ON: accent_pattern (what we discriminate)
@@ -153,7 +153,6 @@ def compute_abx(
         constraints = [pl.col(f"{c}_a") == pl.col(f"{c}_x") for c in ax_match]
         print(f"Using A/X match constraints: {ax_match}")
     score = Score(task, distance, constraints=constraints)
-
     # Collapse: average over speakers first (giving equal weight per phone_sequence + contrast),
     # then final mean over all (phone_sequence, contrast) combinations. If extra BY constraints
     # are provided, collapse across them before speaker.
@@ -162,7 +161,7 @@ def compute_abx(
         # Collapse extra BY constraints before speaker
         collapse_levels = [tuple(extra_by)] + collapse_levels
 
-    return score.collapse(levels=collapse_levels)
+    return score.collapse(levels=collapse_levels), score
 
 
 def main():
@@ -256,7 +255,7 @@ def main():
         for mode_name, across_flag in modes:
             if args.both:
                 print(f"\n=== {mode_name.capitalize()}-speaker ===")
-            error_rate = compute_abx(
+            error_rate,score = compute_abx(
                 dataset,
                 distance=args.distance,
                 across=across_flag,
@@ -267,6 +266,12 @@ def main():
                 subsample_seed=args.subsample_seed,
             )
             label = f" ({mode_name})" if args.both else ""
+            detail_csv = results_dir / "cells" / args.model.lower() / f"{layer_name}.csv"
+            detail_csv.parent.mkdir(parents=True, exist_ok=True)
+
+            score.write_csv(detail_csv)
+
+
             print(f"ABX Error Rate{label}: {error_rate:.4f} ({error_rate * 100:.2f}%)")
             results.append(
                 {
