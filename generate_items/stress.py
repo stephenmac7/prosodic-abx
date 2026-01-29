@@ -3,9 +3,9 @@
 Supports two modes:
 
 1. CLIPPED mode (default):
-   Each audio file contains a single word. This script reads a JSON annotation file
-   and produces a CSV item file with full-word segments (onset=0, offset=duration).
-   Audio files are pre-extracted word clips.
+   Uses MFA-aligned timestamps (with manual overrides) to cut word segments from
+   sentence recordings. Audio clips are saved to abx_items/stress/audio/.
+   The item file references these clips with onset=0, offset=duration.
 
 2. IN-CONTEXT mode (--in-context):
    Uses the original sentence recordings with MFA-aligned timestamps.
@@ -38,12 +38,13 @@ from pathlib import Path
 from typing import Optional
 
 import tgt
+import torchaudio
+from torchcodec.decoders import AudioDecoder
 
 # Hardcoded input paths
 ANN_JSON = Path("/home/sunhaitong/ABX_stress/annotations/stephen_annotations_recording_final.json")
-AUDIO_ROOT_CLIPPED = Path("/home/sunhaitong/ABX_stress/data/recording_words_manual")
 AUDIO_ROOT_SENTENCES = Path("/home/sunhaitong/ABX_stress/data/recording_sentences")
-TEXTGRID_ROOT = Path("/home/sunhaitong/ABX_stress/scripts_clean/tmp_mfa_sentence_batch")
+TEXTGRID_ROOT = Path("/home/sunhaitong/ABX_stress/data/recording_sentences_MFA_aligned")
 MANUAL_TIMESTAMPS = Path(__file__).parent / "metadata" / "stress_recording_manual_timestamps.json"
 OUTPUT_DIR = Path("abx_items/stress")
 
@@ -57,6 +58,33 @@ TARGET_WORDS = [
     "permit", "project", "research", "survey", "transfer",
     "transport", "upset"
 ]
+
+
+# ============================================================
+# ===================== AUDIO CLIPPING =======================
+# ============================================================
+
+def clip_audio(src: Path, dst: Path, onset: float, offset: float) -> None:
+    """Cut a segment from a WAV file."""
+    decoder = AudioDecoder(str(src))
+    sr = decoder.metadata.sample_rate
+    duration = decoder.metadata.duration_seconds
+    total_frames = int(duration * sr)
+
+    start_frame = max(0, int(round(onset * sr)))
+    if offset > 0:
+        end_frame = min(total_frames, int(round(offset * sr)))
+    else:
+        end_frame = total_frames
+
+    num_frames = max(0, end_frame - start_frame)
+
+    waveform, _ = torchaudio.load(
+        str(src), frame_offset=start_frame, num_frames=num_frames
+    )
+
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    torchaudio.save(str(dst), waveform, sr)
 
 
 # ============================================================
@@ -136,13 +164,19 @@ def load_annotations(ann_json: Path) -> list[dict]:
 
 def build_items_clipped(
     annotations: list[dict],
-    audio_root: Path,
+    sentence_audio_root: Path,
+    textgrid_root: Path,
+    manual_timestamps: dict[str, dict[str, float]],
+    output_audio_dir: Path,
     invalid_label: str,
 ) -> list[dict]:
-    """Build item rows from annotations using pre-clipped word audio files."""
+    """Build item rows by cutting word segments from sentence audio using MFA alignments."""
     items: list[dict] = []
     skipped_invalid = 0
     skipped_missing = 0
+    skipped_no_word = 0
+    used_manual = 0
+    clipped_count = 0
 
     for entry in annotations:
         label = str(entry["label"])
@@ -156,12 +190,49 @@ def build_items_clipped(
         if word != word2:
             raise ValueError(f"Word mismatch: json word={word}, filename={fname}")
 
-        audio_path = audio_root / word / fname
-        if not audio_path.exists():
+        sentence_stem, line = get_sentence_info(speaker, word, set_id, take_id)
+
+        # Sentence files: {speaker}/{speaker}_{set}_{line:03d}.wav
+        sentence_audio_path = sentence_audio_root / speaker / f"{sentence_stem}.wav"
+        # TextGrid files: {speaker}/{speaker}_{set}_{line:03d}.TextGrid
+        textgrid_path = textgrid_root / speaker / f"{sentence_stem}.TextGrid"
+
+        if not sentence_audio_path.exists():
             skipped_missing += 1
             continue
 
-        duration = get_duration_seconds(audio_path)
+        # Check for manual timestamp override first
+        if fname in manual_timestamps:
+            onset = manual_timestamps[fname]["onset"]
+            offset = manual_timestamps[fname]["offset"]
+            used_manual += 1
+        elif not textgrid_path.exists():
+            skipped_missing += 1
+            continue
+        else:
+            # Parse TextGrid and find word
+            try:
+                intervals = parse_words_tier(textgrid_path)
+                span = find_word_interval(intervals, word)
+            except Exception as e:
+                print(f"Warning: Failed to parse {textgrid_path}: {e}")
+                skipped_no_word += 1
+                continue
+
+            if span is None:
+                skipped_no_word += 1
+                continue
+
+            onset, offset = span
+
+        # Cut audio and save to output directory
+        output_audio_path = output_audio_dir / word / fname
+        if not output_audio_path.exists():
+            clip_audio(sentence_audio_path, output_audio_path, onset, offset)
+            clipped_count += 1
+
+        # Get duration of clipped file
+        duration = get_duration_seconds(output_audio_path)
         file_id = f"{word}/{Path(fname).stem}"
 
         items.append(
@@ -180,7 +251,13 @@ def build_items_clipped(
     if skipped_invalid > 0:
         print(f"Skipped {skipped_invalid} items with label={invalid_label}")
     if skipped_missing > 0:
-        print(f"Skipped {skipped_missing} items with missing audio files")
+        print(f"Skipped {skipped_missing} items with missing audio/TextGrid files")
+    if skipped_no_word > 0:
+        print(f"Skipped {skipped_no_word} items where word not found in TextGrid")
+    if used_manual > 0:
+        print(f"Used {used_manual} manual timestamp overrides")
+    if clipped_count > 0:
+        print(f"Clipped {clipped_count} new audio files")
 
     return items
 
@@ -215,8 +292,8 @@ def build_items_in_context(
 
         # Sentence files: {speaker}/{speaker}_{set}_{line:03d}.wav
         audio_path = audio_root / speaker / f"{sentence_stem}.wav"
-        # TextGrid files: {speaker}_{set}/output/{speaker}_{set}_{line:03d}.TextGrid
-        textgrid_path = textgrid_root / f"{speaker}_{set_id}" / "output" / f"{sentence_stem}.TextGrid"
+        # TextGrid files: {speaker}/{speaker}_{set}_{line:03d}.TextGrid
+        textgrid_path = textgrid_root / speaker / f"{sentence_stem}.TextGrid"
 
         if not audio_path.exists():
             skipped_missing += 1
@@ -246,9 +323,13 @@ def build_items_in_context(
 
             onset, offset = span
 
+        # Use consistent file ID format matching clipped mode
+        file_id = f"{word}/{Path(fname).stem}"
+
         items.append(
             {
-                "#file": f"{speaker}/{sentence_stem}",
+                "#file": file_id,
+                "source_file": f"{speaker}/{sentence_stem}",
                 "onset": onset,
                 "offset": offset,
                 "phone_sequence": word,
@@ -273,8 +354,14 @@ def build_items_in_context(
 
 def write_items(items: list[dict], output_path: Path) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
+    # Check if items have source_file column (in-context mode)
+    has_source_file = items and "source_file" in items[0]
     header = [
         "#file",
+    ]
+    if has_source_file:
+        header.append("source_file")
+    header.extend([
         "onset",
         "offset",
         "phone_sequence",
@@ -282,7 +369,7 @@ def write_items(items: list[dict], output_path: Path) -> None:
         "speaker",
         "context_set",
         "part_of_word",
-    ]
+    ])
     with output_path.open("w", encoding="utf-8", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=header)
         writer.writeheader()
@@ -320,28 +407,29 @@ def main() -> None:
         audio_root = AUDIO_ROOT_SENTENCES
         mode_str = "in-context (sentence audio with MFA timestamps)"
     else:
-        audio_root = AUDIO_ROOT_CLIPPED
-        mode_str = "clipped (pre-extracted word files)"
+        audio_root = output_dir / "audio"
+        mode_str = "clipped (cut from sentences using MFA + manual timestamps)"
 
     print(f"Mode: {mode_str}")
     print(f"Annotation file: {ANN_JSON}")
-    print(f"Audio root: {audio_root}")
-    if args.in_context:
-        print(f"TextGrid root: {TEXTGRID_ROOT}")
-        print(f"Manual timestamps: {MANUAL_TIMESTAMPS}")
+    print(f"Sentence audio root: {AUDIO_ROOT_SENTENCES}")
+    print(f"TextGrid root: {TEXTGRID_ROOT}")
+    print(f"Manual timestamps: {MANUAL_TIMESTAMPS}")
+    if not args.in_context:
+        print(f"Output audio directory: {audio_root}")
     print(f"Output directory: {output_dir}")
     print()
 
     annotations = load_annotations(ANN_JSON)
     print(f"Loaded {len(annotations)} annotations")
 
-    if args.in_context:
-        manual_timestamps = load_manual_timestamps(MANUAL_TIMESTAMPS)
-        print(f"Loaded {len(manual_timestamps)} manual timestamp overrides")
+    manual_timestamps = load_manual_timestamps(MANUAL_TIMESTAMPS)
+    print(f"Loaded {len(manual_timestamps)} manual timestamp overrides")
 
+    if args.in_context:
         items = build_items_in_context(
             annotations=annotations,
-            audio_root=audio_root,
+            audio_root=AUDIO_ROOT_SENTENCES,
             textgrid_root=TEXTGRID_ROOT,
             manual_timestamps=manual_timestamps,
             invalid_label=INVALID_LABEL,
@@ -349,7 +437,10 @@ def main() -> None:
     else:
         items = build_items_clipped(
             annotations=annotations,
-            audio_root=audio_root,
+            sentence_audio_root=AUDIO_ROOT_SENTENCES,
+            textgrid_root=TEXTGRID_ROOT,
+            manual_timestamps=manual_timestamps,
+            output_audio_dir=audio_root,
             invalid_label=INVALID_LABEL,
         )
 

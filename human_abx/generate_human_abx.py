@@ -23,26 +23,72 @@ import wave
 from collections import Counter, defaultdict
 from pathlib import Path
 
+import numpy as np
 import polars as pl
+import torchaudio
+from torchcodec.decoders import AudioDecoder
 from fastabx.dataset import dummy_dataset_from_item
 from fastabx.subsample import Subsampler
 from fastabx.task import Task
 
 
-def clip_audio(src: Path, dst: Path, onset: float, offset: float) -> None:
-    """Cut a segment from a WAV file."""
-    with wave.open(str(src), "rb") as wf:
-        fr = wf.getframerate()
-        nframes = wf.getnframes()
-        start_frame = max(0, int(round(onset * fr)))
-        end_frame = int(round(offset * fr)) if offset > 0 else nframes
-        end_frame = min(nframes, max(start_frame, end_frame))
-        wf.setpos(start_frame)
-        frames = wf.readframes(end_frame - start_frame)
-        dst.parent.mkdir(parents=True, exist_ok=True)
-        with wave.open(str(dst), "wb") as out:
-            out.setparams(wf.getparams())
-            out.writeframes(frames)
+def clip_audio(
+    src: Path, dst: Path, onset: float, offset: float, fade_duration: float = 0.0
+) -> None:
+    """Cut a segment from a WAV file with optional boundary-centered fade.
+
+    Args:
+        src: Source audio file
+        dst: Destination audio file
+        onset: Start time in seconds
+        offset: End time in seconds (0 means end of file)
+        fade_duration: Duration of fade in seconds. The fade is centered on the cut
+            boundary, so we load extra audio (fade_duration/2) before onset and after
+            offset, then apply a fade over that region. Set to 0 for clean cut.
+    """
+    decoder = AudioDecoder(str(src))
+    sr = decoder.metadata.sample_rate
+    duration = decoder.metadata.duration_seconds
+    total_frames = int(duration * sr)
+
+    fade_frames = int(round(fade_duration * sr))
+    half_fade = fade_frames // 2
+
+    # Expand the region to include fade margins (centered on cut boundary)
+    start_frame = max(0, int(round(onset * sr)) - half_fade)
+    if offset > 0:
+        end_frame = min(total_frames, int(round(offset * sr)) + half_fade)
+    else:
+        end_frame = total_frames
+
+    num_frames = max(0, end_frame - start_frame)
+
+    waveform, _ = torchaudio.load(
+        str(src), frame_offset=start_frame, num_frames=num_frames
+    )
+
+    # Apply fade if requested
+    if fade_frames > 0 and num_frames > 0:
+        # Compute actual fade lengths (may be shorter if we hit file boundaries)
+        actual_fade_in = min(
+            half_fade, int(round(onset * sr)) - start_frame + half_fade
+        )
+        actual_fade_out = min(
+            half_fade, end_frame - int(round(offset * sr)) + half_fade
+        )
+        # Clamp to half the waveform length
+        actual_fade_in = min(actual_fade_in, num_frames // 2)
+        actual_fade_out = min(actual_fade_out, num_frames // 2)
+
+        if actual_fade_in > 0 or actual_fade_out > 0:
+            fade_transform = torchaudio.transforms.Fade(
+                fade_in_len=actual_fade_in,
+                fade_out_len=actual_fade_out,
+            )
+            waveform = fade_transform(waveform)
+
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    torchaudio.save(str(dst), waveform, sr)
 
 
 def materialize_audio_clips(
@@ -50,6 +96,7 @@ def materialize_audio_clips(
     audio_root: Path,
     output_dir: Path,
     used_files: set[str] | None = None,
+    fade_duration: float = 0.0,
 ) -> int:
     """Materialize audio clips from items.csv to output directory.
 
@@ -58,6 +105,7 @@ def materialize_audio_clips(
         audio_root: Root directory containing source audio
         output_dir: Directory to write clipped audio
         used_files: If provided, only materialize files in this set
+        fade_duration: Duration of boundary-centered fade in seconds (0 for clean cut)
 
     Returns:
         Number of clips materialized
@@ -66,6 +114,7 @@ def materialize_audio_clips(
     if "#file" not in items.columns:
         raise ValueError(f"Missing required '#file' column in {items_csv}")
     items = items.with_columns(pl.col("#file").cast(pl.Utf8))
+    has_source_file = "source_file" in items.columns
 
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -83,19 +132,20 @@ def materialize_audio_clips(
         onset = row.get("onset", 0.0) or 0.0
         offset = row.get("offset", 0.0) or 0.0
 
-        # Resolve source path
-        file_path = Path(file_id)
-        if file_path.suffix:
-            src = audio_root / file_path
+        # Resolve source path (use source_file if available, otherwise #file)
+        source_id = row.get("source_file") if has_source_file else file_id
+        source_path = Path(source_id)
+        if source_path.suffix:
+            src = audio_root / source_path
         else:
-            src = audio_root / f"{file_id}.wav"
+            src = audio_root / f"{source_id}.wav"
 
         if not src.exists():
             raise FileNotFoundError(f"Source audio not found: {src}")
 
         dst = output_dir / f"{file_id}.wav"
         if not dst.exists():
-            clip_audio(src, dst, onset, offset)
+            clip_audio(src, dst, onset, offset, fade_duration)
 
     return len(seen)
 
@@ -120,16 +170,18 @@ def enumerate_triplets(task: Task, labels: pl.DataFrame) -> pl.DataFrame:
         for a_idx in index_a:
             for b_idx in index_b:
                 for x_idx in index_x:
-                    rows.append({
-                        "phone_sequence": phone_seq,
-                        "accent_a": str(accent_a),
-                        "accent_b": str(accent_b),
-                        "speaker_ab": speaker_ab,
-                        "speaker_x": speaker_x,
-                        "file_a": files[a_idx],
-                        "file_b": files[b_idx],
-                        "file_x": files[x_idx],
-                    })
+                    rows.append(
+                        {
+                            "phone_sequence": phone_seq,
+                            "accent_a": str(accent_a),
+                            "accent_b": str(accent_b),
+                            "speaker_ab": speaker_ab,
+                            "speaker_x": speaker_x,
+                            "file_a": files[a_idx],
+                            "file_b": files[b_idx],
+                            "file_x": files[x_idx],
+                        }
+                    )
 
     return pl.DataFrame(rows)
 
@@ -168,7 +220,9 @@ def generate_catch_trials(
         .to_dicts()
     )
     if not candidate_groups:
-        raise ValueError("Need at least one speaker with two items for the same phone_sequence")
+        raise ValueError(
+            "Need at least one speaker with two items for the same phone_sequence"
+        )
 
     rows = []
     attempts = 0
@@ -183,7 +237,8 @@ def generate_catch_trials(
 
         # Get items for this speaker + word (same phone_sequence)
         speaker_items = syn_labels.filter(
-            (pl.col("speaker") == speaker) & (pl.col("phone_sequence") == phone_sequence)
+            (pl.col("speaker") == speaker)
+            & (pl.col("phone_sequence") == phone_sequence)
         )
 
         # Sample two different items for A and B within the same word
@@ -201,23 +256,27 @@ def generate_catch_trials(
             x_file = b_row["#file"].item()
             correct_answer = "B"
 
-        rows.append({
-            "phone_sequence": a_row["phone_sequence"].item(),
-            "phone_sequence_b": a_row["phone_sequence"].item(),
-            "accent_a": str(a_row["accent_pattern"].item()),
-            "accent_b": str(b_row["accent_pattern"].item()),
-            "speaker_ab": speaker,
-            "speaker_x": speaker,
-            "file_a": a_row["#file"].item(),
-            "file_b": b_row["#file"].item(),
-            "file_x": x_file,
-            "is_catch": True,
-            "correct_answer": correct_answer,
-            "audio_source": "syn",
-        })
+        rows.append(
+            {
+                "phone_sequence": a_row["phone_sequence"].item(),
+                "phone_sequence_b": a_row["phone_sequence"].item(),
+                "accent_a": str(a_row["accent_pattern"].item()),
+                "accent_b": str(b_row["accent_pattern"].item()),
+                "speaker_ab": speaker,
+                "speaker_x": speaker,
+                "file_a": a_row["#file"].item(),
+                "file_b": b_row["#file"].item(),
+                "file_x": x_file,
+                "is_catch": True,
+                "correct_answer": correct_answer,
+                "audio_source": "syn",
+            }
+        )
 
     if len(rows) < n_catch:
-        print(f"  Warning: Could only generate {len(rows)} catch trials (requested {n_catch})")
+        print(
+            f"  Warning: Could only generate {len(rows)} catch trials (requested {n_catch})"
+        )
 
     return pl.DataFrame(rows)
 
@@ -238,14 +297,16 @@ def counterbalance_answers(triplets: list[dict], seed: int) -> list[dict]:
 
         if random.random() < 0.5:
             # Swap A and B
-            result.append({
-                **triplet,
-                "file_a": triplet["file_b"],
-                "file_b": triplet["file_a"],
-                "accent_a": triplet["accent_b"],
-                "accent_b": triplet["accent_a"],
-                "correct_answer": "B",
-            })
+            result.append(
+                {
+                    **triplet,
+                    "file_a": triplet["file_b"],
+                    "file_b": triplet["file_a"],
+                    "accent_a": triplet["accent_b"],
+                    "accent_b": triplet["accent_a"],
+                    "correct_answer": "B",
+                }
+            )
         else:
             result.append({**triplet, "correct_answer": "A"})
     return result
@@ -271,7 +332,9 @@ def assign_to_participants(
     regular_per_participant = trials_per_participant - n_catch
 
     if regular_per_participant <= 0:
-        raise ValueError("trials_per_participant must be greater than number of catch trials")
+        raise ValueError(
+            "trials_per_participant must be greater than number of catch trials"
+        )
 
     # Count recording appearances needed
     all_recordings = set()
@@ -298,7 +361,8 @@ def assign_to_participants(
         recording_slots_per_participant = target_regular * 3
         min_participants = max(
             1,
-            (total_recording_slots_needed + recording_slots_per_participant - 1) // recording_slots_per_participant,
+            (total_recording_slots_needed + recording_slots_per_participant - 1)
+            // recording_slots_per_participant,
         )
 
         # If each participant can see all triplets, compute tighter bound per recording.
@@ -308,7 +372,9 @@ def assign_to_participants(
                 per_participant_for_r = len(recording_to_triplet_indices[r])
                 if per_participant_for_r <= 0:
                     continue
-                required = (min_responses_per_recording + per_participant_for_r - 1) // per_participant_for_r
+                required = (
+                    min_responses_per_recording + per_participant_for_r - 1
+                ) // per_participant_for_r
                 required_per_recording = max(required_per_recording, required)
             min_participants = max(min_participants, required_per_recording)
 
@@ -328,12 +394,16 @@ def assign_to_participants(
         triplet_assigned_count = Counter()
 
         min_participants_clamped = max(1, min_participants)
-        n_participants = max(min_participants_clamped, compute_min_participants(target_regular))
+        n_participants = max(
+            min_participants_clamped, compute_min_participants(target_regular)
+        )
         print(
             f"  Target: {n_participants} participant lists "
             f"(minimum {min_participants_clamped}, may increase for coverage)"
         )
-        print(f"  {target_regular} regular + {n_catch} catch = {target_regular + n_catch} trials each")
+        print(
+            f"  {target_regular} regular + {n_catch} catch = {target_regular + n_catch} trials each"
+        )
 
         participant_lists = []
         max_participants = n_participants * 100  # Limit to avoid infinite loop
@@ -348,8 +418,11 @@ def assign_to_participants(
             used_in_this_participant = set()
 
             # Prioritize triplets containing under-covered recordings
-            under_covered_recs = {r for r in all_recordings
-                                 if recording_assignment_counts[r] < min_responses_per_recording}
+            under_covered_recs = {
+                r
+                for r in all_recordings
+                if recording_assignment_counts[r] < min_responses_per_recording
+            }
 
             # Sort candidates: triplets with under-covered recordings first, then by coverage pressure
             candidates = list(range(n_triplets))
@@ -379,7 +452,10 @@ def assign_to_participants(
                 # Skip if any recording already used OR would exceed max repeats
                 if recs & used_recordings:
                     continue
-                if any(participant_recordings[r] >= max_repeats_per_participant for r in recs):
+                if any(
+                    participant_recordings[r] >= max_repeats_per_participant
+                    for r in recs
+                ):
                     continue
 
                 participant_triplets.append(triplet)
@@ -402,7 +478,10 @@ def assign_to_participants(
                     recs = get_recordings_in_triplet(triplet)
 
                     # Skip if any recording would exceed max repeats
-                    if any(participant_recordings[r] >= max_repeats_per_participant for r in recs):
+                    if any(
+                        participant_recordings[r] >= max_repeats_per_participant
+                        for r in recs
+                    ):
                         continue
 
                     participant_triplets.append(triplet)
@@ -416,8 +495,10 @@ def assign_to_participants(
 
             # Warn if we couldn't fill all slots
             if len(participant_triplets) < target_regular:
-                print(f"  Warning: Participant {p_idx} has only {len(participant_triplets)}/{target_regular} "
-                      f"regular trials (max_repeats={max_repeats_per_participant} constraint)")
+                print(
+                    f"  Warning: Participant {p_idx} has only {len(participant_triplets)}/{target_regular} "
+                    f"regular trials (max_repeats={max_repeats_per_participant} constraint)"
+                )
 
             # Add catch trials (distributed evenly)
             all_trials = participant_triplets + catch_trials.copy()
@@ -433,21 +514,34 @@ def assign_to_participants(
 
             # Check if we've met our target
             if p_idx >= n_participants:
-                under_covered = [r for r, c in recording_assignment_counts.items() if c < min_responses_per_recording]
+                under_covered = [
+                    r
+                    for r, c in recording_assignment_counts.items()
+                    if c < min_responses_per_recording
+                ]
                 if not under_covered:
                     break  # Coverage achieved
 
         return participant_lists, min_filled, recording_assignment_counts
 
     # Check if coverage is achievable: each recording must appear in enough triplets
-    impossible_recordings = [r for r in all_recordings
-                            if len(recording_to_triplet_indices[r]) < min_responses_per_recording]
+    impossible_recordings = [
+        r
+        for r in all_recordings
+        if len(recording_to_triplet_indices[r]) < min_responses_per_recording
+    ]
     if impossible_recordings:
-        print(f"  Note: {len(impossible_recordings)} recordings appear in < {min_responses_per_recording} triplets")
-        print(f"         These cannot reach target coverage regardless of participant count")
+        print(
+            f"  Note: {len(impossible_recordings)} recordings appear in < {min_responses_per_recording} triplets"
+        )
+        print(
+            f"         These cannot reach target coverage regardless of participant count"
+        )
 
     target_regular = regular_per_participant
-    participant_lists, min_filled, recording_assignment_counts = assign_once(target_regular)
+    participant_lists, min_filled, recording_assignment_counts = assign_once(
+        target_regular
+    )
     if min_filled < target_regular:
         raise RuntimeError(
             f"Unable to assign {target_regular} regular trials per participant without exceeding "
@@ -456,10 +550,16 @@ def assign_to_participants(
         )
 
     print(f"  Generated {len(participant_lists)} participant lists")
-    print(f"  {target_regular} regular + {n_catch} catch = {target_regular + n_catch} trials each")
+    print(
+        f"  {target_regular} regular + {n_catch} catch = {target_regular + n_catch} trials each"
+    )
 
     # Report coverage stats
-    under_covered = [r for r, c in recording_assignment_counts.items() if c < min_responses_per_recording]
+    under_covered = [
+        r
+        for r, c in recording_assignment_counts.items()
+        if c < min_responses_per_recording
+    ]
     if under_covered:
         # Coverage was required but not achieved
         raise RuntimeError(
@@ -468,10 +568,16 @@ def assign_to_participants(
             f"Try increasing --trials-per-participant or decreasing --min-responses-per-recording."
         )
     else:
-        print(f"  All {len(all_recordings)} recordings have >= {min_responses_per_recording} appearances")
+        print(
+            f"  All {len(all_recordings)} recordings have >= {min_responses_per_recording} appearances"
+        )
 
-    min_count = min(recording_assignment_counts.values()) if recording_assignment_counts else 0
-    max_count = max(recording_assignment_counts.values()) if recording_assignment_counts else 0
+    min_count = (
+        min(recording_assignment_counts.values()) if recording_assignment_counts else 0
+    )
+    max_count = (
+        max(recording_assignment_counts.values()) if recording_assignment_counts else 0
+    )
     print(f"  Recording appearances (total): min={min_count}, max={max_count}")
 
     # Report within-participant repeats
@@ -482,7 +588,9 @@ def assign_to_participants(
             for r in get_recordings_in_triplet(t):
                 rec_counts[r] += 1
         if rec_counts:
-            max_within_participant = max(max_within_participant, max(rec_counts.values()))
+            max_within_participant = max(
+                max_within_participant, max(rec_counts.values())
+            )
     print(f"  Max repeats within a participant: {max_within_participant}")
 
     return participant_lists, max_within_participant
@@ -504,14 +612,14 @@ def round_robin_order(triplets: list[dict], seed: int) -> list[dict]:
     ordered = []
 
     # Track last position each recording was heard
-    last_heard = defaultdict(lambda: -float('inf'))
+    last_heard = defaultdict(lambda: -float("inf"))
 
     while remaining:
         current_pos = len(ordered)
 
         # Score each remaining triplet by minimum time since any of its recordings was heard
         best_idx = 0
-        best_min_gap = -float('inf')
+        best_min_gap = -float("inf")
 
         for i, triplet in enumerate(remaining):
             recs = get_recordings_in_triplet(triplet)
@@ -539,52 +647,67 @@ def main():
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument(
-        "--dataset", type=str, required=True,
-        help="Dataset name (e.g., stress, pitch_accent, mandarin_tone)"
+        "--dataset",
+        type=str,
+        required=True,
+        help="Dataset name (e.g., stress, pitch_accent, mandarin_tone)",
     )
     parser.add_argument(
-        "--trials-per-participant", type=int, default=100,
-        help="Number of trials per participant (including catch trials)"
+        "--trials-per-participant",
+        type=int,
+        default=100,
+        help="Number of trials per participant (including catch trials)",
     )
     parser.add_argument(
-        "--min-responses-per-recording", type=int, default=5,
-        help="Minimum times each recording should be heard (across all participants)"
+        "--min-responses-per-recording",
+        type=int,
+        default=5,
+        help="Minimum times each recording should be heard (across all participants)",
     )
     parser.add_argument(
-        "--catch-ratio", type=float, default=0.1,
-        help="Ratio of catch trials to regular trials"
+        "--catch-ratio",
+        type=float,
+        default=0.1,
+        help="Ratio of catch trials to regular trials",
     )
     parser.add_argument(
-        "--max-size-group", type=int, default=None,
-        help="Max items for A, B, or X per cell (fastabx Subsampler). Defaults to no subsampling"
+        "--max-size-group",
+        type=int,
+        default=None,
+        help="Max items for A, B, or X per cell (fastabx Subsampler). Defaults to no subsampling",
     )
     parser.add_argument(
-        "--max-x-across", type=int, default=None,
-        help="Max X speakers per (A,B) pair (fastabx Subsampler). Defaults to no subsampling"
+        "--max-x-across",
+        type=int,
+        default=None,
+        help="Max X speakers per (A,B) pair (fastabx Subsampler). Defaults to no subsampling",
     )
     parser.add_argument(
-        "--pinyin-freq-file", type=Path, default=None,
-        help="Path to pinyin frequency file (for Mandarin filtering)"
+        "--pinyin-freq-file",
+        type=Path,
+        default=None,
+        help="Path to pinyin frequency file (for Mandarin filtering)",
     )
     parser.add_argument(
-        "--top-pinyins", type=int, default=None,
-        help="Select only top N most frequent pinyins (requires --pinyin-freq-file)"
+        "--top-pinyins",
+        type=int,
+        default=None,
+        help="Select only top N most frequent pinyins (requires --pinyin-freq-file)",
     )
     parser.add_argument(
-        "--min-participants", type=int, default=15,
-        help="Minimum number of participants (generator may increase to meet coverage)"
+        "--min-participants",
+        type=int,
+        default=15,
+        help="Minimum number of participants (generator may increase to meet coverage)",
+    )
+    parser.add_argument("--seed", type=int, default=42, help="Random seed")
+    parser.add_argument(
+        "--output-dir", type=Path, default=Path("human_abx"), help="Output directory"
     )
     parser.add_argument(
-        "--seed", type=int, default=42,
-        help="Random seed"
-    )
-    parser.add_argument(
-        "--output-dir", type=Path, default=Path("human_abx"),
-        help="Output directory"
-    )
-    parser.add_argument(
-        "--materialize-audio", action="store_true",
-        help="Also materialize audio clips for web deployment"
+        "--materialize-audio",
+        action="store_true",
+        help="Also materialize audio clips for web deployment",
     )
 
     args = parser.parse_args()
@@ -603,25 +726,31 @@ def main():
     if not syn_item_path.exists():
         raise FileNotFoundError(f"Synthesized item file not found: {syn_item_path}")
     syn_labels = pl.read_csv(syn_item_path, schema_overrides={"#file": pl.String})
-    print(f"Loaded synthesized items for catch trials from {syn_item_path} ({len(syn_labels)} items)")
+    print(
+        f"Loaded synthesized items for catch trials from {syn_item_path} ({len(syn_labels)} items)"
+    )
 
     # Filter by pinyin frequency if specified
     if args.pinyin_freq_file:
         if not args.top_pinyins:
             raise ValueError("--top-pinyins required when using --pinyin-freq-file")
 
-        print(f"Filtering to top {args.top_pinyins} pinyins from {args.pinyin_freq_file}...")
+        print(
+            f"Filtering to top {args.top_pinyins} pinyins from {args.pinyin_freq_file}..."
+        )
         freq_data = []
         with open(args.pinyin_freq_file) as f:
             for line in f:
-                parts = line.strip().split('\t')
+                parts = line.strip().split("\t")
                 if len(parts) >= 3:
                     freq_data.append((parts[1], int(parts[2])))  # pinyin, frequency
 
         # Sort by frequency and take top N
         freq_data.sort(key=lambda x: -x[1])
-        top_pinyins = {p for p, _ in freq_data[:args.top_pinyins]}
-        print(f"  Selected pinyins: {sorted(top_pinyins)[:10]}... ({len(top_pinyins)} total)")
+        top_pinyins = {p for p, _ in freq_data[: args.top_pinyins]}
+        print(
+            f"  Selected pinyins: {sorted(top_pinyins)[:10]}... ({len(top_pinyins)} total)"
+        )
 
         # Filter labels - phone_sequence is the pinyin for mandarin_tone
         original_count = len(labels)
@@ -639,7 +768,13 @@ def main():
     print("Building ABX task with subsampling...")
     dataset = dummy_dataset_from_item(item_path, frequency=None)
     subsampler = Subsampler(args.max_size_group, args.max_x_across, seed=args.seed)
-    task = Task(dataset, on="accent_pattern", by=["phone_sequence"], across=["speaker"], subsampler=subsampler)
+    task = Task(
+        dataset,
+        on="accent_pattern",
+        by=["phone_sequence"],
+        across=["speaker"],
+        subsampler=subsampler,
+    )
     print(f"  {len(task)} cells")
 
     # Enumerate triplets
@@ -674,9 +809,13 @@ def main():
         args.min_participants,
     )
 
-    trials_per_participant_actual = len(participant_lists[0]) if participant_lists else 0
+    trials_per_participant_actual = (
+        len(participant_lists[0]) if participant_lists else 0
+    )
     catch_per_participant_actual = (
-        sum(1 for t in participant_lists[0] if t.get("is_catch")) if participant_lists else 0
+        sum(1 for t in participant_lists[0] if t.get("is_catch"))
+        if participant_lists
+        else 0
     )
 
     # Save outputs
@@ -739,7 +878,9 @@ def main():
         f.write(f"Trials per participant: {trials_per_participant_actual}\n")
         f.write(f"Number of participants: {len(participant_lists)}\n")
         f.write(f"Min responses per recording: {args.min_responses_per_recording}\n")
-        f.write(f"Subsampler: max_size_group={args.max_size_group}, max_x_across={args.max_x_across}\n")
+        f.write(
+            f"Subsampler: max_size_group={args.max_size_group}, max_x_across={args.max_x_across}\n"
+        )
         f.write(f"Seed: {args.seed}\n")
         f.write(f"Used audio list: {used_audio_path}\n")
         f.write(f"Used main audio list: {used_audio_main_path}\n")
@@ -758,9 +899,13 @@ def main():
         f.write(f"  Total unique recordings: {len(all_recordings)}\n")
         f.write(f"  Min appearances: {min(recording_counts.values())}\n")
         f.write(f"  Max appearances: {max(recording_counts.values())}\n")
-        f.write(f"  Mean appearances: {sum(recording_counts.values()) / len(recording_counts):.1f}\n")
+        f.write(
+            f"  Mean appearances: {sum(recording_counts.values()) / len(recording_counts):.1f}\n"
+        )
         f.write(f"\nWithin-participant repeats:\n")
-        f.write(f"  Max times a recording heard by one participant: {max_within_participant}\n")
+        f.write(
+            f"  Max times a recording heard by one participant: {max_within_participant}\n"
+        )
 
     print(f"Wrote summary to {summary_path}")
 
@@ -769,16 +914,61 @@ def main():
         print("\nMaterializing audio clips...")
         web_audio_dir = args.output_dir / "web" / "audio"
 
-        # Main dataset audio
-        audio_root_main = Path((Path("abx_items") / args.dataset / "audio_path.txt").read_text().strip())
+        # Determine if we should use in-context items (for boundary-centered fade)
+        # English (stress) and Japanese (pitch_accent) use in-context with fade
+        # Mandarin uses clean cuts without fade
+        datasets_with_fade = {"stress", "pitch_accent"}
+        use_in_context = args.dataset in datasets_with_fade
+        fade_duration = 0.02 if use_in_context else 0.0  # 20ms fade
+
+        if use_in_context:
+            # Use in-context items (sentence audio with word timestamps)
+            in_context_dataset = f"{args.dataset}_in_context"
+            in_context_item_path = Path("abx_items") / in_context_dataset / "items.csv"
+            if not in_context_item_path.exists():
+                raise FileNotFoundError(
+                    f"In-context items not found: {in_context_item_path}. "
+                    f"Run the generate script with --in-context first."
+                )
+            audio_root_main = Path(
+                (Path("abx_items") / in_context_dataset / "audio_path.txt")
+                .read_text()
+                .strip()
+            )
+            main_items_path = in_context_item_path
+            print(
+                f"  Using in-context items with {fade_duration*1000:.0f}ms boundary-centered fade"
+            )
+        else:
+            # Use regular items (clean cut)
+            audio_root_main = Path(
+                (Path("abx_items") / args.dataset / "audio_path.txt")
+                .read_text()
+                .strip()
+            )
+            main_items_path = item_path
+            print(f"  Using clean cuts (no fade)")
+
         main_output = web_audio_dir / args.dataset
-        n_main = materialize_audio_clips(item_path, audio_root_main, main_output, used_files_main)
+        n_main = materialize_audio_clips(
+            main_items_path,
+            audio_root_main,
+            main_output,
+            used_files_main,
+            fade_duration,
+        )
         print(f"  Materialized {n_main} main clips to {main_output}")
 
-        # Synthesized audio for catch trials
-        audio_root_syn = Path((Path("abx_items") / f"{args.dataset}_syn" / "audio_path.txt").read_text().strip())
+        # Synthesized audio for catch trials (always clean cut - already isolated words)
+        audio_root_syn = Path(
+            (Path("abx_items") / f"{args.dataset}_syn" / "audio_path.txt")
+            .read_text()
+            .strip()
+        )
         syn_output = web_audio_dir / f"{args.dataset}_syn"
-        n_syn = materialize_audio_clips(syn_item_path, audio_root_syn, syn_output, used_files_syn)
+        n_syn = materialize_audio_clips(
+            syn_item_path, audio_root_syn, syn_output, used_files_syn, fade_duration=0.0
+        )
         print(f"  Materialized {n_syn} synthesized clips to {syn_output}")
 
 
