@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Human ABX Lab Task</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <header class="topbar">
+        <div class="brand">
+          <div class="mark">ABX</div>
+          <div class="meta">
+            <div class="title">Lab Task</div>
+          </div>
+        </div>
+        <div class="session">
+          <div class="pill" id="participantLabel">Participant: --</div>
+          <div class="pill" id="listLabel">List: --</div>
+        </div>
+      </header>
+
+      <section class="card intro" id="introCard">
+        <div class="intro-step" id="step1">
+          <h1>Audio Discrimination Task</h1>
+          <p>
+            In this task you'll listen to audio clips and make judgments.
+            Before we start, we need to check a few things.
+          </p>
+          <div class="question-box">
+            <div class="question-label">Are you wearing <strong>wired</strong> headphones in a quiet environment?</div>
+            <p class="sub-question">
+              Please avoid using wireless earbuds (e.g., AirPods), as they can cause audio clipping and timing issues.
+            </p>
+            <div class="question-buttons">
+              <button class="option-btn" id="headphonesYes">Yes, I'm ready</button>
+              <button class="option-btn secondary" id="headphonesNo">No</button>
+            </div>
+          </div>
+          <div class="hint" id="headphonesHint"></div>
+        </div>
+
+        <div class="intro-step hidden" id="step2">
+          <h1>How it works</h1>
+          <p>
+            You'll hear three clips: <strong>A</strong>, <strong>B</strong>, then <strong>X</strong>.
+          </p>
+          <p>
+            Your job: decide whether <strong>X</strong> sounds more like <strong>A</strong> or <strong>B</strong>.
+          </p>
+          <div class="demo-visual-abx">
+            <div class="demo-option">
+              <div class="demo-clip">A</div>
+            </div>
+            <div class="demo-option">
+              <div class="demo-clip">B</div>
+            </div>
+            <div class="demo-question-row">
+              <span class="qmark">?</span>
+              <span class="qmark">?</span>
+            </div>
+            <div class="demo-x-center">
+              <div class="demo-clip highlight">X</div>
+            </div>
+          </div>
+          <button class="primary" id="toStep3">Got it</button>
+        </div>
+
+        <div class="intro-step hidden" id="step3">
+          <h1>Let's practice</h1>
+          <p>
+            Listen to A, B, and X below. Then choose whether X sounds more like A or B.
+          </p>
+          <div class="clip-grid">
+            <div class="clip" id="demoClipA">
+              <div class="clip-label">A</div>
+              <div class="clip-state" id="demoStateA">Ready</div>
+            </div>
+            <div class="clip" id="demoClipB">
+              <div class="clip-label">B</div>
+              <div class="clip-state" id="demoStateB">Ready</div>
+            </div>
+            <div class="clip clip-x" id="demoClipX">
+              <div class="clip-label">X</div>
+              <div class="clip-state" id="demoStateX">Ready</div>
+            </div>
+          </div>
+          <div class="action-row">
+            <button class="action-btn" id="demoPlay" disabled>Play A &rarr; B &rarr; X</button>
+          </div>
+          <div class="choice-label" id="demoChoiceLabel" style="visibility: hidden;">X sounds more like...</div>
+          <div class="demo-choice-buttons">
+            <button class="choiceBtn left" id="demoChooseA" disabled>A</button>
+            <button class="choiceBtn right" id="demoChooseB" disabled>B</button>
+          </div>
+          <div class="hint" id="demoHint"></div>
+        </div>
+
+        <div class="intro-step hidden" id="step4">
+          <h1>Helpful hints</h1>
+          <div class="hints-list">
+            <div class="hint-item">
+              <div class="hint-icon">R</div>
+              <div class="hint-text">
+                <strong>Replay anytime</strong><br>
+                You can replay A &rarr; B &rarr; X as many times as you need. Press <span class="key">R</span> or click the Replay button.
+              </div>
+            </div>
+            <div class="hint-item">
+              <div class="hint-icon">1 2</div>
+              <div class="hint-text">
+                <strong>Keyboard shortcuts</strong><br>
+                Press <span class="key">1</span> to choose A, or <span class="key">2</span> to choose B.
+              </div>
+            </div>
+            <div class="hint-item">
+              <div class="hint-icon">&larr;</div>
+              <div class="hint-text">
+                <strong>Changed your mind?</strong><br>
+                You can go back and redo your previous answer once during the task.
+              </div>
+            </div>
+          </div>
+          <button class="primary" id="toStep5">Got it</button>
+        </div>
+
+        <div class="intro-step hidden" id="step5">
+          <h1>You're ready!</h1>
+          <p>
+            Great job! You're all set to begin the real task.
+          </p>
+          <button class="primary" id="startButton" disabled>Begin Task</button>
+          <div class="hint" id="introHint"></div>
+        </div>
+      </section>
+
+      <section class="card task hidden" id="taskCard">
+        <div class="status">
+          <div class="phase" id="phaseLabel">In progress</div>
+          <div class="progress">
+            <div class="bar"><div class="fill" id="progressFill"></div></div>
+            <div class="count" id="progressText">0 / 0</div>
+          </div>
+        </div>
+
+        <div class="clip-grid">
+          <div class="clip" id="clipA">
+            <div class="clip-label">A</div>
+            <div class="clip-state" id="stateA">Ready</div>
+          </div>
+          <div class="clip" id="clipB">
+            <div class="clip-label">B</div>
+            <div class="clip-state" id="stateB">Ready</div>
+          </div>
+          <div class="clip clip-x" id="clipX">
+            <div class="clip-label">X</div>
+            <div class="clip-state" id="stateX">Ready</div>
+          </div>
+        </div>
+
+        <div class="action-row">
+          <button class="action-btn" id="replayAll" disabled>
+            Replay A &rarr; B &rarr; X <span class="key">R</span>
+          </button>
+        </div>
+
+        <div class="choice-label">X sounds more like...</div>
+        <div class="choice">
+          <button class="choiceBtn left" id="chooseA" disabled>
+            A <span class="key">1</span>
+          </button>
+          <button class="choiceBtn right" id="chooseB" disabled>
+            B <span class="key">2</span>
+          </button>
+        </div>
+
+        <div class="go-back-row hidden" id="goBackRow">
+          <button class="ghost" id="goBackBtn">&larr; Go back to previous</button>
+        </div>
+
+        <div class="hint" id="taskHint"></div>
+      </section>
+
+      <section class="card hidden" id="doneCard">
+        <h2>All done</h2>
+        <p>Thank you for participating.</p>
+        
+        <div class="redirect-box hidden" id="doneRedirectBox">
+          <p>Redirecting to Prolific in <span id="doneRedirectCount">5</span> seconds...</p>
+          <button class="primary" id="doneRedirectBtn">Continue now</button>
+        </div>
+
+        <p class="error-text hidden" id="doneError" style="color: red;"></p>
+        <div class="completion" id="doneCompletionRow">
+          <div class="pill" id="completionCode">Completion code: --</div>
+          <button class="ghost" id="downloadButton">Download responses</button>
+        </div>
+      </section>
+
+      <section class="card hidden" id="failCard">
+        <h2>Task ended</h2>
+        <p>
+          Thanks for your time. Unfortunately, too many responses were incorrect.
+        </p>
+        
+        <div class="redirect-box hidden" id="failRedirectBox">
+          <p>Redirecting to Prolific in <span id="failRedirectCount">5</span> seconds...</p>
+          <button class="primary" id="failRedirectBtn">Continue now</button>
+        </div>
+
+        <div class="completion" id="failCompletionRow">
+          <p>You may now return to Prolific.</p>
+        </div>
+      </section>
+
+      <section class="card hidden" id="errorCard">
+        <h2>Error</h2>
+        <p id="errorText">Missing required parameters.</p>
+      </section>
+    </main>
+
+    <div class="overlay hidden" id="feedbackOverlay" aria-modal="true" role="dialog">
+      <div class="modal">
+        <h3 id="feedbackTitle">Feedback</h3>
+        <p id="feedbackText">--</p>
+        <button class="primary" id="feedbackOk">OK</button>
+      </div>
+    </div>
+
+    <div class="overlay hidden" id="resumeOverlay" aria-modal="true" role="dialog">
+      <div class="modal">
+        <h3>Resume Session?</h3>
+        <p>We found a saved session for this participant and list.</p>
+        <div class="resume-buttons">
+          <button class="primary" id="resumeYes">Resume from where I left off</button>
+          <button class="secondary" id="resumeNo">Start over</button>
+        </div>
+      </div>
+    </div>
+
+    <audio id="audioA" preload="auto"></audio>
+    <audio id="audioB" preload="auto"></audio>
+    <audio id="audioX" preload="auto"></audio>
+
+    <script src="app.js"></script>
+  </body>
+</html>

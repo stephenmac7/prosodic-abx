@@ -1,0 +1,8 @@
+# Generated files
+generated/
+web/audio/
+web/lists/
+web/data/
+
+# Python cache
+__pycache__/
