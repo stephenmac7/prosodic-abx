@@ -18,6 +18,7 @@ Usage:
 """
 
 import argparse
+import math
 import random
 import wave
 from collections import Counter, defaultdict
@@ -32,8 +33,32 @@ from fastabx.subsample import Subsampler
 from fastabx.task import Task
 
 
+def normalize_waveform(
+    waveform: "torch.Tensor",
+    target_dbfs: float = -20.0,
+    max_peak: float = 0.99,
+    eps: float = 1e-8,
+) -> "torch.Tensor":
+    """Normalize waveform loudness to a target RMS with peak limiting."""
+    rms = waveform.pow(2).mean().sqrt()
+    if rms < eps:
+        return waveform
+    target_rms = 10 ** (target_dbfs / 20)
+    scale = target_rms / rms
+    waveform = waveform * scale
+    peak = waveform.abs().max()
+    if peak > max_peak:
+        waveform = waveform * (max_peak / peak)
+    return waveform
+
+
 def clip_audio(
-    src: Path, dst: Path, onset: float, offset: float, fade_duration: float = 0.0
+    src: Path,
+    dst: Path,
+    onset: float,
+    offset: float,
+    fade_duration: float = 0.0,
+    normalize: bool = True,
 ) -> None:
     """Cut a segment from a WAV file with optional boundary-centered fade.
 
@@ -87,6 +112,9 @@ def clip_audio(
             )
             waveform = fade_transform(waveform)
 
+    if normalize:
+        waveform = normalize_waveform(waveform)
+
     dst.parent.mkdir(parents=True, exist_ok=True)
     torchaudio.save(str(dst), waveform, sr)
 
@@ -97,6 +125,7 @@ def materialize_audio_clips(
     output_dir: Path,
     used_files: set[str] | None = None,
     fade_duration: float = 0.0,
+    normalize: bool = True,
 ) -> int:
     """Materialize audio clips from items.csv to output directory.
 
@@ -106,6 +135,7 @@ def materialize_audio_clips(
         output_dir: Directory to write clipped audio
         used_files: If provided, only materialize files in this set
         fade_duration: Duration of boundary-centered fade in seconds (0 for clean cut)
+        normalize: Normalize audio volume for saved clips
 
     Returns:
         Number of clips materialized
@@ -145,7 +175,7 @@ def materialize_audio_clips(
 
         dst = output_dir / f"{file_id}.wav"
         if not dst.exists():
-            clip_audio(src, dst, onset, offset, fade_duration)
+            clip_audio(src, dst, onset, offset, fade_duration, normalize=normalize)
 
     return len(seen)
 
@@ -217,6 +247,7 @@ def generate_catch_trials(
         .len()
         .filter(pl.col("len") >= 2)
         .select(["speaker", "phone_sequence"])
+        .sort(["speaker", "phone_sequence"])
         .to_dicts()
     )
     if not candidate_groups:
@@ -779,7 +810,18 @@ def main():
 
     # Enumerate triplets
     print("Enumerating triplets...")
-    all_triplets = enumerate_triplets(task, labels)
+    all_triplets = enumerate_triplets(task, labels).sort(
+        [
+            "phone_sequence",
+            "accent_a",
+            "accent_b",
+            "speaker_ab",
+            "speaker_x",
+            "file_a",
+            "file_b",
+            "file_x",
+        ]
+    )
     print(f"  {len(all_triplets)} triplets from subsampled cells")
 
     # Use full triplet set - assignment algorithm handles coverage constraints
@@ -794,7 +836,16 @@ def main():
     # Generate catch trials from synthesized speech
     n_catch = max(1, int(args.trials_per_participant * args.catch_ratio))
     print(f"Generating {n_catch} catch trials from synthesized speech...")
-    catch_trials = generate_catch_trials(syn_labels, n_catch, args.seed)
+    catch_trials = generate_catch_trials(syn_labels, n_catch, args.seed).sort(
+        [
+            "phone_sequence",
+            "speaker_ab",
+            "file_a",
+            "file_b",
+            "file_x",
+            "correct_answer",
+        ]
+    )
     catch_list = catch_trials.to_dicts()
     print(f"  Generated {len(catch_list)} catch trials")
 
@@ -831,6 +882,9 @@ def main():
     # Save participant lists directly to web/lists/ for deployment
     lists_dir = args.output_dir / "web" / "lists" / args.dataset
     lists_dir.mkdir(parents=True, exist_ok=True)
+    # Remove stale lists from previous runs for this dataset
+    for old_list in lists_dir.glob("participant_*.csv"):
+        old_list.unlink()
 
     for i, plist in enumerate(participant_lists):
         list_path = lists_dir / f"participant_{i:03d}.csv"
@@ -902,6 +956,33 @@ def main():
         f.write(
             f"  Mean appearances: {sum(recording_counts.values()) / len(recording_counts):.1f}\n"
         )
+        # Coverage distribution
+        counts_by_appearance = Counter(recording_counts.values())
+        total_recordings = len(recording_counts)
+        f.write(f"\nRecording appearance distribution:\n")
+        for k in sorted(counts_by_appearance):
+            count = counts_by_appearance[k]
+            pct = (count / total_recordings * 100) if total_recordings else 0.0
+            f.write(f"  {k}: {count} ({pct:.1f}%)\n")
+
+        # Identity of lowest-coverage recordings (below 5th percentile)
+        counts_sorted = sorted(recording_counts.values())
+        if counts_sorted:
+            p10_index = max(0, math.ceil(0.05 * len(counts_sorted)) - 1)
+            p10 = counts_sorted[p10_index]
+            low_recs = sorted(
+                ((r, c) for r, c in recording_counts.items() if c < p10),
+                key=lambda rc: (rc[1], rc[0]),
+            )
+            f.write(
+                f"\nRecordings with < 5th percentile appearances (p10={p10}): {len(low_recs)}\n"
+            )
+            max_listed = 50
+            for r, c in low_recs[:max_listed]:
+                f.write(f"  {r}: {c}\n")
+            if len(low_recs) > max_listed:
+                f.write(f"  ... {len(low_recs) - max_listed} more\n")
+
         f.write(f"\nWithin-participant repeats:\n")
         f.write(
             f"  Max times a recording heard by one participant: {max_within_participant}\n"
@@ -948,6 +1029,21 @@ def main():
             )
             main_items_path = item_path
             print(f"  Using clean cuts (no fade)")
+
+        main_items_files = set(
+            pl.read_csv(main_items_path, columns=["#file"])["#file"]
+            .cast(pl.Utf8)
+            .to_list()
+        )
+        missing_files = used_files_main - main_items_files
+        if missing_files:
+            missing_list = sorted(missing_files)
+            preview = ", ".join(missing_list[:10])
+            raise FileNotFoundError(
+                "Missing required audio files in items.csv for materialization. "
+                f"{len(missing_list)} files are referenced by participant lists but not present in "
+                f"{main_items_path}. First few: {preview}"
+            )
 
         main_output = web_audio_dir / args.dataset
         n_main = materialize_audio_clips(

@@ -9,11 +9,11 @@ This experiment evaluates how well humans discriminate prosodic minimal pairs, p
 ## Datasets
 
 ### English Lexical Stress
-- **Items**: 597 recordings from 10 speakers
+- **Items**: 598 recordings from 10 speakers
 - **Contrasts**: 15 noun-verb minimal pairs (e.g., "CONduct" vs "conDUCT")
 - **Excluded words**: "research", "transfer" (not true minimal pairs)
-- **Participants needed**: 15 (Generated 28 lists for coverage)
-- **Trials per participant**: 100 (90 regular + 10 catch)
+- **Participants needed**: 15 (Generated 32 lists for coverage)
+- **Trials per participant**: 70 (63 regular + 7 catch)
 
 ### Japanese Pitch Accent
 - **Items**: 909 recordings from 10 speakers
@@ -120,8 +120,8 @@ cd /home/smcintosh/fastabx
 # English stress
 uv run python human_abx/generate_human_abx.py \
     --dataset stress \
-    --trials-per-participant 100 \
-    --min-responses-per-recording 5 \
+    --trials-per-participant 70 \
+    --min-responses-per-recording 2 \
     --materialize-audio
 
 # Japanese pitch accent
@@ -142,6 +142,8 @@ uv run python human_abx/generate_human_abx.py \
 ```
 
 Omit `--materialize-audio` if you only want to regenerate participant lists.
+The summary now includes a recording-appearance distribution so you can verify coverage
+when using lower minimums.
 
 ## Prolific Deployment
 

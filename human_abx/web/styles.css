@@ -72,6 +72,29 @@ body {
   flex-wrap: wrap;
 }
 
+.report-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0;
+}
+
+.report-btn {
+  border: 1px solid var(--border);
+  background: #f6efe5;
+  color: var(--ink);
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 6px 14px rgba(30, 20, 10, 0.12);
+}
+
+.report-btn:hover {
+  transform: translateY(-1px);
+}
+
 .pill {
   background: #f6efe5;
   border: 1px solid var(--border);
