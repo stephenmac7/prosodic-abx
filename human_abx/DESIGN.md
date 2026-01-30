@@ -9,9 +9,10 @@ This experiment evaluates how well humans discriminate prosodic minimal pairs, p
 ## Datasets
 
 ### English Lexical Stress
-- **Items**: 617 recordings from 10 speakers
-- **Contrasts**: 16 noun-verb minimal pairs (e.g., "CONduct" vs "conDUCT")
-- **Participants needed**: 15 (Generated 29 lists for coverage)
+- **Items**: 597 recordings from 10 speakers
+- **Contrasts**: 15 noun-verb minimal pairs (e.g., "CONduct" vs "conDUCT")
+- **Excluded words**: "research", "transfer" (not true minimal pairs)
+- **Participants needed**: 15 (Generated 28 lists for coverage)
 - **Trials per participant**: 100 (90 regular + 10 catch)
 
 ### Japanese Pitch Accent

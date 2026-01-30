@@ -42,7 +42,7 @@ import torchaudio
 from torchcodec.decoders import AudioDecoder
 
 # Hardcoded input paths
-ANN_JSON = Path("/home/sunhaitong/ABX_stress/annotations/stephen_annotations_recording_final.json")
+ANN_JSON = Path(__file__).parent / "metadata" / "stress_recording_annotations.json"
 AUDIO_ROOT_SENTENCES = Path("/home/sunhaitong/ABX_stress/data/recording_sentences")
 TEXTGRID_ROOT = Path("/home/sunhaitong/ABX_stress/data/recording_sentences_MFA_aligned")
 MANUAL_TIMESTAMPS = Path(__file__).parent / "metadata" / "stress_recording_manual_timestamps.json"
@@ -50,6 +50,7 @@ OUTPUT_DIR = Path("abx_items/stress")
 
 # Processing parameters
 INVALID_LABEL = "invalid"  # Label value to skip
+EXCLUDE_WORDS = {"research", "transfer"}  # Words to exclude from dataset
 
 # Target words in order (used to compute line numbers)
 TARGET_WORDS = [
@@ -185,6 +186,9 @@ def build_items_clipped(
             continue
 
         word = entry["word"]
+        if word.lower() in EXCLUDE_WORDS:
+            continue
+
         fname = entry["filename"]
         speaker, word2, set_id, take_id = parse_filename(fname)
         if word != word2:
@@ -283,6 +287,9 @@ def build_items_in_context(
             continue
 
         word = entry["word"]
+        if word.lower() in EXCLUDE_WORDS:
+            continue
+
         fname = entry["filename"]
         speaker, word2, set_id, take_id = parse_filename(fname)
         if word != word2:

@@ -2,8 +2,9 @@ const config = {
   audioBaseUrl: "audio",
   audioBaseUrlSyn: "",
   audioExtension: ".wav",
-  isiMs: 600,
-  preDelayMs: 700,
+  isiMs: 300,
+  xIsiMs: 450,
+  preDelayMs: 400,
   autoPlays: 2,
   // Screen out if catch fail rate exceeds this (checked after minCatchesBeforeScreening)
   catchFailThreshold: 0.30,
@@ -11,8 +12,8 @@ const config = {
   completionCode: "PROLIFIC-CODE",
   submitUrl: "save_responses.php",
   // Demo trial uses hardcoded files (X = A, so correct answer is A)
-  demoFileA: "audio/demo_a_sleep.wav",
-  demoFileB: "audio/demo_b_sleeep.wav",
+  demoFileA: "audio/demo_a_UMbrella.wav",
+  demoFileB: "audio/demo_b_umBRElla.wav",
 };
 
 const prolific = {
@@ -33,7 +34,6 @@ const state = {
   participantId: "--",
   started: false,
   loading: false,
-  goBackUsed: false,
   canGoBack: false,
 };
 
@@ -436,7 +436,7 @@ async function playSequence(trial, repeatsOverride = null) {
       return;
     }
     if (state.playbackId !== myPlaybackId) return;
-    await sleep(config.isiMs);
+    await sleep(config.xIsiMs);
     if (state.playbackId !== myPlaybackId) return;
     const okX = await playAudio(els.audioX, urlX, els.clipX, els.stateX, "X");
     if (!okX) {
@@ -610,8 +610,8 @@ function handleChoice(response) {
 
   state.currentIndex += 1;
 
-  // Enable go-back if not already used (after first trial)
-  if (!state.goBackUsed && state.currentIndex > 1) {
+  // Enable go-back after first trial completes
+  if (state.currentIndex > 0) {
     state.canGoBack = true;
     els.goBackRow.classList.remove("hidden");
   }
@@ -621,9 +621,7 @@ function handleChoice(response) {
 }
 
 function goBack() {
-  if (!state.canGoBack || state.goBackUsed) return;
-
-  state.goBackUsed = true;
+  if (!state.canGoBack) return;
   state.canGoBack = false;
   els.goBackRow.classList.add("hidden");
 
