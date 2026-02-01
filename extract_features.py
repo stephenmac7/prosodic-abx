@@ -37,23 +37,29 @@ SSL_FREQUENCY = 50.0
 KALDI_FREQUENCY = 100.0
 MFCC_SAMPLE_RATE = 16_000
 HF_MODELS = {
-    # English
+    # Multilingual pretrain
+    "wav2vec2-large-xlsr-53": "facebook/wav2vec2-large-xlsr-53",
+    "mhubert-147":"utter-project/mHuBERT-147", 
+    #ASR fintunes
     "wav2vec2-large-xlsr-53-english": "jonatasgrosman/wav2vec2-large-xlsr-53-english",
-    # Chinese
-    "chinese_hubert_large": "TencentGameMate/chinese-hubert-large",
-    "chinese_hubert_base": "TencentGameMate/chinese-hubert-base",
-    "chinese_wav2vec2_base": "TencentGameMate/chinese-wav2vec2-base",
-    "chinese_wav2vec2_large": "TencentGameMate/chinese-wav2vec2-large",
-    "wav2vec2-large-xlsr-53-chinese-zh-cn": "jonatasgrosman/wav2vec2-large-xlsr-53-chinese-zh-cn",
-    # Japanese
-    "japanese-wav2vec2-base": "yky-h/japanese-wav2vec2-base",
-    "japanese-hubert-base": "yky-h/japanese-hubert-base",
-    "japanese-hubert-large": "yky-h/japanese-hubert-large",
     "wav2vec2-large-xlsr-53-japanese": "jonatasgrosman/wav2vec2-large-xlsr-53-japanese",
-    # Multilingual
-    "w2v-bert-2.0": "facebook/w2v-bert-2.0",
-    "mhubert": "utter-project/mHuBERT-147",
+    "wav2vec2-large-xlsr-53-chinese-zh-cn": "jonatasgrosman/wav2vec2-large-xlsr-53-chinese-zh-cn",
+    #Chinese pretrain
+    "chinese-wav2vec2-large": "TencentGameMate/chinese-wav2vec2-large",
+    "chinese-wav2vec2-base": "TencentGameMate/chinese-wav2vec2-base",
+    "chinese-hubert-large": "TencentGameMate/chinese-hubert-large",
+    "chinese-hubert-base": "TencentGameMate/chinese-hubert-base",
+    #Japanese pretrain
+    "japanese-wav2vec2-base": "reazon-research/japanese-wav2vec2-base",
+    "japanese-wav2vec2-large": "reazon-research/japanese-wav2vec2-large",
+    "japanese-hubert-base-k2": "reazon-research/japanese-hubert-base-k2",
+    "japanese-hubert-large": "yky-h/japanese-hubert-large",
+    #ASR finetunes
+    "japanese-wav2vec2-base-rs35kh": "reazon-research/japanese-wav2vec2-base-rs35kh",
+    "japanese-wav2vec2-large-rs35kh": "reazon-research/japanese-wav2vec2-large-rs35kh",
+    "japanese-hubert-base-k2-rs35kh": "reazon-research/japanese-hubert-base-k2-rs35kh",
 }
+
 
 
 def extract_features(
