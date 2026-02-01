@@ -15,9 +15,12 @@ ini_set('display_errors', 0);
 
 // ============== CONFIGURATION ==============
 // Prolific completion URL - participants redirect here after successful submission
-$completion_url = 'https://app.prolific.com/submissions/complete?cc=C7N8WBPR'; // e.g., 'https://app.prolific.com/submissions/complete?cc=XXXXXX'
+$completion_url = 'https://app.prolific.com/submissions/complete?cc=C17T72BV';
 // Prolific screen-out URL - participants who fail catch trials redirect here
-$attention_fail_url = 'https://app.prolific.com/submissions/complete?cc=C13YLCJJ'; // e.g., 'https://app.prolific.com/submissions/complete?cc=SCREENOUT'
+$attention_fail_url = 'https://app.prolific.com/submissions/complete?cc=C16L0AZF'; // e.g., 'https://app.prolific.com/submissions/complete?cc=SCREENOUT'
+// Prolific bonus URL - participants with high accuracy on ABX trials redirect here
+$bonus_url = 'https://app.prolific.com/submissions/complete?cc=C1ANNQZC';
+$bonus_threshold = 0.80; // Accuracy threshold for bonus (80%)
 // ===========================================
 
 header('Content-Type: application/json');
@@ -167,19 +170,41 @@ if ($dataset !== null && $list_name !== null) {
     }
 }
 
+// Calculate accuracy for non-catch trials (for bonus eligibility)
+$abx_correct = 0;
+$abx_total = 0;
+foreach ($responses as $row) {
+    $is_catch = isset($row['is_catch']) && (strtolower($row['is_catch']) === 'true' || $row['is_catch'] === true);
+    if (!$is_catch) {
+        $abx_total++;
+        if (isset($row['correct']) && (strtolower($row['correct']) === 'true' || $row['correct'] === true)) {
+            $abx_correct++;
+        }
+    }
+}
+$accuracy = $abx_total > 0 ? $abx_correct / $abx_total : 0;
+$qualifies_for_bonus = $accuracy > $bonus_threshold;
+
 // Also append to master log
 $master_log = "{$data_dir}/submissions.log";
-$status = $screened_out ? 'SCREENED_OUT' : 'COMPLETED';
-$log_entry = date('c') . "\t{$participant_id}\t{$list_id}\t{$prolific_pid}\t{$study_id}\t{$status}\t" . count($responses) . " responses\t{$filename}\n";
+$status = $screened_out ? 'SCREENED_OUT' : ($qualifies_for_bonus ? 'COMPLETED_BONUS' : 'COMPLETED');
+$accuracy_pct = round($accuracy * 100, 1);
+$log_entry = date('c') . "\t{$participant_id}\t{$list_id}\t{$prolific_pid}\t{$study_id}\t{$status}\t" . count($responses) . " responses\t{$accuracy_pct}% accuracy\t{$filename}\n";
 file_put_contents($master_log, $log_entry, FILE_APPEND | LOCK_EX);
 
 $response = [
     'ok' => true,
     'participant_id' => $participant_id,
     'responses_count' => count($responses),
+    'accuracy' => $accuracy,
+    'qualifies_for_bonus' => $qualifies_for_bonus,
 ];
 
-if (!empty($completion_url)) {
+// Use bonus URL if participant qualifies, otherwise use standard completion URL
+if ($qualifies_for_bonus && !empty($bonus_url)) {
+    $response['completion_url'] = $bonus_url;
+    $response['is_bonus'] = true;
+} elseif (!empty($completion_url)) {
     $response['completion_url'] = $completion_url;
 }
 if (!empty($attention_fail_url)) {

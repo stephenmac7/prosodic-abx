@@ -178,8 +178,16 @@ The `assign.php` script will:
 
 Responses are saved to `~/public_html/human_abx/data/`:
 - `responses_{participant}_{list}_{timestamp}.csv` - Individual response files
-- `submissions.log` - Master log of all submissions
+- `submissions.log` - Master log of all submissions (includes accuracy and bonus status)
 - `assignments_{dataset}.json` - Participant-to-list assignments
+
+### Bonus Payments
+
+Participants who achieve high accuracy on ABX trials (non-catch) are automatically redirected to a bonus completion URL. Configure this in `save_responses.php`:
+- `$bonus_url`: Prolific completion URL for bonus-eligible participants
+- `$bonus_threshold`: Accuracy threshold (set to 80%)
+
+The submissions log records `COMPLETED_BONUS` status for bonus-qualifying participants.
 
 ### URL Parameters
 

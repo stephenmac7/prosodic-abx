@@ -7,7 +7,7 @@ const config = {
   preDelayMs: 400,
   autoPlays: 2,
   // Screen out if catch fail rate exceeds this (checked after minCatchesBeforeScreening)
-  catchFailThreshold: 0.30,
+  catchFailThreshold: 0.35,
   minCatchesBeforeScreening: 2,
   completionCode: "PROLIFIC-CODE",
   submitUrl: "save_responses.php",
@@ -523,6 +523,17 @@ async function finishStudy() {
 
   showCard(els.doneCard);
 
+  // Update the done card message based on bonus status
+  const doneTitle = document.querySelector("#doneCard h2");
+  const doneMessage = document.querySelector("#doneCard > p");
+
+  if (result.ok && result.isBonus) {
+    if (doneTitle) doneTitle.textContent = "Congratulations!";
+    if (doneMessage) {
+      doneMessage.innerHTML = "<strong>Great job!</strong> Your high accuracy earned you a bonus payment.";
+    }
+  }
+
   if (result.ok && result.completionUrl) {
     // Hide static completion row, show redirect box
     els.doneCompletionRow.classList.add("hidden");
@@ -734,6 +745,8 @@ async function submitIfConfigured(screenedOut = false) {
       ok: true,
       completionUrl: data.completion_url || "",
       attentionFailUrl: data.attention_fail_url || "",
+      isBonus: data.is_bonus || false,
+      accuracy: data.accuracy || 0,
     };
   } catch (err) {
     return { ok: false, error: err };

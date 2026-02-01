@@ -173,6 +173,23 @@ body {
   color: var(--ink);
 }
 
+.hint-item.bonus-hint {
+  background: linear-gradient(135deg, #fff8e6 0%, #fff3d4 100%);
+  border: 2px solid #e6b800;
+  box-shadow: 0 2px 8px rgba(230, 184, 0, 0.15);
+}
+
+.hint-item.bonus-hint .hint-icon {
+  background: #fff8e6;
+  border-color: #e6b800;
+  color: #cc9900;
+  font-size: 18px;
+}
+
+.hint-item.bonus-hint .hint-text strong {
+  color: #996600;
+}
+
 .go-back-row {
   display: flex;
   justify-content: center;
