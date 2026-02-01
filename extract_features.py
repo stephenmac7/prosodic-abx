@@ -52,6 +52,7 @@ HF_MODELS = {
     "wav2vec2-large-xlsr-53-japanese": "jonatasgrosman/wav2vec2-large-xlsr-53-japanese",
     # Multilingual
     "w2v-bert-2.0": "facebook/w2v-bert-2.0",
+    "mhubert": "utter-project/mHuBERT-147",
 }
 
 
