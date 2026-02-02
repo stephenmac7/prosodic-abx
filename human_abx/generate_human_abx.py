@@ -144,7 +144,6 @@ def materialize_audio_clips(
     if "#file" not in items.columns:
         raise ValueError(f"Missing required '#file' column in {items_csv}")
     items = items.with_columns(pl.col("#file").cast(pl.Utf8))
-    has_source_file = "source_file" in items.columns
 
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -162,13 +161,11 @@ def materialize_audio_clips(
         onset = row.get("onset", 0.0) or 0.0
         offset = row.get("offset", 0.0) or 0.0
 
-        # Resolve source path (use source_file if available, otherwise #file)
-        source_id = row.get("source_file") if has_source_file else file_id
-        source_path = Path(source_id)
+        source_path = Path(file_id)
         if source_path.suffix:
             src = audio_root / source_path
         else:
-            src = audio_root / f"{source_id}.wav"
+            src = audio_root / f"{file_id}.wav"
 
         if not src.exists():
             raise FileNotFoundError(f"Source audio not found: {src}")
@@ -744,7 +741,15 @@ def main():
     args = parser.parse_args()
 
     # Load items
-    item_path = Path("abx_items") / args.dataset / "items.csv"
+    # Prefer in-context items for specific datasets to ensure correct file IDs (sentence files)
+    # are used throughout the pipeline.
+    datasets_using_context = {"stress", "pitch_accent"}
+    if args.dataset in datasets_using_context:
+        dataset_dir = f"{args.dataset}_in_context"
+    else:
+        dataset_dir = args.dataset
+
+    item_path = Path("abx_items") / dataset_dir / "items.csv"
     if not item_path.exists():
         raise FileNotFoundError(f"Item file not found: {item_path}")
 

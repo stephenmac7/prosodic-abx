@@ -257,8 +257,7 @@ def build_items_in_context(
         # Use consistent file ID format matching clipped mode
         items.append(
             {
-                "#file": f"{speaker}/{stem}",
-                "source_file": f"{speaker}/{sentence_stem}",
+                "#file": f"{speaker}/{sentence_stem}",
                 "onset": onset,
                 "offset": offset,
                 "phone_sequence": seq,
@@ -279,18 +278,14 @@ def build_items_in_context(
 
 def write_items(items: list[dict], output_path: Path) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    # Check if items have source_file column (in-context mode)
-    has_source_file = items and "source_file" in items[0]
-    header = ["#file"]
-    if has_source_file:
-        header.append("source_file")
-    header.extend([
+    header = [
+        "#file",
         "onset",
         "offset",
         "phone_sequence",
         "accent_pattern",
         "speaker",
-    ])
+    ]
     with output_path.open("w", encoding="utf-8", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=header)
         writer.writeheader()

@@ -81,7 +81,7 @@ MODEL_METADATA = {
     "chinese-wav2vec2-base": ("Chinese", "Wav2Vec2", "Base", "Large", False, None),
     "chinese-wav2vec2-large": ("Chinese", "Wav2Vec2", "Large", "Large", False, None),
     "chinese-hubert-base": ("Chinese", "HuBERT", "Base", "Large", False, None),
-    "chinese_hubert_large": ("Chinese", "HuBERT", "Large", "Large", False, None),
+    "chinese-hubert-large": ("Chinese", "HuBERT", "Large", "Large", False, None),
     # Japanese pretrained
     "japanese-wav2vec2-base": ("Japanese", "Wav2Vec2", "Base", "Large", False, None),
     "japanese-wav2vec2-large": ("Japanese", "Wav2Vec2", "Large", "Large", False, None),
@@ -469,7 +469,7 @@ def plot_size_comparison(results, output_dir, dataset_label="Pitch Accent"):
         ("hubert_base", "hubert_large"),
         ("wav2vec2_base", "wav2vec2_large"),
         ("chinese-wav2vec2-base", "chinese-wav2vec2-large"),
-        ("chinese-hubert-base", "chinese_hubert_large"),
+        ("chinese-hubert-base", "chinese-hubert-large"),
         ("japanese-wav2vec2-base", "japanese-wav2vec2-large"),
         ("japanese-hubert-base-k2", "japanese-hubert-large"),
     ]

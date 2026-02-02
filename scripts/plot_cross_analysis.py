@@ -1057,7 +1057,7 @@ def plot_architecture_controlled_language(all_results, output_dir):
             "Large",
             {
                 "English": "hubert_large",
-                "Chinese": "chinese_hubert_large",
+                "Chinese": "chinese-hubert-large",
                 "Japanese": "japanese-hubert-large",
             },
         ),
