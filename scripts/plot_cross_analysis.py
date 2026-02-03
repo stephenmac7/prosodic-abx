@@ -1361,6 +1361,214 @@ def plot_cross_dataset_heatmap(all_results, output_dir):
 
     return matrix, langs, archs
 
+def plot_cross_dataset_heatmap_4x4(all_results, output_dir):
+    """
+    Create cross-dataset heatmaps stratified by:
+        - Pretraining language (rows)
+        - Model architecture + size (columns)
+
+    Produces:
+        1) A global heatmap averaged across tasks (unchanged behavior)
+        2) Per-task heatmaps (Mandarin / Stress / Pitch Accent),
+           each with a 4x4 layout:
+               rows    = pretraining language
+               columns = hubert-base | hubert-large | wav2vec2-base | wav2vec2-large
+
+    Notes:
+        - Finetuned models are excluded
+        - No averaging across model sizes
+        - Missing combinations are left as NaN
+    """
+
+    import seaborn as sns
+
+    tasks = list(all_results.keys())
+    task_labels = {
+        "mandarin_tone": "Mandarin Tone",
+        "stress": "Lexical Stress",
+        "pitch_accent": "Pitch Accent",
+    }
+
+    # Collect data for all non-finetuned models across all tasks
+    model_task_errors = {}  # model_name -> {task: best_error}
+
+    for task in tasks:
+        for model_name, df in all_results[task].items():
+            if model_name not in MODEL_METADATA:
+                continue
+            meta = MODEL_METADATA[model_name]
+            pretrain_lang = meta[0]
+            finetuned = meta[4]
+
+            # Skip baselines and finetuned models
+            if pretrain_lang == "Baseline" or finetuned:
+                continue
+
+            if model_name not in model_task_errors:
+                model_task_errors[model_name] = {}
+            model_task_errors[model_name][task] = df["error_rate"].min()
+
+    # Build aggregated data by (pretrain_lang, architecture)
+    # For each cell, average across models and then across tasks
+    agg_data = {}  # (lang, arch) -> list of per-model mean errors
+
+    for model_name, task_errors in model_task_errors.items():
+        meta = MODEL_METADATA[model_name]
+        pretrain_lang = meta[0]
+        architecture = meta[1]
+        # Merge XLSR into Wav2Vec2
+        if architecture == "Wav2Vec2-XLSR":
+            architecture = "Wav2Vec2"
+
+        # Calculate mean error across available tasks for this model
+        if task_errors:
+            mean_error = np.mean(list(task_errors.values()))
+            key = (pretrain_lang, architecture)
+            if key not in agg_data:
+                agg_data[key] = []
+            agg_data[key].append(mean_error)
+
+    # Get unique languages and architectures, sorted
+    # Exclude WavLM (only English data, not informative for cross-language comparison)
+    langs = sorted(set(k[0] for k in agg_data.keys()))
+    archs = sorted(k[1] for k in agg_data.keys() if k[1] != "WavLM")
+    archs = sorted(set(archs))
+
+    # Create matrix with mean values
+    matrix = np.full((len(langs), len(archs)), np.nan)
+    for (lang, arch), errors in agg_data.items():
+        if arch not in archs:
+            continue
+        i = langs.index(lang)
+        j = archs.index(arch)
+        matrix[i, j] = np.mean(errors)
+
+    # Dynamic color range based on actual data
+    valid_vals = matrix[~np.isnan(matrix)]
+    vmin = valid_vals.min() - 0.01
+    vmax = valid_vals.max() + 0.01
+
+    # Create the heatmap
+    # --------------------------------------------------
+    # Create per-task heatmaps side by side with shared y-axis
+    # Now: 4x4 (language x {hubert/wav2vec2} x {base/large})
+    # No averaging over size; missing combinations stay NaN.
+    # --------------------------------------------------
+    ARCH_SIZE_ORDER = [
+        ("HuBERT", "Base"),
+        ("HuBERT", "Large"),
+        ("Wav2Vec2", "Base"),
+        ("Wav2Vec2", "Large"),
+    ]
+    ARCH_SIZE_LABELS = [
+        "hubert-base",
+        "hubert-large",
+        "wav2vec2-base",
+        "wav2vec2-large",
+    ]
+
+    fig, axes = plt.subplots(1, 3, figsize=(11, 4), sharey=True)
+
+    for idx, task in enumerate(tasks):
+        ax = axes[idx]
+
+        task_matrix = np.full((len(langs), len(ARCH_SIZE_ORDER)), np.nan)
+
+        for model_name, task_errors in model_task_errors.items():
+            if task not in task_errors:
+                continue
+
+            meta = MODEL_METADATA[model_name]
+            pretrain_lang = meta[0]
+            arch = meta[1]
+            size = meta[2]   # <-- base / large
+            finetuned = meta[4]
+
+            # Skip finetuned (should already be filtered above, but keep safe)
+            if finetuned:
+                continue
+
+            # Merge XLSR into Wav2Vec2
+            if arch == "Wav2Vec2-XLSR":
+                arch = "Wav2Vec2"
+
+            key = (arch, size)
+            if key not in ARCH_SIZE_ORDER:
+                continue
+            if pretrain_lang not in langs:
+                continue
+
+            i = langs.index(pretrain_lang)
+            j = ARCH_SIZE_ORDER.index(key)
+
+            val = task_errors[task]
+
+            # If multiple models map to the same cell, keep the best one
+            if np.isnan(task_matrix[i, j]):
+                task_matrix[i, j] = val
+            else:
+                task_matrix[i, j] = min(task_matrix[i, j], val)
+
+        # Task-specific color range (guard against empty panel)
+        task_valid = task_matrix[~np.isnan(task_matrix)]
+        if task_valid.size == 0:
+            ax.set_title(task_labels.get(task, task), fontsize=11, fontweight="bold")
+            ax.set_xticks(range(len(ARCH_SIZE_LABELS)))
+            ax.set_xticklabels(ARCH_SIZE_LABELS, rotation=45, ha="right", fontsize=9)
+            continue
+
+        task_vmin = task_valid.min() - 0.01
+        task_vmax = task_valid.max() + 0.01
+
+        ax.imshow(
+            task_matrix,
+            cmap="RdYlGn_r",
+            vmin=task_vmin,
+            vmax=task_vmax,
+            aspect="auto",
+        )
+
+        ax.set_xticks(range(len(ARCH_SIZE_LABELS)))
+        ax.set_xticklabels(ARCH_SIZE_LABELS, rotation=45, ha="right", fontsize=9)
+
+        # Add text annotations with task-specific normalization
+        for i in range(len(langs)):
+            for j in range(len(ARCH_SIZE_LABELS)):
+                if not np.isnan(task_matrix[i, j]):
+                    val_norm = (task_matrix[i, j] - task_vmin) / (task_vmax - task_vmin)
+                    text_color = "white" if val_norm > 0.6 else "black"
+                    ax.text(
+                        j,
+                        i,
+                        f"{task_matrix[i, j]:.3f}",
+                        ha="center",
+                        va="center",
+                        color=text_color,
+                        fontsize=9,
+                        fontweight="bold",
+                    )
+
+        ax.set_title(task_labels.get(task, task), fontsize=11, fontweight="bold")
+
+    # Only set y-axis labels on the first panel
+    axes[0].set_yticks(range(len(langs)))
+    axes[0].set_yticklabels(langs, fontsize=10)
+    axes[0].set_ylabel("Pretraining Language", fontsize=10)
+
+    plt.tight_layout()
+    plt.savefig(output_dir / "cross_dataset_heatmap_by_task_4x4.png", dpi=150, bbox_inches="tight")
+
+    # Remove titles for PDF
+    for ax in axes:
+        ax.set_title("")
+    plt.savefig(output_dir / "cross_dataset_heatmap_by_task_4x4.pdf", dpi=150, bbox_inches="tight")
+    plt.close()
+
+    print("  - cross_dataset_heatmap_by_task_4x4.png")
+
+
+    return matrix, langs, archs
+
 
 def main():
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -1377,6 +1585,7 @@ def main():
     plot_finetune_language_effect(all_results, OUTPUT_DIR)
     plot_architecture_controlled_language(all_results, OUTPUT_DIR)
     plot_cross_dataset_heatmap(all_results, OUTPUT_DIR)
+    plot_cross_dataset_heatmap_4x4(all_results, OUTPUT_DIR)
 
     print(f"\nAll plots saved to {OUTPUT_DIR}")
 
