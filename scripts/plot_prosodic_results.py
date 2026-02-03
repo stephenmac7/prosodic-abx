@@ -52,6 +52,14 @@ MODEL_METADATA = {
         False,
         None,
     ),
+    "mhubert-147": (
+        "Multilingual",
+        "HuBERT",
+        "147M",
+        "Large",
+        False,
+        None,
+    ),
     # 'w2v-bert-2.0' excluded - isolated model with different architecture
     "wav2vec2-large-xlsr-53-english": (
         "Multilingual",
