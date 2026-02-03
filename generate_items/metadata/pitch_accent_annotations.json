@@ -1,0 +1,4602 @@
+[
+  {
+    "filename": "S009_88_きって_切って.wav",
+    "label": "88",
+    "decision": true
+  },
+  {
+    "filename": "S010_88_きって_切って.wav",
+    "label": "88",
+    "decision": true
+  },
+  {
+    "filename": "S007_87_きって_切手.wav",
+    "label": "87",
+    "decision": true
+  },
+  {
+    "filename": "S004_88_きって_切って.wav",
+    "label": "88",
+    "decision": true
+  },
+  {
+    "filename": "S006_88_きって_切って.wav",
+    "label": "88",
+    "decision": true
+  },
+  {
+    "filename": "S002_88_きって_切って.wav",
+    "label": "88",
+    "decision": true
+  },
+  {
+    "filename": "S005_88_きって_切って.wav",
+    "label": "88",
+    "decision": true
+  },
+  {
+    "filename": "S002_87_きって_切手.wav",
+    "label": "87",
+    "decision": true
+  },
+  {
+    "filename": "S001_88_きって_切って.wav",
+    "label": "88",
+    "decision": true
+  },
+  {
+    "filename": "S006_87_きって_切手.wav",
+    "label": "87",
+    "decision": true
+  },
+  {
+    "filename": "S008_88_きって_切って.wav",
+    "label": "88",
+    "decision": true
+  },
+  {
+    "filename": "S009_87_きって_切手.wav",
+    "label": "87",
+    "decision": true
+  },
+  {
+    "filename": "S008_87_きって_切手.wav",
+    "label": "87",
+    "decision": true
+  },
+  {
+    "filename": "S001_87_きって_切手.wav",
+    "label": "87",
+    "decision": true
+  },
+  {
+    "filename": "S003_87_きって_切手.wav",
+    "label": "87",
+    "decision": true
+  },
+  {
+    "filename": "S007_88_きって_切って.wav",
+    "label": "88",
+    "decision": true
+  },
+  {
+    "filename": "S005_87_きって_切手.wav",
+    "label": "87",
+    "decision": true
+  },
+  {
+    "filename": "S004_87_きって_切手.wav",
+    "label": "87",
+    "decision": true
+  },
+  {
+    "filename": "S003_88_きって_切って.wav",
+    "label": "88",
+    "decision": true
+  },
+  {
+    "filename": "S010_87_きって_切手.wav",
+    "label": "87",
+    "decision": true
+  },
+  {
+    "filename": "S001_12_いし_意志.wav",
+    "label": "12",
+    "decision": true
+  },
+  {
+    "filename": "S007_11_いし_石.wav",
+    "label": "11",
+    "decision": true
+  },
+  {
+    "filename": "S008_12_いし_意志.wav",
+    "label": "12",
+    "decision": true
+  },
+  {
+    "filename": "S009_11_いし_石.wav",
+    "label": "11",
+    "decision": true
+  },
+  {
+    "filename": "S001_11_いし_石.wav",
+    "label": "11",
+    "decision": true
+  },
+  {
+    "filename": "S010_11_いし_石.wav",
+    "label": "11",
+    "decision": true
+  },
+  {
+    "filename": "S003_11_いし_石.wav",
+    "label": "11",
+    "decision": true
+  },
+  {
+    "filename": "S006_11_いし_石.wav",
+    "label": "11",
+    "decision": true
+  },
+  {
+    "filename": "S005_11_いし_石.wav",
+    "label": "11",
+    "decision": true
+  },
+  {
+    "filename": "S003_12_いし_意志.wav",
+    "label": "12",
+    "decision": true
+  },
+  {
+    "filename": "S007_12_いし_意志.wav",
+    "label": "12",
+    "decision": true
+  },
+  {
+    "filename": "S004_11_いし_石.wav",
+    "label": "11",
+    "decision": true
+  },
+  {
+    "filename": "S004_12_いし_意志.wav",
+    "label": "12",
+    "decision": true
+  },
+  {
+    "filename": "S002_11_いし_石.wav",
+    "label": "11",
+    "decision": true
+  },
+  {
+    "filename": "S002_12_いし_意志.wav",
+    "label": "12",
+    "decision": true
+  },
+  {
+    "filename": "S005_12_いし_意志.wav",
+    "label": "12",
+    "decision": true
+  },
+  {
+    "filename": "S006_12_いし_意志.wav",
+    "label": "12",
+    "decision": true
+  },
+  {
+    "filename": "S010_12_いし_意志.wav",
+    "label": "12",
+    "decision": true
+  },
+  {
+    "filename": "S009_12_いし_意志.wav",
+    "label": "12",
+    "decision": true
+  },
+  {
+    "filename": "S008_11_いし_石.wav",
+    "label": "11",
+    "decision": true
+  },
+  {
+    "filename": "S006_23_にほん_日本.wav",
+    "label": "23",
+    "decision": true
+  },
+  {
+    "filename": "S010_24_にほん_二本.wav",
+    "label": "24",
+    "decision": true
+  },
+  {
+    "filename": "S008_24_にほん_二本.wav",
+    "label": "24",
+    "decision": true
+  },
+  {
+    "filename": "S002_24_にほん_二本.wav",
+    "label": "24",
+    "decision": true
+  },
+  {
+    "filename": "S008_23_にほん_日本.wav",
+    "label": "23",
+    "decision": true
+  },
+  {
+    "filename": "S005_23_にほん_日本.wav",
+    "label": "23",
+    "decision": true
+  },
+  {
+    "filename": "S010_23_にほん_日本.wav",
+    "label": "23",
+    "decision": true
+  },
+  {
+    "filename": "S001_24_にほん_二本.wav",
+    "label": "24",
+    "decision": true
+  },
+  {
+    "filename": "S007_23_にほん_日本.wav",
+    "label": "23",
+    "decision": true
+  },
+  {
+    "filename": "S005_24_にほん_二本.wav",
+    "label": "24",
+    "decision": true
+  },
+  {
+    "filename": "S004_23_にほん_日本.wav",
+    "label": "23",
+    "decision": true
+  },
+  {
+    "filename": "S006_24_にほん_二本.wav",
+    "label": "24",
+    "decision": true
+  },
+  {
+    "filename": "S004_24_にほん_二本.wav",
+    "label": "24",
+    "decision": true
+  },
+  {
+    "filename": "S009_23_にほん_日本.wav",
+    "label": "23",
+    "decision": true
+  },
+  {
+    "filename": "S009_24_にほん_二本.wav",
+    "label": "24",
+    "decision": true
+  },
+  {
+    "filename": "S007_24_にほん_二本.wav",
+    "label": "24",
+    "decision": true
+  },
+  {
+    "filename": "S002_23_にほん_日本.wav",
+    "label": "23",
+    "decision": true
+  },
+  {
+    "filename": "S003_23_にほん_日本.wav",
+    "label": "23",
+    "decision": true
+  },
+  {
+    "filename": "S001_23_にほん_日本.wav",
+    "label": "23",
+    "decision": true
+  },
+  {
+    "filename": "S003_24_にほん_二本.wav",
+    "label": "24",
+    "decision": true
+  },
+  {
+    "filename": "S004_91_はく_履く.wav",
+    "label": "91",
+    "decision": true
+  },
+  {
+    "filename": "S002_92_はく_掃く.wav",
+    "label": "92",
+    "decision": true
+  },
+  {
+    "filename": "S003_92_はく_掃く.wav",
+    "label": "92",
+    "decision": true
+  },
+  {
+    "filename": "S002_91_はく_履く.wav",
+    "label": "91",
+    "decision": true
+  },
+  {
+    "filename": "S008_91_はく_履く.wav",
+    "label": "91",
+    "decision": true
+  },
+  {
+    "filename": "S007_91_はく_履く.wav",
+    "label": "91",
+    "decision": true
+  },
+  {
+    "filename": "S001_92_はく_掃く.wav",
+    "label": "92",
+    "decision": true
+  },
+  {
+    "filename": "S006_91_はく_履く.wav",
+    "label": "91",
+    "decision": true
+  },
+  {
+    "filename": "S001_91_はく_履く.wav",
+    "label": "91",
+    "decision": true
+  },
+  {
+    "filename": "S005_91_はく_履く.wav",
+    "label": "91",
+    "decision": true
+  },
+  {
+    "filename": "S009_91_はく_履く.wav",
+    "label": "91",
+    "decision": true
+  },
+  {
+    "filename": "S010_91_はく_履く.wav",
+    "label": "91",
+    "decision": true
+  },
+  {
+    "filename": "S006_92_はく_掃く.wav",
+    "label": "92",
+    "decision": true
+  },
+  {
+    "filename": "S005_92_はく_掃く.wav",
+    "label": "92",
+    "decision": true
+  },
+  {
+    "filename": "S003_91_はく_履く.wav",
+    "label": "91",
+    "decision": true
+  },
+  {
+    "filename": "S008_92_はく_掃く.wav",
+    "label": "92",
+    "decision": true
+  },
+  {
+    "filename": "S004_92_はく_掃く.wav",
+    "label": "92",
+    "decision": true
+  },
+  {
+    "filename": "S010_92_はく_掃く.wav",
+    "label": "92",
+    "decision": true
+  },
+  {
+    "filename": "S007_92_はく_掃く.wav",
+    "label": "92",
+    "decision": true
+  },
+  {
+    "filename": "S009_92_はく_掃く.wav",
+    "label": "92",
+    "decision": true
+  },
+  {
+    "filename": "S009_61_はなを_鼻を.wav",
+    "label": "61",
+    "decision": true
+  },
+  {
+    "filename": "S002_61_はなを_鼻を.wav",
+    "label": "61",
+    "decision": true
+  },
+  {
+    "filename": "S007_62_はなを_花を.wav",
+    "label": "62",
+    "decision": true
+  },
+  {
+    "filename": "S008_61_はなを_鼻を.wav",
+    "label": "61",
+    "decision": true
+  },
+  {
+    "filename": "S010_61_はなを_鼻を.wav",
+    "label": "61",
+    "decision": true
+  },
+  {
+    "filename": "S007_61_はなを_鼻を.wav",
+    "label": "61",
+    "decision": true
+  },
+  {
+    "filename": "S005_62_はなを_花を.wav",
+    "label": "62",
+    "decision": true
+  },
+  {
+    "filename": "S001_62_はなを_花を.wav",
+    "label": "62",
+    "decision": true
+  },
+  {
+    "filename": "S006_61_はなを_鼻を.wav",
+    "label": "61",
+    "decision": true
+  },
+  {
+    "filename": "S006_62_はなを_花を.wav",
+    "label": "62",
+    "decision": true
+  },
+  {
+    "filename": "S008_62_はなを_花を.wav",
+    "label": "62",
+    "decision": true
+  },
+  {
+    "filename": "S003_61_はなを_鼻を.wav",
+    "label": "62",
+    "decision": false
+  },
+  {
+    "filename": "S005_61_はなを_鼻を.wav",
+    "label": "61",
+    "decision": true
+  },
+  {
+    "filename": "S009_62_はなを_花を.wav",
+    "label": "62",
+    "decision": true
+  },
+  {
+    "filename": "S003_62_はなを_花を.wav",
+    "label": "62",
+    "decision": true
+  },
+  {
+    "filename": "S001_61_はなを_鼻を.wav",
+    "label": "61",
+    "decision": true
+  },
+  {
+    "filename": "S010_62_はなを_花を.wav",
+    "label": "62",
+    "decision": true
+  },
+  {
+    "filename": "S002_62_はなを_花を.wav",
+    "label": "61",
+    "decision": false
+  },
+  {
+    "filename": "S004_61_はなを_鼻を.wav",
+    "label": "61",
+    "decision": true
+  },
+  {
+    "filename": "S004_62_はなを_花を.wav",
+    "label": "62",
+    "decision": true
+  },
+  {
+    "filename": "S002_02_にじ_虹.wav",
+    "label": "02",
+    "decision": true
+  },
+  {
+    "filename": "S004_02_にじ_虹.wav",
+    "label": "02",
+    "decision": true
+  },
+  {
+    "filename": "S005_02_にじ_虹.wav",
+    "label": "02",
+    "decision": true
+  },
+  {
+    "filename": "S001_02_にじ_虹.wav",
+    "label": "02",
+    "decision": true
+  },
+  {
+    "filename": "S006_02_にじ_虹.wav",
+    "label": "02",
+    "decision": true
+  },
+  {
+    "filename": "S003_02_にじ_虹.wav",
+    "label": "02",
+    "decision": true
+  },
+  {
+    "filename": "S007_01_にじ_二字.wav",
+    "label": "01",
+    "decision": true
+  },
+  {
+    "filename": "S004_01_にじ_二字.wav",
+    "label": "01",
+    "decision": true
+  },
+  {
+    "filename": "S001_01_にじ_二字.wav",
+    "label": "01",
+    "decision": true
+  },
+  {
+    "filename": "S009_01_にじ_二字.wav",
+    "label": "01",
+    "decision": true
+  },
+  {
+    "filename": "S010_02_にじ_虹.wav",
+    "label": "02",
+    "decision": true
+  },
+  {
+    "filename": "S003_01_にじ_二字.wav",
+    "label": "01",
+    "decision": true
+  },
+  {
+    "filename": "S005_01_にじ_二字.wav",
+    "label": "01",
+    "decision": true
+  },
+  {
+    "filename": "S006_01_にじ_二字.wav",
+    "label": "01",
+    "decision": true
+  },
+  {
+    "filename": "S008_01_にじ_二字.wav",
+    "label": "01",
+    "decision": true
+  },
+  {
+    "filename": "S009_02_にじ_虹.wav",
+    "label": "02",
+    "decision": true
+  },
+  {
+    "filename": "S008_02_にじ_虹.wav",
+    "label": "02",
+    "decision": true
+  },
+  {
+    "filename": "S007_02_にじ_虹.wav",
+    "label": "02",
+    "decision": true
+  },
+  {
+    "filename": "S002_01_にじ_二字.wav",
+    "label": "01",
+    "decision": true
+  },
+  {
+    "filename": "S010_01_にじ_二字.wav",
+    "label": "01",
+    "decision": true
+  },
+  {
+    "filename": "S006_69_にほん_日本.wav",
+    "label": "69",
+    "decision": true
+  },
+  {
+    "filename": "S010_69_にほん_日本.wav",
+    "label": "69",
+    "decision": true
+  },
+  {
+    "filename": "S006_70_にほん_二本.wav",
+    "label": "70",
+    "decision": true
+  },
+  {
+    "filename": "S001_70_にほん_二本.wav",
+    "label": "70",
+    "decision": true
+  },
+  {
+    "filename": "S008_70_にほん_二本.wav",
+    "label": "70",
+    "decision": true
+  },
+  {
+    "filename": "S003_70_にほん_二本.wav",
+    "label": "70",
+    "decision": true
+  },
+  {
+    "filename": "S002_70_にほん_二本.wav",
+    "label": "70",
+    "decision": true
+  },
+  {
+    "filename": "S004_70_にほん_二本.wav",
+    "label": "70",
+    "decision": true
+  },
+  {
+    "filename": "S001_69_にほん_日本.wav",
+    "label": "69",
+    "decision": true
+  },
+  {
+    "filename": "S009_70_にほん_二本.wav",
+    "label": "70",
+    "decision": true
+  },
+  {
+    "filename": "S009_69_にほん_日本.wav",
+    "label": "69",
+    "decision": true
+  },
+  {
+    "filename": "S004_69_にほん_日本.wav",
+    "label": "69",
+    "decision": true
+  },
+  {
+    "filename": "S002_69_にほん_日本.wav",
+    "label": "69",
+    "decision": true
+  },
+  {
+    "filename": "S008_69_にほん_日本.wav",
+    "label": "69",
+    "decision": true
+  },
+  {
+    "filename": "S003_69_にほん_日本.wav",
+    "label": "69",
+    "decision": true
+  },
+  {
+    "filename": "S007_69_にほん_日本.wav",
+    "label": "69",
+    "decision": true
+  },
+  {
+    "filename": "S005_70_にほん_二本.wav",
+    "label": "70",
+    "decision": true
+  },
+  {
+    "filename": "S010_70_にほん_二本.wav",
+    "label": "70",
+    "decision": true
+  },
+  {
+    "filename": "S007_70_にほん_二本.wav",
+    "label": "70",
+    "decision": true
+  },
+  {
+    "filename": "S005_69_にほん_日本.wav",
+    "label": "69",
+    "decision": true
+  },
+  {
+    "filename": "S006_55_かき_牡蠣.wav",
+    "label": "55",
+    "decision": true
+  },
+  {
+    "filename": "S006_56_かき_柿.wav",
+    "label": "56",
+    "decision": true
+  },
+  {
+    "filename": "S004_55_かき_牡蠣.wav",
+    "label": "55",
+    "decision": true
+  },
+  {
+    "filename": "S010_55_かき_牡蠣.wav",
+    "label": "55",
+    "decision": true
+  },
+  {
+    "filename": "S007_55_かき_牡蠣.wav",
+    "label": "55",
+    "decision": true
+  },
+  {
+    "filename": "S008_56_かき_柿.wav",
+    "label": "56",
+    "decision": true
+  },
+  {
+    "filename": "S007_56_かき_柿.wav",
+    "label": "56",
+    "decision": true
+  },
+  {
+    "filename": "S001_56_かき_柿.wav",
+    "label": "56",
+    "decision": true
+  },
+  {
+    "filename": "S009_55_かき_牡蠣.wav",
+    "label": "55",
+    "decision": true
+  },
+  {
+    "filename": "S005_55_かき_牡蠣.wav",
+    "label": "55",
+    "decision": true
+  },
+  {
+    "filename": "S005_56_かき_柿.wav",
+    "label": "56",
+    "decision": true
+  },
+  {
+    "filename": "S002_56_かき_柿.wav",
+    "label": "56",
+    "decision": true
+  },
+  {
+    "filename": "S003_56_かき_柿.wav",
+    "label": "56",
+    "decision": true
+  },
+  {
+    "filename": "S008_55_かき_牡蠣.wav",
+    "label": "55",
+    "decision": true
+  },
+  {
+    "filename": "S004_56_かき_柿.wav",
+    "label": "56",
+    "decision": true
+  },
+  {
+    "filename": "S010_56_かき_柿.wav",
+    "label": "56",
+    "decision": true
+  },
+  {
+    "filename": "S001_55_かき_牡蠣.wav",
+    "label": "55",
+    "decision": true
+  },
+  {
+    "filename": "S002_55_かき_牡蠣.wav",
+    "label": "55",
+    "decision": true
+  },
+  {
+    "filename": "S009_56_かき_柿.wav",
+    "label": "56",
+    "decision": true
+  },
+  {
+    "filename": "S003_55_かき_牡蠣.wav",
+    "label": "56",
+    "decision": false
+  },
+  {
+    "filename": "S010_64_さけ_鮭.wav",
+    "label": "64",
+    "decision": true
+  },
+  {
+    "filename": "S003_63_さけ_酒.wav",
+    "label": "63",
+    "decision": true
+  },
+  {
+    "filename": "S003_64_さけ_鮭.wav",
+    "label": "64",
+    "decision": true
+  },
+  {
+    "filename": "S002_63_さけ_酒.wav",
+    "label": "63",
+    "decision": true
+  },
+  {
+    "filename": "S006_64_さけ_鮭.wav",
+    "label": "64",
+    "decision": true
+  },
+  {
+    "filename": "S008_64_さけ_鮭.wav",
+    "label": "64",
+    "decision": true
+  },
+  {
+    "filename": "S007_64_さけ_鮭.wav",
+    "label": "64",
+    "decision": true
+  },
+  {
+    "filename": "S001_64_さけ_鮭.wav",
+    "label": "64",
+    "decision": true
+  },
+  {
+    "filename": "S002_64_さけ_鮭.wav",
+    "label": "64",
+    "decision": true
+  },
+  {
+    "filename": "S006_63_さけ_酒.wav",
+    "label": "63",
+    "decision": true
+  },
+  {
+    "filename": "S009_64_さけ_鮭.wav",
+    "label": "64",
+    "decision": true
+  },
+  {
+    "filename": "S007_63_さけ_酒.wav",
+    "label": "63",
+    "decision": true
+  },
+  {
+    "filename": "S004_64_さけ_鮭.wav",
+    "label": "64",
+    "decision": true
+  },
+  {
+    "filename": "S008_63_さけ_酒.wav",
+    "label": "63",
+    "decision": true
+  },
+  {
+    "filename": "S005_63_さけ_酒.wav",
+    "label": "63",
+    "decision": true
+  },
+  {
+    "filename": "S005_64_さけ_鮭.wav",
+    "label": "64",
+    "decision": true
+  },
+  {
+    "filename": "S001_63_さけ_酒.wav",
+    "label": "63",
+    "decision": true
+  },
+  {
+    "filename": "S009_63_さけ_酒.wav",
+    "label": "63",
+    "decision": true
+  },
+  {
+    "filename": "S004_63_さけ_酒.wav",
+    "label": "63",
+    "decision": true
+  },
+  {
+    "filename": "S010_63_さけ_酒.wav",
+    "label": "63",
+    "decision": true
+  },
+  {
+    "filename": "S007_49_あめ_飴.wav",
+    "label": "49",
+    "decision": true
+  },
+  {
+    "filename": "S002_50_あめ_雨.wav",
+    "label": "50",
+    "decision": true
+  },
+  {
+    "filename": "S001_50_あめ_雨.wav",
+    "label": "50",
+    "decision": true
+  },
+  {
+    "filename": "S010_50_あめ_雨.wav",
+    "label": "50",
+    "decision": true
+  },
+  {
+    "filename": "S008_49_あめ_飴.wav",
+    "label": "49",
+    "decision": true
+  },
+  {
+    "filename": "S004_50_あめ_雨.wav",
+    "label": "50",
+    "decision": true
+  },
+  {
+    "filename": "S003_50_あめ_雨.wav",
+    "label": "50",
+    "decision": true
+  },
+  {
+    "filename": "S006_49_あめ_飴.wav",
+    "label": "49",
+    "decision": true
+  },
+  {
+    "filename": "S007_50_あめ_雨.wav",
+    "label": "50",
+    "decision": true
+  },
+  {
+    "filename": "S005_49_あめ_飴.wav",
+    "label": "49",
+    "decision": true
+  },
+  {
+    "filename": "S009_50_あめ_雨.wav",
+    "label": "50",
+    "decision": true
+  },
+  {
+    "filename": "S004_49_あめ_飴.wav",
+    "label": "49",
+    "decision": true
+  },
+  {
+    "filename": "S003_49_あめ_飴.wav",
+    "label": "49",
+    "decision": true
+  },
+  {
+    "filename": "S001_49_あめ_飴.wav",
+    "label": "49",
+    "decision": true
+  },
+  {
+    "filename": "S009_49_あめ_飴.wav",
+    "label": "49",
+    "decision": true
+  },
+  {
+    "filename": "S010_49_あめ_飴.wav",
+    "label": "49",
+    "decision": true
+  },
+  {
+    "filename": "S006_50_あめ_雨.wav",
+    "label": "50",
+    "decision": true
+  },
+  {
+    "filename": "S008_50_あめ_雨.wav",
+    "label": "50",
+    "decision": true
+  },
+  {
+    "filename": "S005_50_あめ_雨.wav",
+    "label": "50",
+    "decision": true
+  },
+  {
+    "filename": "S002_49_あめ_飴.wav",
+    "label": "49",
+    "decision": true
+  },
+  {
+    "filename": "S010_38_よんで_読んで.wav",
+    "label": "38",
+    "decision": true
+  },
+  {
+    "filename": "S008_38_よんで_読んで.wav",
+    "label": "38",
+    "decision": true
+  },
+  {
+    "filename": "S009_37_よんで_呼んで.wav",
+    "label": "37",
+    "decision": true
+  },
+  {
+    "filename": "S008_37_よんで_呼んで.wav",
+    "label": "37",
+    "decision": true
+  },
+  {
+    "filename": "S004_38_よんで_読んで.wav",
+    "label": "38",
+    "decision": true
+  },
+  {
+    "filename": "S006_37_よんで_呼んで.wav",
+    "label": "37",
+    "decision": true
+  },
+  {
+    "filename": "S002_37_よんで_呼んで.wav",
+    "label": "37",
+    "decision": true
+  },
+  {
+    "filename": "S004_37_よんで_呼んで.wav",
+    "label": "37",
+    "decision": true
+  },
+  {
+    "filename": "S005_38_よんで_読んで.wav",
+    "label": "38",
+    "decision": true
+  },
+  {
+    "filename": "S003_37_よんで_呼んで.wav",
+    "label": "37",
+    "decision": true
+  },
+  {
+    "filename": "S001_37_よんで_呼んで.wav",
+    "label": "37",
+    "decision": true
+  },
+  {
+    "filename": "S007_37_よんで_呼んで.wav",
+    "label": "37",
+    "decision": true
+  },
+  {
+    "filename": "S006_38_よんで_読んで.wav",
+    "label": "38",
+    "decision": true
+  },
+  {
+    "filename": "S010_37_よんで_呼んで.wav",
+    "label": "37",
+    "decision": true
+  },
+  {
+    "filename": "S001_38_よんで_読んで.wav",
+    "label": "38",
+    "decision": true
+  },
+  {
+    "filename": "S009_38_よんで_読んで.wav",
+    "label": "38",
+    "decision": true
+  },
+  {
+    "filename": "S007_38_よんで_読んで.wav",
+    "label": "38",
+    "decision": true
+  },
+  {
+    "filename": "S005_37_よんで_呼んで.wav",
+    "label": "37",
+    "decision": true
+  },
+  {
+    "filename": "S002_38_よんで_読んで.wav",
+    "label": "38",
+    "decision": true
+  },
+  {
+    "filename": "S003_38_よんで_読んで.wav",
+    "label": "38",
+    "decision": true
+  },
+  {
+    "filename": "S007_74_かう_飼う.wav",
+    "label": "74",
+    "decision": true
+  },
+  {
+    "filename": "S010_73_かう_買う.wav",
+    "label": "73",
+    "decision": true
+  },
+  {
+    "filename": "S010_74_かう_飼う.wav",
+    "label": "74",
+    "decision": true
+  },
+  {
+    "filename": "S003_73_かう_買う.wav",
+    "label": "73",
+    "decision": true
+  },
+  {
+    "filename": "S001_73_かう_買う.wav",
+    "label": "73",
+    "decision": true
+  },
+  {
+    "filename": "S008_74_かう_飼う.wav",
+    "label": "74",
+    "decision": true
+  },
+  {
+    "filename": "S009_73_かう_買う.wav",
+    "label": "73",
+    "decision": true
+  },
+  {
+    "filename": "S004_74_かう_飼う.wav",
+    "label": "74",
+    "decision": true
+  },
+  {
+    "filename": "S007_73_かう_買う.wav",
+    "label": "73",
+    "decision": true
+  },
+  {
+    "filename": "S008_73_かう_買う.wav",
+    "label": "73",
+    "decision": true
+  },
+  {
+    "filename": "S002_74_かう_飼う.wav",
+    "label": "74",
+    "decision": true
+  },
+  {
+    "filename": "S005_74_かう_飼う.wav",
+    "label": "74",
+    "decision": true
+  },
+  {
+    "filename": "S005_73_かう_買う.wav",
+    "label": "73",
+    "decision": true
+  },
+  {
+    "filename": "S006_74_かう_飼う.wav",
+    "label": "74",
+    "decision": true
+  },
+  {
+    "filename": "S006_73_かう_買う.wav",
+    "label": "73",
+    "decision": true
+  },
+  {
+    "filename": "S009_74_かう_飼う.wav",
+    "label": "74",
+    "decision": true
+  },
+  {
+    "filename": "S003_74_かう_飼う.wav",
+    "label": "74",
+    "decision": true
+  },
+  {
+    "filename": "S002_73_かう_買う.wav",
+    "label": "73",
+    "decision": true
+  },
+  {
+    "filename": "S004_73_かう_買う.wav",
+    "label": "73",
+    "decision": true
+  },
+  {
+    "filename": "S001_74_かう_飼う.wav",
+    "label": "74",
+    "decision": true
+  },
+  {
+    "filename": "S006_31_かえる_変える.wav",
+    "label": "31",
+    "decision": true
+  },
+  {
+    "filename": "S009_31_かえる_変える.wav",
+    "label": "31",
+    "decision": true
+  },
+  {
+    "filename": "S006_32_かえる_帰る.wav",
+    "label": "32",
+    "decision": true
+  },
+  {
+    "filename": "S001_31_かえる_変える.wav",
+    "label": "31",
+    "decision": true
+  },
+  {
+    "filename": "S005_31_かえる_変える.wav",
+    "label": "31",
+    "decision": true
+  },
+  {
+    "filename": "S007_32_かえる_帰る.wav",
+    "label": "32",
+    "decision": true
+  },
+  {
+    "filename": "S008_31_かえる_変える.wav",
+    "label": "31",
+    "decision": true
+  },
+  {
+    "filename": "S010_31_かえる_変える.wav",
+    "label": "31",
+    "decision": true
+  },
+  {
+    "filename": "S009_32_かえる_帰る.wav",
+    "label": "32",
+    "decision": true
+  },
+  {
+    "filename": "S005_32_かえる_帰る.wav",
+    "label": "32",
+    "decision": true
+  },
+  {
+    "filename": "S002_31_かえる_変える.wav",
+    "label": "31",
+    "decision": true
+  },
+  {
+    "filename": "S004_32_かえる_帰る.wav",
+    "label": "32",
+    "decision": true
+  },
+  {
+    "filename": "S003_32_かえる_帰る.wav",
+    "label": "32",
+    "decision": true
+  },
+  {
+    "filename": "S010_32_かえる_帰る.wav",
+    "label": "32",
+    "decision": true
+  },
+  {
+    "filename": "S003_31_かえる_変える.wav",
+    "label": "31",
+    "decision": true
+  },
+  {
+    "filename": "S001_32_かえる_帰る.wav",
+    "label": "32",
+    "decision": true
+  },
+  {
+    "filename": "S007_31_かえる_変える.wav",
+    "label": "31",
+    "decision": true
+  },
+  {
+    "filename": "S004_31_かえる_変える.wav",
+    "label": "31",
+    "decision": true
+  },
+  {
+    "filename": "S002_32_かえる_帰る.wav",
+    "label": "32",
+    "decision": true
+  },
+  {
+    "filename": "S008_32_かえる_帰る.wav",
+    "label": "32",
+    "decision": true
+  },
+  {
+    "filename": "S001_71_いけん_違憲.wav",
+    "label": "71",
+    "decision": true
+  },
+  {
+    "filename": "S001_72_いけん_意見.wav",
+    "label": "72",
+    "decision": true
+  },
+  {
+    "filename": "S006_72_いけん_意見.wav",
+    "label": "72",
+    "decision": true
+  },
+  {
+    "filename": "S002_72_いけん_意見.wav",
+    "label": "72",
+    "decision": true
+  },
+  {
+    "filename": "S010_71_いけん_違憲.wav",
+    "label": "71",
+    "decision": true
+  },
+  {
+    "filename": "S006_71_いけん_違憲.wav",
+    "label": "71",
+    "decision": true
+  },
+  {
+    "filename": "S008_72_いけん_意見.wav",
+    "label": "72",
+    "decision": true
+  },
+  {
+    "filename": "S003_72_いけん_意見.wav",
+    "label": "72",
+    "decision": true
+  },
+  {
+    "filename": "S007_71_いけん_違憲.wav",
+    "label": "71",
+    "decision": true
+  },
+  {
+    "filename": "S005_72_いけん_意見.wav",
+    "label": "72",
+    "decision": true
+  },
+  {
+    "filename": "S004_71_いけん_違憲.wav",
+    "label": "71",
+    "decision": true
+  },
+  {
+    "filename": "S003_71_いけん_違憲.wav",
+    "label": "71",
+    "decision": true
+  },
+  {
+    "filename": "S007_72_いけん_意見.wav",
+    "label": "72",
+    "decision": true
+  },
+  {
+    "filename": "S002_71_いけん_違憲.wav",
+    "label": "71",
+    "decision": true
+  },
+  {
+    "filename": "S010_72_いけん_意見.wav",
+    "label": "72",
+    "decision": true
+  },
+  {
+    "filename": "S008_71_いけん_違憲.wav",
+    "label": "71",
+    "decision": true
+  },
+  {
+    "filename": "S009_71_いけん_違憲.wav",
+    "label": "71",
+    "decision": true
+  },
+  {
+    "filename": "S009_72_いけん_意見.wav",
+    "label": "72",
+    "decision": true
+  },
+  {
+    "filename": "S004_72_いけん_意見.wav",
+    "label": "72",
+    "decision": true
+  },
+  {
+    "filename": "S005_71_いけん_違憲.wav",
+    "label": "71",
+    "decision": true
+  },
+  {
+    "filename": "S002_05_はし_端.wav",
+    "label": "05",
+    "decision": true
+  },
+  {
+    "filename": "S001_05_はし_端.wav",
+    "label": "05",
+    "decision": true
+  },
+  {
+    "filename": "S008_06_はし_箸.wav",
+    "label": "06",
+    "decision": true
+  },
+  {
+    "filename": "S009_05_はし_端.wav",
+    "label": "05",
+    "decision": true
+  },
+  {
+    "filename": "S005_05_はし_端.wav",
+    "label": "05",
+    "decision": true
+  },
+  {
+    "filename": "S008_05_はし_端.wav",
+    "label": "05",
+    "decision": true
+  },
+  {
+    "filename": "S005_06_はし_箸.wav",
+    "label": "06",
+    "decision": true
+  },
+  {
+    "filename": "S007_05_はし_端.wav",
+    "label": "05",
+    "decision": true
+  },
+  {
+    "filename": "S001_06_はし_箸.wav",
+    "label": "06",
+    "decision": true
+  },
+  {
+    "filename": "S010_06_はし_箸.wav",
+    "label": "06",
+    "decision": true
+  },
+  {
+    "filename": "S003_05_はし_端.wav",
+    "label": "05",
+    "decision": true
+  },
+  {
+    "filename": "S007_06_はし_箸.wav",
+    "label": "06",
+    "decision": true
+  },
+  {
+    "filename": "S002_06_はし_箸.wav",
+    "label": "06",
+    "decision": true
+  },
+  {
+    "filename": "S004_06_はし_箸.wav",
+    "label": "06",
+    "decision": true
+  },
+  {
+    "filename": "S010_05_はし_端.wav",
+    "label": "05",
+    "decision": true
+  },
+  {
+    "filename": "S006_05_はし_端.wav",
+    "label": "05",
+    "decision": true
+  },
+  {
+    "filename": "S003_06_はし_箸.wav",
+    "label": "05",
+    "decision": false
+  },
+  {
+    "filename": "S004_05_はし_端.wav",
+    "label": "05",
+    "decision": true
+  },
+  {
+    "filename": "S009_06_はし_箸.wav",
+    "label": "06",
+    "decision": true
+  },
+  {
+    "filename": "S006_06_はし_箸.wav",
+    "label": "06",
+    "decision": true
+  },
+  {
+    "filename": "S006_77_かえる_変える.wav",
+    "label": "77",
+    "decision": true
+  },
+  {
+    "filename": "S007_77_かえる_変える.wav",
+    "label": "77",
+    "decision": true
+  },
+  {
+    "filename": "S009_77_かえる_変える.wav",
+    "label": "77",
+    "decision": true
+  },
+  {
+    "filename": "S008_77_かえる_変える.wav",
+    "label": "77",
+    "decision": true
+  },
+  {
+    "filename": "S006_78_かえる_帰る.wav",
+    "label": "78",
+    "decision": true
+  },
+  {
+    "filename": "S010_78_かえる_帰る.wav",
+    "label": "78",
+    "decision": true
+  },
+  {
+    "filename": "S008_78_かえる_帰る.wav",
+    "label": "78",
+    "decision": true
+  },
+  {
+    "filename": "S005_78_かえる_帰る.wav",
+    "label": "78",
+    "decision": true
+  },
+  {
+    "filename": "S004_78_かえる_帰る.wav",
+    "label": "78",
+    "decision": true
+  },
+  {
+    "filename": "S003_77_かえる_変える.wav",
+    "label": "77",
+    "decision": true
+  },
+  {
+    "filename": "S001_77_かえる_変える.wav",
+    "label": "77",
+    "decision": true
+  },
+  {
+    "filename": "S005_77_かえる_変える.wav",
+    "label": "77",
+    "decision": true
+  },
+  {
+    "filename": "S004_77_かえる_変える.wav",
+    "label": "77",
+    "decision": true
+  },
+  {
+    "filename": "S007_78_かえる_帰る.wav",
+    "label": "78",
+    "decision": true
+  },
+  {
+    "filename": "S010_77_かえる_変える.wav",
+    "label": "77",
+    "decision": true
+  },
+  {
+    "filename": "S002_77_かえる_変える.wav",
+    "label": "77",
+    "decision": true
+  },
+  {
+    "filename": "S003_78_かえる_帰る.wav",
+    "label": "78",
+    "decision": true
+  },
+  {
+    "filename": "S002_78_かえる_帰る.wav",
+    "label": "78",
+    "decision": true
+  },
+  {
+    "filename": "S001_78_かえる_帰る.wav",
+    "label": "78",
+    "decision": true
+  },
+  {
+    "filename": "S009_78_かえる_帰る.wav",
+    "label": "78",
+    "decision": true
+  },
+  {
+    "filename": "S004_35_きて_着て.wav",
+    "label": "35",
+    "decision": true
+  },
+  {
+    "filename": "S004_36_きて_来て.wav",
+    "label": "36",
+    "decision": true
+  },
+  {
+    "filename": "S002_35_きて_着て.wav",
+    "label": "35",
+    "decision": true
+  },
+  {
+    "filename": "S010_36_きて_来て.wav",
+    "label": "36",
+    "decision": true
+  },
+  {
+    "filename": "S008_36_きて_来て.wav",
+    "label": "36",
+    "decision": true
+  },
+  {
+    "filename": "S009_36_きて_来て.wav",
+    "label": "36",
+    "decision": true
+  },
+  {
+    "filename": "S003_36_きて_来て.wav",
+    "label": "36",
+    "decision": true
+  },
+  {
+    "filename": "S005_36_きて_来て.wav",
+    "label": "36",
+    "decision": true
+  },
+  {
+    "filename": "S008_35_きて_着て.wav",
+    "label": "35",
+    "decision": true
+  },
+  {
+    "filename": "S003_35_きて_着て.wav",
+    "label": "35",
+    "decision": true
+  },
+  {
+    "filename": "S001_35_きて_着て.wav",
+    "label": "35",
+    "decision": true
+  },
+  {
+    "filename": "S009_35_きて_着て.wav",
+    "label": "35",
+    "decision": true
+  },
+  {
+    "filename": "S006_36_きて_来て.wav",
+    "label": "36",
+    "decision": true
+  },
+  {
+    "filename": "S005_35_きて_着て.wav",
+    "label": "35",
+    "decision": true
+  },
+  {
+    "filename": "S001_36_きて_来て.wav",
+    "label": "36",
+    "decision": true
+  },
+  {
+    "filename": "S006_35_きて_着て.wav",
+    "label": "35",
+    "decision": true
+  },
+  {
+    "filename": "S010_35_きて_着て.wav",
+    "label": "35",
+    "decision": true
+  },
+  {
+    "filename": "S007_35_きて_着て.wav",
+    "label": "35",
+    "decision": true
+  },
+  {
+    "filename": "S007_36_きて_来て.wav",
+    "label": "36",
+    "decision": true
+  },
+  {
+    "filename": "S002_36_きて_来て.wav",
+    "label": "36",
+    "decision": true
+  },
+  {
+    "filename": "S008_80_かって_勝って.wav",
+    "label": "80",
+    "decision": true
+  },
+  {
+    "filename": "S006_79_かって_買って.wav",
+    "label": "79",
+    "decision": true
+  },
+  {
+    "filename": "S005_79_かって_買って.wav",
+    "label": "79",
+    "decision": true
+  },
+  {
+    "filename": "S004_80_かって_勝って.wav",
+    "label": "80",
+    "decision": true
+  },
+  {
+    "filename": "S001_79_かって_買って.wav",
+    "label": "79",
+    "decision": true
+  },
+  {
+    "filename": "S006_80_かって_勝って.wav",
+    "label": "80",
+    "decision": true
+  },
+  {
+    "filename": "S002_80_かって_勝って.wav",
+    "label": "80",
+    "decision": true
+  },
+  {
+    "filename": "S010_80_かって_勝って.wav",
+    "label": "80",
+    "decision": true
+  },
+  {
+    "filename": "S004_79_かって_買って.wav",
+    "label": "79",
+    "decision": true
+  },
+  {
+    "filename": "S007_80_かって_勝って.wav",
+    "label": "80",
+    "decision": true
+  },
+  {
+    "filename": "S008_79_かって_買って.wav",
+    "label": "79",
+    "decision": true
+  },
+  {
+    "filename": "S009_79_かって_買って.wav",
+    "label": "79",
+    "decision": true
+  },
+  {
+    "filename": "S003_79_かって_買って.wav",
+    "label": "79",
+    "decision": true
+  },
+  {
+    "filename": "S010_79_かって_買って.wav",
+    "label": "79",
+    "decision": true
+  },
+  {
+    "filename": "S009_80_かって_勝って.wav",
+    "label": "80",
+    "decision": true
+  },
+  {
+    "filename": "S003_80_かって_勝って.wav",
+    "label": "80",
+    "decision": true
+  },
+  {
+    "filename": "S005_80_かって_勝って.wav",
+    "label": "80",
+    "decision": true
+  },
+  {
+    "filename": "S002_79_かって_買って.wav",
+    "label": "79",
+    "decision": true
+  },
+  {
+    "filename": "S007_79_かって_買って.wav",
+    "label": "79",
+    "decision": true
+  },
+  {
+    "filename": "S001_80_かって_勝って.wav",
+    "label": "80",
+    "decision": true
+  },
+  {
+    "filename": "S002_19_りょうしん_両唇.wav",
+    "label": "19",
+    "decision": true
+  },
+  {
+    "filename": "S005_20_りょうしん_両親.wav",
+    "label": "20",
+    "decision": true
+  },
+  {
+    "filename": "S004_19_りょうしん_両唇.wav",
+    "label": "19",
+    "decision": true
+  },
+  {
+    "filename": "S008_20_りょうしん_両親.wav",
+    "label": "20",
+    "decision": true
+  },
+  {
+    "filename": "S006_20_りょうしん_両親.wav",
+    "label": "20",
+    "decision": true
+  },
+  {
+    "filename": "S007_20_りょうしん_両親.wav",
+    "label": "20",
+    "decision": true
+  },
+  {
+    "filename": "S004_20_りょうしん_両親.wav",
+    "label": "20",
+    "decision": true
+  },
+  {
+    "filename": "S005_19_りょうしん_両唇.wav",
+    "label": "19",
+    "decision": true
+  },
+  {
+    "filename": "S001_19_りょうしん_両唇.wav",
+    "label": "19",
+    "decision": true
+  },
+  {
+    "filename": "S009_19_りょうしん_両唇.wav",
+    "label": "19",
+    "decision": true
+  },
+  {
+    "filename": "S003_20_りょうしん_両親.wav",
+    "label": "20",
+    "decision": true
+  },
+  {
+    "filename": "S008_19_りょうしん_両唇.wav",
+    "label": "19",
+    "decision": true
+  },
+  {
+    "filename": "S010_20_りょうしん_両親.wav",
+    "label": "20",
+    "decision": true
+  },
+  {
+    "filename": "S002_20_りょうしん_両親.wav",
+    "label": "20",
+    "decision": true
+  },
+  {
+    "filename": "S010_19_りょうしん_両唇.wav",
+    "label": "19",
+    "decision": true
+  },
+  {
+    "filename": "S006_19_りょうしん_両唇.wav",
+    "label": "19",
+    "decision": true
+  },
+  {
+    "filename": "S003_19_りょうしん_両唇.wav",
+    "label": "19",
+    "decision": true
+  },
+  {
+    "filename": "S009_20_りょうしん_両親.wav",
+    "label": "20",
+    "decision": true
+  },
+  {
+    "filename": "S001_20_りょうしん_両親.wav",
+    "label": "20",
+    "decision": true
+  },
+  {
+    "filename": "S007_19_りょうしん_両唇.wav",
+    "label": "19",
+    "decision": true
+  },
+  {
+    "filename": "S005_07_はし_橋.wav",
+    "label": "07",
+    "decision": true
+  },
+  {
+    "filename": "S005_08_はし_箸.wav",
+    "label": "08",
+    "decision": true
+  },
+  {
+    "filename": "S003_08_はし_箸.wav",
+    "label": "07",
+    "decision": false
+  },
+  {
+    "filename": "S002_07_はし_橋.wav",
+    "label": "07",
+    "decision": true
+  },
+  {
+    "filename": "S010_08_はし_箸.wav",
+    "label": "08",
+    "decision": true
+  },
+  {
+    "filename": "S010_07_はし_橋.wav",
+    "label": "07",
+    "decision": true
+  },
+  {
+    "filename": "S003_07_はし_橋.wav",
+    "label": "07",
+    "decision": true
+  },
+  {
+    "filename": "S006_08_はし_箸.wav",
+    "label": "08",
+    "decision": true
+  },
+  {
+    "filename": "S008_08_はし_箸.wav",
+    "label": "08",
+    "decision": true
+  },
+  {
+    "filename": "S007_07_はし_橋.wav",
+    "label": "07",
+    "decision": true
+  },
+  {
+    "filename": "S001_08_はし_箸.wav",
+    "label": "08",
+    "decision": true
+  },
+  {
+    "filename": "S001_07_はし_橋.wav",
+    "label": "07",
+    "decision": true
+  },
+  {
+    "filename": "S004_07_はし_橋.wav",
+    "label": "07",
+    "decision": true
+  },
+  {
+    "filename": "S004_08_はし_箸.wav",
+    "label": "08",
+    "decision": true
+  },
+  {
+    "filename": "S006_07_はし_橋.wav",
+    "label": "07",
+    "decision": true
+  },
+  {
+    "filename": "S008_07_はし_橋.wav",
+    "label": "07",
+    "decision": true
+  },
+  {
+    "filename": "S009_07_はし_橋.wav",
+    "label": "07",
+    "decision": true
+  },
+  {
+    "filename": "S009_08_はし_箸.wav",
+    "label": "08",
+    "decision": true
+  },
+  {
+    "filename": "S002_08_はし_箸.wav",
+    "label": "08",
+    "decision": true
+  },
+  {
+    "filename": "S007_08_はし_箸.wav",
+    "label": "08",
+    "decision": true
+  },
+  {
+    "filename": "S001_10_かき_下記.wav",
+    "label": "10",
+    "decision": true
+  },
+  {
+    "filename": "S004_10_かき_下記.wav",
+    "label": "10",
+    "decision": true
+  },
+  {
+    "filename": "S002_10_かき_下記.wav",
+    "label": "10",
+    "decision": true
+  },
+  {
+    "filename": "S008_09_かき_柿.wav",
+    "label": "09",
+    "decision": true
+  },
+  {
+    "filename": "S003_10_かき_下記.wav",
+    "label": "10",
+    "decision": true
+  },
+  {
+    "filename": "S003_09_かき_柿.wav",
+    "label": "09",
+    "decision": true
+  },
+  {
+    "filename": "S004_09_かき_柿.wav",
+    "label": "09",
+    "decision": true
+  },
+  {
+    "filename": "S001_09_かき_柿.wav",
+    "label": "09",
+    "decision": true
+  },
+  {
+    "filename": "S005_10_かき_下記.wav",
+    "label": "10",
+    "decision": true
+  },
+  {
+    "filename": "S009_09_かき_柿.wav",
+    "label": "09",
+    "decision": true
+  },
+  {
+    "filename": "S005_09_かき_柿.wav",
+    "label": "09",
+    "decision": true
+  },
+  {
+    "filename": "S009_10_かき_下記.wav",
+    "label": "10",
+    "decision": true
+  },
+  {
+    "filename": "S002_09_かき_柿.wav",
+    "label": "09",
+    "decision": true
+  },
+  {
+    "filename": "S006_10_かき_下記.wav",
+    "label": "10",
+    "decision": true
+  },
+  {
+    "filename": "S010_10_かき_下記.wav",
+    "label": "10",
+    "decision": true
+  },
+  {
+    "filename": "S007_09_かき_柿.wav",
+    "label": "09",
+    "decision": true
+  },
+  {
+    "filename": "S008_10_かき_下記.wav",
+    "label": "10",
+    "decision": true
+  },
+  {
+    "filename": "S010_09_かき_柿.wav",
+    "label": "09",
+    "decision": true
+  },
+  {
+    "filename": "S007_10_かき_下記.wav",
+    "label": "10",
+    "decision": true
+  },
+  {
+    "filename": "S006_09_かき_柿.wav",
+    "label": "09",
+    "decision": true
+  },
+  {
+    "filename": "S003_54_はし_箸.wav",
+    "label": "53",
+    "decision": false
+  },
+  {
+    "filename": "S004_54_はし_箸.wav",
+    "label": "54",
+    "decision": true
+  },
+  {
+    "filename": "S007_54_はし_箸.wav",
+    "label": "54",
+    "decision": true
+  },
+  {
+    "filename": "S002_54_はし_箸.wav",
+    "label": "54",
+    "decision": true
+  },
+  {
+    "filename": "S009_53_はし_橋.wav",
+    "label": "53",
+    "decision": true
+  },
+  {
+    "filename": "S008_54_はし_箸.wav",
+    "label": "54",
+    "decision": true
+  },
+  {
+    "filename": "S010_54_はし_箸.wav",
+    "label": "54",
+    "decision": true
+  },
+  {
+    "filename": "S007_53_はし_橋.wav",
+    "label": "53",
+    "decision": true
+  },
+  {
+    "filename": "S010_53_はし_橋.wav",
+    "label": "53",
+    "decision": true
+  },
+  {
+    "filename": "S004_53_はし_橋.wav",
+    "label": "53",
+    "decision": true
+  },
+  {
+    "filename": "S001_54_はし_箸.wav",
+    "label": "54",
+    "decision": true
+  },
+  {
+    "filename": "S005_54_はし_箸.wav",
+    "label": "54",
+    "decision": true
+  },
+  {
+    "filename": "S006_54_はし_箸.wav",
+    "label": "54",
+    "decision": true
+  },
+  {
+    "filename": "S001_53_はし_橋.wav",
+    "label": "53",
+    "decision": true
+  },
+  {
+    "filename": "S006_53_はし_橋.wav",
+    "label": "53",
+    "decision": true
+  },
+  {
+    "filename": "S008_53_はし_橋.wav",
+    "label": "53",
+    "decision": true
+  },
+  {
+    "filename": "S009_54_はし_箸.wav",
+    "label": "54",
+    "decision": true
+  },
+  {
+    "filename": "S003_53_はし_橋.wav",
+    "label": "53",
+    "decision": true
+  },
+  {
+    "filename": "S005_53_はし_橋.wav",
+    "label": "53",
+    "decision": true
+  },
+  {
+    "filename": "S002_53_はし_橋.wav",
+    "label": "53",
+    "decision": true
+  },
+  {
+    "filename": "S005_04_あめ_雨.wav",
+    "label": "04",
+    "decision": true
+  },
+  {
+    "filename": "S001_03_あめ_飴.wav",
+    "label": "03",
+    "decision": true
+  },
+  {
+    "filename": "S004_03_あめ_飴.wav",
+    "label": "03",
+    "decision": true
+  },
+  {
+    "filename": "S010_04_あめ_雨.wav",
+    "label": "04",
+    "decision": true
+  },
+  {
+    "filename": "S006_03_あめ_飴.wav",
+    "label": "03",
+    "decision": true
+  },
+  {
+    "filename": "S008_03_あめ_飴.wav",
+    "label": "03",
+    "decision": true
+  },
+  {
+    "filename": "S006_04_あめ_雨.wav",
+    "label": "04",
+    "decision": true
+  },
+  {
+    "filename": "S002_03_あめ_飴.wav",
+    "label": "03",
+    "decision": true
+  },
+  {
+    "filename": "S004_04_あめ_雨.wav",
+    "label": "04",
+    "decision": true
+  },
+  {
+    "filename": "S005_03_あめ_飴.wav",
+    "label": "03",
+    "decision": true
+  },
+  {
+    "filename": "S009_03_あめ_飴.wav",
+    "label": "03",
+    "decision": true
+  },
+  {
+    "filename": "S007_04_あめ_雨.wav",
+    "label": "04",
+    "decision": true
+  },
+  {
+    "filename": "S010_03_あめ_飴.wav",
+    "label": "03",
+    "decision": true
+  },
+  {
+    "filename": "S007_03_あめ_飴.wav",
+    "label": "03",
+    "decision": true
+  },
+  {
+    "filename": "S008_04_あめ_雨.wav",
+    "label": "04",
+    "decision": true
+  },
+  {
+    "filename": "S003_03_あめ_飴.wav",
+    "label": "03",
+    "decision": true
+  },
+  {
+    "filename": "S009_04_あめ_雨.wav",
+    "label": "04",
+    "decision": true
+  },
+  {
+    "filename": "S001_04_あめ_雨.wav",
+    "label": "04",
+    "decision": true
+  },
+  {
+    "filename": "S002_04_あめ_雨.wav",
+    "label": "04",
+    "decision": true
+  },
+  {
+    "filename": "S003_04_あめ_雨.wav",
+    "label": "04",
+    "decision": true
+  },
+  {
+    "filename": "S003_58_いし_医師.wav",
+    "label": "58",
+    "decision": true
+  },
+  {
+    "filename": "S009_58_いし_医師.wav",
+    "label": "58",
+    "decision": true
+  },
+  {
+    "filename": "S002_58_いし_医師.wav",
+    "label": "58",
+    "decision": true
+  },
+  {
+    "filename": "S003_57_いし_石.wav",
+    "label": "57",
+    "decision": true
+  },
+  {
+    "filename": "S002_57_いし_石.wav",
+    "label": "57",
+    "decision": true
+  },
+  {
+    "filename": "S004_57_いし_石.wav",
+    "label": "57",
+    "decision": true
+  },
+  {
+    "filename": "S010_57_いし_石.wav",
+    "label": "57",
+    "decision": true
+  },
+  {
+    "filename": "S005_58_いし_医師.wav",
+    "label": "58",
+    "decision": true
+  },
+  {
+    "filename": "S008_57_いし_石.wav",
+    "label": "57",
+    "decision": true
+  },
+  {
+    "filename": "S007_57_いし_石.wav",
+    "label": "57",
+    "decision": true
+  },
+  {
+    "filename": "S001_57_いし_石.wav",
+    "label": "57",
+    "decision": true
+  },
+  {
+    "filename": "S008_58_いし_医師.wav",
+    "label": "58",
+    "decision": true
+  },
+  {
+    "filename": "S005_57_いし_石.wav",
+    "label": "57",
+    "decision": true
+  },
+  {
+    "filename": "S009_57_いし_石.wav",
+    "label": "57",
+    "decision": true
+  },
+  {
+    "filename": "S006_58_いし_医師.wav",
+    "label": "58",
+    "decision": true
+  },
+  {
+    "filename": "S001_58_いし_医師.wav",
+    "label": "58",
+    "decision": true
+  },
+  {
+    "filename": "S006_57_いし_石.wav",
+    "label": "57",
+    "decision": true
+  },
+  {
+    "filename": "S007_58_いし_医師.wav",
+    "label": "58",
+    "decision": true
+  },
+  {
+    "filename": "S004_58_いし_医師.wav",
+    "label": "58",
+    "decision": true
+  },
+  {
+    "filename": "S010_58_いし_医師.wav",
+    "label": "58",
+    "decision": true
+  },
+  {
+    "filename": "S002_13_きが_気が.wav",
+    "label": "13",
+    "decision": true
+  },
+  {
+    "filename": "S004_13_きが_気が.wav",
+    "label": "13",
+    "decision": true
+  },
+  {
+    "filename": "S010_14_きが_木が.wav",
+    "label": "14",
+    "decision": true
+  },
+  {
+    "filename": "S005_13_きが_気が.wav",
+    "label": "13",
+    "decision": true
+  },
+  {
+    "filename": "S005_14_きが_木が.wav",
+    "label": "14",
+    "decision": true
+  },
+  {
+    "filename": "S007_14_きが_木が.wav",
+    "label": "14",
+    "decision": true
+  },
+  {
+    "filename": "S010_13_きが_気が.wav",
+    "label": "13",
+    "decision": true
+  },
+  {
+    "filename": "S008_14_きが_木が.wav",
+    "label": "14",
+    "decision": true
+  },
+  {
+    "filename": "S001_14_きが_木が.wav",
+    "label": "14",
+    "decision": true
+  },
+  {
+    "filename": "S006_14_きが_木が.wav",
+    "label": "14",
+    "decision": true
+  },
+  {
+    "filename": "S009_14_きが_木が.wav",
+    "label": "14",
+    "decision": true
+  },
+  {
+    "filename": "S004_14_きが_木が.wav",
+    "label": "14",
+    "decision": true
+  },
+  {
+    "filename": "S002_14_きが_木が.wav",
+    "label": "14",
+    "decision": true
+  },
+  {
+    "filename": "S003_13_きが_気が.wav",
+    "label": "13",
+    "decision": true
+  },
+  {
+    "filename": "S008_13_きが_気が.wav",
+    "label": "13",
+    "decision": true
+  },
+  {
+    "filename": "S003_14_きが_木が.wav",
+    "label": "14",
+    "decision": true
+  },
+  {
+    "filename": "S007_13_きが_気が.wav",
+    "label": "13",
+    "decision": true
+  },
+  {
+    "filename": "S006_13_きが_気が.wav",
+    "label": "13",
+    "decision": true
+  },
+  {
+    "filename": "S009_13_きが_気が.wav",
+    "label": "13",
+    "decision": true
+  },
+  {
+    "filename": "S001_13_きが_気が.wav",
+    "label": "13",
+    "decision": true
+  },
+  {
+    "filename": "S009_34_かって_勝って.wav",
+    "label": "34",
+    "decision": true
+  },
+  {
+    "filename": "S006_33_かって_買って.wav",
+    "label": "33",
+    "decision": true
+  },
+  {
+    "filename": "S001_33_かって_買って.wav",
+    "label": "33",
+    "decision": true
+  },
+  {
+    "filename": "S004_33_かって_買って.wav",
+    "label": "33",
+    "decision": true
+  },
+  {
+    "filename": "S010_33_かって_買って.wav",
+    "label": "33",
+    "decision": true
+  },
+  {
+    "filename": "S002_34_かって_勝って.wav",
+    "label": "34",
+    "decision": true
+  },
+  {
+    "filename": "S009_33_かって_買って.wav",
+    "label": "33",
+    "decision": true
+  },
+  {
+    "filename": "S004_34_かって_勝って.wav",
+    "label": "34",
+    "decision": true
+  },
+  {
+    "filename": "S003_33_かって_買って.wav",
+    "label": "33",
+    "decision": true
+  },
+  {
+    "filename": "S008_33_かって_買って.wav",
+    "label": "33",
+    "decision": true
+  },
+  {
+    "filename": "S005_33_かって_買って.wav",
+    "label": "33",
+    "decision": true
+  },
+  {
+    "filename": "S005_34_かって_勝って.wav",
+    "label": "34",
+    "decision": true
+  },
+  {
+    "filename": "S001_34_かって_勝って.wav",
+    "label": "34",
+    "decision": true
+  },
+  {
+    "filename": "S010_34_かって_勝って.wav",
+    "label": "34",
+    "decision": true
+  },
+  {
+    "filename": "S003_34_かって_勝って.wav",
+    "label": "34",
+    "decision": true
+  },
+  {
+    "filename": "S007_34_かって_勝って.wav",
+    "label": "34",
+    "decision": true
+  },
+  {
+    "filename": "S008_34_かって_勝って.wav",
+    "label": "34",
+    "decision": true
+  },
+  {
+    "filename": "S006_34_かって_勝って.wav",
+    "label": "34",
+    "decision": true
+  },
+  {
+    "filename": "S002_33_かって_買って.wav",
+    "label": "33",
+    "decision": true
+  },
+  {
+    "filename": "S007_33_かって_買って.wav",
+    "label": "33",
+    "decision": true
+  },
+  {
+    "filename": "S008_44_あつい_熱い.wav",
+    "label": "44",
+    "decision": true
+  },
+  {
+    "filename": "S002_43_あつい_厚い.wav",
+    "label": "43",
+    "decision": true
+  },
+  {
+    "filename": "S008_43_あつい_厚い.wav",
+    "label": "43",
+    "decision": true
+  },
+  {
+    "filename": "S005_44_あつい_熱い.wav",
+    "label": "44",
+    "decision": true
+  },
+  {
+    "filename": "S003_44_あつい_熱い.wav",
+    "label": "44",
+    "decision": true
+  },
+  {
+    "filename": "S009_43_あつい_厚い.wav",
+    "label": "43",
+    "decision": true
+  },
+  {
+    "filename": "S002_44_あつい_熱い.wav",
+    "label": "44",
+    "decision": true
+  },
+  {
+    "filename": "S009_44_あつい_熱い.wav",
+    "label": "44",
+    "decision": true
+  },
+  {
+    "filename": "S003_43_あつい_厚い.wav",
+    "label": "43",
+    "decision": true
+  },
+  {
+    "filename": "S004_43_あつい_厚い.wav",
+    "label": "43",
+    "decision": true
+  },
+  {
+    "filename": "S004_44_あつい_熱い.wav",
+    "label": "44",
+    "decision": true
+  },
+  {
+    "filename": "S007_44_あつい_熱い.wav",
+    "label": "44",
+    "decision": true
+  },
+  {
+    "filename": "S001_44_あつい_熱い.wav",
+    "label": "44",
+    "decision": true
+  },
+  {
+    "filename": "S006_43_あつい_厚い.wav",
+    "label": "43",
+    "decision": true
+  },
+  {
+    "filename": "S005_43_あつい_厚い.wav",
+    "label": "43",
+    "decision": true
+  },
+  {
+    "filename": "S007_43_あつい_厚い.wav",
+    "label": "43",
+    "decision": true
+  },
+  {
+    "filename": "S001_43_あつい_厚い.wav",
+    "label": "43",
+    "decision": true
+  },
+  {
+    "filename": "S010_44_あつい_熱い.wav",
+    "label": "44",
+    "decision": true
+  },
+  {
+    "filename": "S006_44_あつい_熱い.wav",
+    "label": "44",
+    "decision": true
+  },
+  {
+    "filename": "S010_43_あつい_厚い.wav",
+    "label": "43",
+    "decision": true
+  },
+  {
+    "filename": "S002_66_りょうしん_良心.wav",
+    "label": "66",
+    "decision": true
+  },
+  {
+    "filename": "S001_66_りょうしん_良心.wav",
+    "label": "66",
+    "decision": true
+  },
+  {
+    "filename": "S007_65_りょうしん_両唇.wav",
+    "label": "65",
+    "decision": true
+  },
+  {
+    "filename": "S004_65_りょうしん_両唇.wav",
+    "label": "65",
+    "decision": true
+  },
+  {
+    "filename": "S001_65_りょうしん_両唇.wav",
+    "label": "65",
+    "decision": true
+  },
+  {
+    "filename": "S008_66_りょうしん_良心.wav",
+    "label": "66",
+    "decision": true
+  },
+  {
+    "filename": "S003_65_りょうしん_両唇.wav",
+    "label": "65",
+    "decision": true
+  },
+  {
+    "filename": "S006_65_りょうしん_両唇.wav",
+    "label": "65",
+    "decision": true
+  },
+  {
+    "filename": "S008_65_りょうしん_両唇.wav",
+    "label": "65",
+    "decision": true
+  },
+  {
+    "filename": "S005_65_りょうしん_両唇.wav",
+    "label": "65",
+    "decision": true
+  },
+  {
+    "filename": "S009_66_りょうしん_良心.wav",
+    "label": "66",
+    "decision": true
+  },
+  {
+    "filename": "S006_66_りょうしん_良心.wav",
+    "label": "66",
+    "decision": true
+  },
+  {
+    "filename": "S010_66_りょうしん_良心.wav",
+    "label": "66",
+    "decision": true
+  },
+  {
+    "filename": "S005_66_りょうしん_良心.wav",
+    "label": "66",
+    "decision": true
+  },
+  {
+    "filename": "S004_66_りょうしん_良心.wav",
+    "label": "66",
+    "decision": true
+  },
+  {
+    "filename": "S007_66_りょうしん_良心.wav",
+    "label": "66",
+    "decision": true
+  },
+  {
+    "filename": "S010_65_りょうしん_両唇.wav",
+    "label": "65",
+    "decision": true
+  },
+  {
+    "filename": "S003_66_りょうしん_良心.wav",
+    "label": "66",
+    "decision": true
+  },
+  {
+    "filename": "S009_65_りょうしん_両唇.wav",
+    "label": "65",
+    "decision": true
+  },
+  {
+    "filename": "S002_65_りょうしん_両唇.wav",
+    "label": "66",
+    "decision": false
+  },
+  {
+    "filename": "S010_82_きて_来て.wav",
+    "label": "82",
+    "decision": true
+  },
+  {
+    "filename": "S003_82_きて_来て.wav",
+    "label": "82",
+    "decision": true
+  },
+  {
+    "filename": "S004_82_きて_来て.wav",
+    "label": "82",
+    "decision": true
+  },
+  {
+    "filename": "S003_81_きて_着て.wav",
+    "label": "81",
+    "decision": true
+  },
+  {
+    "filename": "S008_82_きて_来て.wav",
+    "label": "82",
+    "decision": true
+  },
+  {
+    "filename": "S004_81_きて_着て.wav",
+    "label": "81",
+    "decision": true
+  },
+  {
+    "filename": "S005_81_きて_着て.wav",
+    "label": "81",
+    "decision": true
+  },
+  {
+    "filename": "S006_81_きて_着て.wav",
+    "label": "81",
+    "decision": true
+  },
+  {
+    "filename": "S010_81_きて_着て.wav",
+    "label": "81",
+    "decision": true
+  },
+  {
+    "filename": "S008_81_きて_着て.wav",
+    "label": "81",
+    "decision": true
+  },
+  {
+    "filename": "S006_82_きて_来て.wav",
+    "label": "82",
+    "decision": true
+  },
+  {
+    "filename": "S001_81_きて_着て.wav",
+    "label": "81",
+    "decision": true
+  },
+  {
+    "filename": "S007_82_きて_来て.wav",
+    "label": "82",
+    "decision": true
+  },
+  {
+    "filename": "S009_81_きて_着て.wav",
+    "label": "81",
+    "decision": true
+  },
+  {
+    "filename": "S007_81_きて_着て.wav",
+    "label": "81",
+    "decision": true
+  },
+  {
+    "filename": "S001_82_きて_来て.wav",
+    "label": "82",
+    "decision": true
+  },
+  {
+    "filename": "S009_82_きて_来て.wav",
+    "label": "82",
+    "decision": true
+  },
+  {
+    "filename": "S002_81_きて_着て.wav",
+    "label": "81",
+    "decision": true
+  },
+  {
+    "filename": "S002_82_きて_来て.wav",
+    "label": "82",
+    "decision": true
+  },
+  {
+    "filename": "S005_82_きて_来て.wav",
+    "label": "82",
+    "decision": true
+  },
+  {
+    "filename": "S009_60_きです_木です.wav",
+    "label": "60",
+    "decision": true
+  },
+  {
+    "filename": "S008_60_きです_木です.wav",
+    "label": "60",
+    "decision": true
+  },
+  {
+    "filename": "S004_60_きです_木です.wav",
+    "label": "60",
+    "decision": true
+  },
+  {
+    "filename": "S010_59_きです_気です.wav",
+    "label": "59",
+    "decision": true
+  },
+  {
+    "filename": "S007_59_きです_気です.wav",
+    "label": "59",
+    "decision": true
+  },
+  {
+    "filename": "S007_60_きです_木です.wav",
+    "label": "60",
+    "decision": true
+  },
+  {
+    "filename": "S010_60_きです_木です.wav",
+    "label": "60",
+    "decision": true
+  },
+  {
+    "filename": "S005_60_きです_木です.wav",
+    "label": "60",
+    "decision": true
+  },
+  {
+    "filename": "S001_60_きです_木です.wav",
+    "label": "60",
+    "decision": true
+  },
+  {
+    "filename": "S003_60_きです_木です.wav",
+    "label": "59",
+    "decision": false
+  },
+  {
+    "filename": "S006_60_きです_木です.wav",
+    "label": "60",
+    "decision": true
+  },
+  {
+    "filename": "S004_59_きです_気です.wav",
+    "label": "60",
+    "decision": false
+  },
+  {
+    "filename": "S001_59_きです_気です.wav",
+    "label": "59",
+    "decision": true
+  },
+  {
+    "filename": "S003_59_きです_気です.wav",
+    "label": "59",
+    "decision": true
+  },
+  {
+    "filename": "S005_59_きです_気です.wav",
+    "label": "59",
+    "decision": true
+  },
+  {
+    "filename": "S002_59_きです_気です.wav",
+    "label": "59",
+    "decision": true
+  },
+  {
+    "filename": "S006_59_きです_気です.wav",
+    "label": "59",
+    "decision": true
+  },
+  {
+    "filename": "S009_59_きです_気です.wav",
+    "label": "59",
+    "decision": true
+  },
+  {
+    "filename": "S002_60_きです_木です.wav",
+    "label": "60",
+    "decision": true
+  },
+  {
+    "filename": "S008_59_きです_気です.wav",
+    "label": "59",
+    "decision": true
+  },
+  {
+    "filename": "S003_89_あつい_厚い.wav",
+    "label": "89",
+    "decision": true
+  },
+  {
+    "filename": "S007_89_あつい_厚い.wav",
+    "label": "89",
+    "decision": true
+  },
+  {
+    "filename": "S010_89_あつい_厚い.wav",
+    "label": "89",
+    "decision": true
+  },
+  {
+    "filename": "S003_90_あつい_暑い.wav",
+    "label": "90",
+    "decision": true
+  },
+  {
+    "filename": "S008_89_あつい_厚い.wav",
+    "label": "89",
+    "decision": true
+  },
+  {
+    "filename": "S002_89_あつい_厚い.wav",
+    "label": "89",
+    "decision": true
+  },
+  {
+    "filename": "S010_90_あつい_暑い.wav",
+    "label": "90",
+    "decision": true
+  },
+  {
+    "filename": "S005_89_あつい_厚い.wav",
+    "label": "89",
+    "decision": true
+  },
+  {
+    "filename": "S004_89_あつい_厚い.wav",
+    "label": "89",
+    "decision": true
+  },
+  {
+    "filename": "S006_89_あつい_厚い.wav",
+    "label": "89",
+    "decision": true
+  },
+  {
+    "filename": "S005_90_あつい_暑い.wav",
+    "label": "90",
+    "decision": true
+  },
+  {
+    "filename": "S008_90_あつい_暑い.wav",
+    "label": "90",
+    "decision": true
+  },
+  {
+    "filename": "S001_90_あつい_暑い.wav",
+    "label": "90",
+    "decision": true
+  },
+  {
+    "filename": "S002_90_あつい_暑い.wav",
+    "label": "90",
+    "decision": true
+  },
+  {
+    "filename": "S004_90_あつい_暑い.wav",
+    "label": "90",
+    "decision": true
+  },
+  {
+    "filename": "S009_89_あつい_厚い.wav",
+    "label": "89",
+    "decision": true
+  },
+  {
+    "filename": "S007_90_あつい_暑い.wav",
+    "label": "90",
+    "decision": true
+  },
+  {
+    "filename": "S001_89_あつい_厚い.wav",
+    "label": "89",
+    "decision": true
+  },
+  {
+    "filename": "S006_90_あつい_暑い.wav",
+    "label": "90",
+    "decision": true
+  },
+  {
+    "filename": "S009_90_あつい_暑い.wav",
+    "label": "90",
+    "decision": true
+  },
+  {
+    "filename": "S003_29_きる_着る.wav",
+    "label": "29",
+    "decision": true
+  },
+  {
+    "filename": "S001_29_きる_着る.wav",
+    "label": "29",
+    "decision": true
+  },
+  {
+    "filename": "S004_29_きる_着る.wav",
+    "label": "29",
+    "decision": true
+  },
+  {
+    "filename": "S009_30_きる_切る.wav",
+    "label": "30",
+    "decision": true
+  },
+  {
+    "filename": "S005_30_きる_切る.wav",
+    "label": "30",
+    "decision": true
+  },
+  {
+    "filename": "S010_30_きる_切る.wav",
+    "label": "30",
+    "decision": true
+  },
+  {
+    "filename": "S010_29_きる_着る.wav",
+    "label": "29",
+    "decision": true
+  },
+  {
+    "filename": "S005_29_きる_着る.wav",
+    "label": "29",
+    "decision": true
+  },
+  {
+    "filename": "S002_30_きる_切る.wav",
+    "label": "30",
+    "decision": true
+  },
+  {
+    "filename": "S001_30_きる_切る.wav",
+    "label": "30",
+    "decision": true
+  },
+  {
+    "filename": "S006_29_きる_着る.wav",
+    "label": "29",
+    "decision": true
+  },
+  {
+    "filename": "S008_29_きる_着る.wav",
+    "label": "29",
+    "decision": true
+  },
+  {
+    "filename": "S006_30_きる_切る.wav",
+    "label": "30",
+    "decision": true
+  },
+  {
+    "filename": "S002_29_きる_着る.wav",
+    "label": "29",
+    "decision": true
+  },
+  {
+    "filename": "S008_30_きる_切る.wav",
+    "label": "30",
+    "decision": true
+  },
+  {
+    "filename": "S009_29_きる_着る.wav",
+    "label": "29",
+    "decision": true
+  },
+  {
+    "filename": "S004_30_きる_切る.wav",
+    "label": "30",
+    "decision": true
+  },
+  {
+    "filename": "S007_29_きる_着る.wav",
+    "label": "29",
+    "decision": true
+  },
+  {
+    "filename": "S003_30_きる_切る.wav",
+    "label": "30",
+    "decision": true
+  },
+  {
+    "filename": "S007_30_きる_切る.wav",
+    "label": "30",
+    "decision": true
+  },
+  {
+    "filename": "S009_67_しめい_指名.wav",
+    "label": "67",
+    "decision": true
+  },
+  {
+    "filename": "S004_68_しめい_使命.wav",
+    "label": "68",
+    "decision": true
+  },
+  {
+    "filename": "S006_68_しめい_使命.wav",
+    "label": "68",
+    "decision": true
+  },
+  {
+    "filename": "S005_67_しめい_指名.wav",
+    "label": "67",
+    "decision": true
+  },
+  {
+    "filename": "S003_67_しめい_指名.wav",
+    "label": "67",
+    "decision": true
+  },
+  {
+    "filename": "S002_67_しめい_指名.wav",
+    "label": "67",
+    "decision": true
+  },
+  {
+    "filename": "S004_67_しめい_指名.wav",
+    "label": "67",
+    "decision": true
+  },
+  {
+    "filename": "S001_68_しめい_使命.wav",
+    "label": "68",
+    "decision": true
+  },
+  {
+    "filename": "S001_67_しめい_指名.wav",
+    "label": "67",
+    "decision": true
+  },
+  {
+    "filename": "S010_68_しめい_使命.wav",
+    "label": "68",
+    "decision": true
+  },
+  {
+    "filename": "S007_68_しめい_使命.wav",
+    "label": "68",
+    "decision": true
+  },
+  {
+    "filename": "S008_67_しめい_指名.wav",
+    "label": "67",
+    "decision": true
+  },
+  {
+    "filename": "S006_67_しめい_指名.wav",
+    "label": "67",
+    "decision": true
+  },
+  {
+    "filename": "S002_68_しめい_使命.wav",
+    "label": "68",
+    "decision": true
+  },
+  {
+    "filename": "S005_68_しめい_使命.wav",
+    "label": "68",
+    "decision": true
+  },
+  {
+    "filename": "S008_68_しめい_使命.wav",
+    "label": "68",
+    "decision": true
+  },
+  {
+    "filename": "S009_68_しめい_使命.wav",
+    "label": "68",
+    "decision": true
+  },
+  {
+    "filename": "S003_68_しめい_使命.wav",
+    "label": "68",
+    "decision": true
+  },
+  {
+    "filename": "S007_67_しめい_指名.wav",
+    "label": "67",
+    "decision": true
+  },
+  {
+    "filename": "S010_67_しめい_指名.wav",
+    "label": "67",
+    "decision": true
+  },
+  {
+    "filename": "S006_27_かう_買う.wav",
+    "label": "27",
+    "decision": true
+  },
+  {
+    "filename": "S004_27_かう_買う.wav",
+    "label": "27",
+    "decision": true
+  },
+  {
+    "filename": "S002_28_かう_飼う.wav",
+    "label": "28",
+    "decision": true
+  },
+  {
+    "filename": "S007_28_かう_飼う.wav",
+    "label": "28",
+    "decision": true
+  },
+  {
+    "filename": "S008_27_かう_買う.wav",
+    "label": "27",
+    "decision": true
+  },
+  {
+    "filename": "S004_28_かう_飼う.wav",
+    "label": "28",
+    "decision": true
+  },
+  {
+    "filename": "S009_27_かう_買う.wav",
+    "label": "27",
+    "decision": true
+  },
+  {
+    "filename": "S005_28_かう_飼う.wav",
+    "label": "28",
+    "decision": true
+  },
+  {
+    "filename": "S003_27_かう_買う.wav",
+    "label": "27",
+    "decision": true
+  },
+  {
+    "filename": "S009_28_かう_飼う.wav",
+    "label": "28",
+    "decision": true
+  },
+  {
+    "filename": "S010_27_かう_買う.wav",
+    "label": "27",
+    "decision": true
+  },
+  {
+    "filename": "S002_27_かう_買う.wav",
+    "label": "27",
+    "decision": true
+  },
+  {
+    "filename": "S007_27_かう_買う.wav",
+    "label": "27",
+    "decision": true
+  },
+  {
+    "filename": "S003_28_かう_飼う.wav",
+    "label": "28",
+    "decision": true
+  },
+  {
+    "filename": "S001_27_かう_買う.wav",
+    "label": "27",
+    "decision": true
+  },
+  {
+    "filename": "S005_27_かう_買う.wav",
+    "label": "27",
+    "decision": true
+  },
+  {
+    "filename": "S006_28_かう_飼う.wav",
+    "label": "28",
+    "decision": true
+  },
+  {
+    "filename": "S008_28_かう_飼う.wav",
+    "label": "28",
+    "decision": true
+  },
+  {
+    "filename": "S001_28_かう_飼う.wav",
+    "label": "28",
+    "decision": true
+  },
+  {
+    "filename": "S010_28_かう_飼う.wav",
+    "label": "28",
+    "decision": true
+  },
+  {
+    "filename": "S005_84_よんで_読んで.wav",
+    "label": "84",
+    "decision": true
+  },
+  {
+    "filename": "S002_83_よんで_呼んで.wav",
+    "label": "83",
+    "decision": true
+  },
+  {
+    "filename": "S009_83_よんで_呼んで.wav",
+    "label": "83",
+    "decision": true
+  },
+  {
+    "filename": "S010_84_よんで_読んで.wav",
+    "label": "84",
+    "decision": true
+  },
+  {
+    "filename": "S008_83_よんで_呼んで.wav",
+    "label": "83",
+    "decision": true
+  },
+  {
+    "filename": "S002_84_よんで_読んで.wav",
+    "label": "84",
+    "decision": true
+  },
+  {
+    "filename": "S004_83_よんで_呼んで.wav",
+    "label": "83",
+    "decision": true
+  },
+  {
+    "filename": "S007_83_よんで_呼んで.wav",
+    "label": "83",
+    "decision": true
+  },
+  {
+    "filename": "S006_83_よんで_呼んで.wav",
+    "label": "83",
+    "decision": true
+  },
+  {
+    "filename": "S005_83_よんで_呼んで.wav",
+    "label": "83",
+    "decision": true
+  },
+  {
+    "filename": "S003_84_よんで_読んで.wav",
+    "label": "84",
+    "decision": true
+  },
+  {
+    "filename": "S001_84_よんで_読んで.wav",
+    "label": "84",
+    "decision": true
+  },
+  {
+    "filename": "S003_83_よんで_呼んで.wav",
+    "label": "83",
+    "decision": true
+  },
+  {
+    "filename": "S006_84_よんで_読んで.wav",
+    "label": "84",
+    "decision": true
+  },
+  {
+    "filename": "S008_84_よんで_読んで.wav",
+    "label": "84",
+    "decision": true
+  },
+  {
+    "filename": "S007_84_よんで_読んで.wav",
+    "label": "84",
+    "decision": true
+  },
+  {
+    "filename": "S009_84_よんで_読んで.wav",
+    "label": "84",
+    "decision": true
+  },
+  {
+    "filename": "S001_83_よんで_呼んで.wav",
+    "label": "83",
+    "decision": true
+  },
+  {
+    "filename": "S010_83_よんで_呼んで.wav",
+    "label": "83",
+    "decision": true
+  },
+  {
+    "filename": "S004_84_よんで_読んで.wav",
+    "label": "84",
+    "decision": true
+  },
+  {
+    "filename": "S010_52_はし_箸.wav",
+    "label": "52",
+    "decision": true
+  },
+  {
+    "filename": "S007_52_はし_箸.wav",
+    "label": "52",
+    "decision": true
+  },
+  {
+    "filename": "S009_52_はし_箸.wav",
+    "label": "52",
+    "decision": true
+  },
+  {
+    "filename": "S002_52_はし_箸.wav",
+    "label": "52",
+    "decision": true
+  },
+  {
+    "filename": "S001_52_はし_箸.wav",
+    "label": "52",
+    "decision": true
+  },
+  {
+    "filename": "S002_51_はし_端.wav",
+    "label": "51",
+    "decision": true
+  },
+  {
+    "filename": "S005_51_はし_端.wav",
+    "label": "51",
+    "decision": true
+  },
+  {
+    "filename": "S004_52_はし_箸.wav",
+    "label": "52",
+    "decision": true
+  },
+  {
+    "filename": "S006_52_はし_箸.wav",
+    "label": "52",
+    "decision": true
+  },
+  {
+    "filename": "S008_51_はし_端.wav",
+    "label": "51",
+    "decision": true
+  },
+  {
+    "filename": "S004_51_はし_端.wav",
+    "label": "51",
+    "decision": true
+  },
+  {
+    "filename": "S009_51_はし_端.wav",
+    "label": "51",
+    "decision": true
+  },
+  {
+    "filename": "S005_52_はし_箸.wav",
+    "label": "52",
+    "decision": true
+  },
+  {
+    "filename": "S010_51_はし_端.wav",
+    "label": "51",
+    "decision": true
+  },
+  {
+    "filename": "S001_51_はし_端.wav",
+    "label": "51",
+    "decision": true
+  },
+  {
+    "filename": "S003_51_はし_端.wav",
+    "label": "51",
+    "decision": true
+  },
+  {
+    "filename": "S006_51_はし_端.wav",
+    "label": "51",
+    "decision": true
+  },
+  {
+    "filename": "S007_51_はし_端.wav",
+    "label": "51",
+    "decision": true
+  },
+  {
+    "filename": "S003_52_はし_箸.wav",
+    "label": "invalid",
+    "decision": false
+  },
+  {
+    "filename": "S008_52_はし_箸.wav",
+    "label": "52",
+    "decision": true
+  },
+  {
+    "filename": "S006_40_いつか_いつか.wav",
+    "label": "40",
+    "decision": true
+  },
+  {
+    "filename": "S006_39_いつか_五日.wav",
+    "label": "39",
+    "decision": true
+  },
+  {
+    "filename": "S009_40_いつか_いつか.wav",
+    "label": "40",
+    "decision": true
+  },
+  {
+    "filename": "S005_39_いつか_五日.wav",
+    "label": "39",
+    "decision": true
+  },
+  {
+    "filename": "S009_39_いつか_五日.wav",
+    "label": "39",
+    "decision": true
+  },
+  {
+    "filename": "S010_39_いつか_五日.wav",
+    "label": "39",
+    "decision": true
+  },
+  {
+    "filename": "S004_40_いつか_いつか.wav",
+    "label": "40",
+    "decision": true
+  },
+  {
+    "filename": "S002_40_いつか_いつか.wav",
+    "label": "40",
+    "decision": true
+  },
+  {
+    "filename": "S008_40_いつか_いつか.wav",
+    "label": "40",
+    "decision": true
+  },
+  {
+    "filename": "S004_39_いつか_五日.wav",
+    "label": "39",
+    "decision": true
+  },
+  {
+    "filename": "S005_40_いつか_いつか.wav",
+    "label": "40",
+    "decision": true
+  },
+  {
+    "filename": "S001_40_いつか_いつか.wav",
+    "label": "40",
+    "decision": true
+  },
+  {
+    "filename": "S007_39_いつか_五日.wav",
+    "label": "39",
+    "decision": true
+  },
+  {
+    "filename": "S003_40_いつか_いつか.wav",
+    "label": "40",
+    "decision": true
+  },
+  {
+    "filename": "S002_39_いつか_五日.wav",
+    "label": "39",
+    "decision": true
+  },
+  {
+    "filename": "S001_39_いつか_五日.wav",
+    "label": "39",
+    "decision": true
+  },
+  {
+    "filename": "S008_39_いつか_五日.wav",
+    "label": "39",
+    "decision": true
+  },
+  {
+    "filename": "S003_39_いつか_五日.wav",
+    "label": "39",
+    "decision": true
+  },
+  {
+    "filename": "S007_40_いつか_いつか.wav",
+    "label": "40",
+    "decision": true
+  },
+  {
+    "filename": "S010_40_いつか_いつか.wav",
+    "label": "40",
+    "decision": true
+  },
+  {
+    "filename": "S008_22_しめい_氏名.wav",
+    "label": "22",
+    "decision": true
+  },
+  {
+    "filename": "S005_21_しめい_指名.wav",
+    "label": "21",
+    "decision": true
+  },
+  {
+    "filename": "S001_21_しめい_指名.wav",
+    "label": "21",
+    "decision": true
+  },
+  {
+    "filename": "S006_21_しめい_指名.wav",
+    "label": "21",
+    "decision": true
+  },
+  {
+    "filename": "S009_22_しめい_氏名.wav",
+    "label": "22",
+    "decision": true
+  },
+  {
+    "filename": "S004_21_しめい_指名.wav",
+    "label": "21",
+    "decision": true
+  },
+  {
+    "filename": "S005_22_しめい_氏名.wav",
+    "label": "22",
+    "decision": true
+  },
+  {
+    "filename": "S001_22_しめい_氏名.wav",
+    "label": "22",
+    "decision": true
+  },
+  {
+    "filename": "S003_22_しめい_氏名.wav",
+    "label": "22",
+    "decision": true
+  },
+  {
+    "filename": "S010_22_しめい_氏名.wav",
+    "label": "22",
+    "decision": true
+  },
+  {
+    "filename": "S007_21_しめい_指名.wav",
+    "label": "21",
+    "decision": true
+  },
+  {
+    "filename": "S010_21_しめい_指名.wav",
+    "label": "21",
+    "decision": true
+  },
+  {
+    "filename": "S002_22_しめい_氏名.wav",
+    "label": "22",
+    "decision": true
+  },
+  {
+    "filename": "S004_22_しめい_氏名.wav",
+    "label": "22",
+    "decision": true
+  },
+  {
+    "filename": "S002_21_しめい_指名.wav",
+    "label": "21",
+    "decision": true
+  },
+  {
+    "filename": "S008_21_しめい_指名.wav",
+    "label": "21",
+    "decision": true
+  },
+  {
+    "filename": "S009_21_しめい_指名.wav",
+    "label": "21",
+    "decision": true
+  },
+  {
+    "filename": "S003_21_しめい_指名.wav",
+    "label": "21",
+    "decision": true
+  },
+  {
+    "filename": "S007_22_しめい_氏名.wav",
+    "label": "22",
+    "decision": true
+  },
+  {
+    "filename": "S006_22_しめい_氏名.wav",
+    "label": "22",
+    "decision": true
+  },
+  {
+    "filename": "S001_75_きる_着る.wav",
+    "label": "75",
+    "decision": true
+  },
+  {
+    "filename": "S007_76_きる_切る.wav",
+    "label": "76",
+    "decision": true
+  },
+  {
+    "filename": "S006_76_きる_切る.wav",
+    "label": "76",
+    "decision": true
+  },
+  {
+    "filename": "S004_75_きる_着る.wav",
+    "label": "75",
+    "decision": true
+  },
+  {
+    "filename": "S005_76_きる_切る.wav",
+    "label": "76",
+    "decision": true
+  },
+  {
+    "filename": "S004_76_きる_切る.wav",
+    "label": "76",
+    "decision": true
+  },
+  {
+    "filename": "S003_75_きる_着る.wav",
+    "label": "75",
+    "decision": true
+  },
+  {
+    "filename": "S006_75_きる_着る.wav",
+    "label": "75",
+    "decision": true
+  },
+  {
+    "filename": "S009_75_きる_着る.wav",
+    "label": "75",
+    "decision": true
+  },
+  {
+    "filename": "S005_75_きる_着る.wav",
+    "label": "75",
+    "decision": true
+  },
+  {
+    "filename": "S010_76_きる_切る.wav",
+    "label": "76",
+    "decision": true
+  },
+  {
+    "filename": "S003_76_きる_切る.wav",
+    "label": "76",
+    "decision": true
+  },
+  {
+    "filename": "S009_76_きる_切る.wav",
+    "label": "76",
+    "decision": true
+  },
+  {
+    "filename": "S010_75_きる_着る.wav",
+    "label": "75",
+    "decision": true
+  },
+  {
+    "filename": "S008_75_きる_着る.wav",
+    "label": "75",
+    "decision": true
+  },
+  {
+    "filename": "S002_76_きる_切る.wav",
+    "label": "76",
+    "decision": true
+  },
+  {
+    "filename": "S001_76_きる_切る.wav",
+    "label": "76",
+    "decision": true
+  },
+  {
+    "filename": "S008_76_きる_切る.wav",
+    "label": "76",
+    "decision": true
+  },
+  {
+    "filename": "S002_75_きる_着る.wav",
+    "label": "75",
+    "decision": true
+  },
+  {
+    "filename": "S007_75_きる_着る.wav",
+    "label": "75",
+    "decision": true
+  },
+  {
+    "filename": "S005_47_にじ_虹.wav",
+    "label": "47",
+    "decision": true
+  },
+  {
+    "filename": "S003_48_にじ_二時.wav",
+    "label": "48",
+    "decision": true
+  },
+  {
+    "filename": "S002_47_にじ_虹.wav",
+    "label": "47",
+    "decision": true
+  },
+  {
+    "filename": "S003_47_にじ_虹.wav",
+    "label": "47",
+    "decision": true
+  },
+  {
+    "filename": "S001_47_にじ_虹.wav",
+    "label": "47",
+    "decision": true
+  },
+  {
+    "filename": "S004_47_にじ_虹.wav",
+    "label": "47",
+    "decision": true
+  },
+  {
+    "filename": "S007_48_にじ_二時.wav",
+    "label": "48",
+    "decision": true
+  },
+  {
+    "filename": "S008_47_にじ_虹.wav",
+    "label": "47",
+    "decision": true
+  },
+  {
+    "filename": "S002_48_にじ_二時.wav",
+    "label": "48",
+    "decision": true
+  },
+  {
+    "filename": "S005_48_にじ_二時.wav",
+    "label": "48",
+    "decision": true
+  },
+  {
+    "filename": "S007_47_にじ_虹.wav",
+    "label": "47",
+    "decision": true
+  },
+  {
+    "filename": "S009_47_にじ_虹.wav",
+    "label": "47",
+    "decision": true
+  },
+  {
+    "filename": "S004_48_にじ_二時.wav",
+    "label": "48",
+    "decision": true
+  },
+  {
+    "filename": "S010_48_にじ_二時.wav",
+    "label": "48",
+    "decision": true
+  },
+  {
+    "filename": "S009_48_にじ_二時.wav",
+    "label": "48",
+    "decision": true
+  },
+  {
+    "filename": "S008_48_にじ_二時.wav",
+    "label": "48",
+    "decision": true
+  },
+  {
+    "filename": "S010_47_にじ_虹.wav",
+    "label": "47",
+    "decision": true
+  },
+  {
+    "filename": "S006_48_にじ_二時.wav",
+    "label": "48",
+    "decision": true
+  },
+  {
+    "filename": "S001_48_にじ_二時.wav",
+    "label": "48",
+    "decision": true
+  },
+  {
+    "filename": "S006_47_にじ_虹.wav",
+    "label": "47",
+    "decision": true
+  },
+  {
+    "filename": "S008_18_さけ_鮭.wav",
+    "label": "18",
+    "decision": true
+  },
+  {
+    "filename": "S009_17_さけ_酒.wav",
+    "label": "17",
+    "decision": true
+  },
+  {
+    "filename": "S003_18_さけ_鮭.wav",
+    "label": "17",
+    "decision": false
+  },
+  {
+    "filename": "S009_18_さけ_鮭.wav",
+    "label": "18",
+    "decision": true
+  },
+  {
+    "filename": "S007_17_さけ_酒.wav",
+    "label": "17",
+    "decision": true
+  },
+  {
+    "filename": "S006_17_さけ_酒.wav",
+    "label": "17",
+    "decision": true
+  },
+  {
+    "filename": "S007_18_さけ_鮭.wav",
+    "label": "18",
+    "decision": true
+  },
+  {
+    "filename": "S003_17_さけ_酒.wav",
+    "label": "17",
+    "decision": true
+  },
+  {
+    "filename": "S010_17_さけ_酒.wav",
+    "label": "17",
+    "decision": true
+  },
+  {
+    "filename": "S008_17_さけ_酒.wav",
+    "label": "17",
+    "decision": true
+  },
+  {
+    "filename": "S002_18_さけ_鮭.wav",
+    "label": "18",
+    "decision": true
+  },
+  {
+    "filename": "S001_17_さけ_酒.wav",
+    "label": "17",
+    "decision": true
+  },
+  {
+    "filename": "S010_18_さけ_鮭.wav",
+    "label": "18",
+    "decision": true
+  },
+  {
+    "filename": "S001_18_さけ_鮭.wav",
+    "label": "18",
+    "decision": true
+  },
+  {
+    "filename": "S006_18_さけ_鮭.wav",
+    "label": "18",
+    "decision": true
+  },
+  {
+    "filename": "S002_17_さけ_酒.wav",
+    "label": "17",
+    "decision": true
+  },
+  {
+    "filename": "S004_18_さけ_鮭.wav",
+    "label": "18",
+    "decision": true
+  },
+  {
+    "filename": "S005_17_さけ_酒.wav",
+    "label": "17",
+    "decision": true
+  },
+  {
+    "filename": "S004_17_さけ_酒.wav",
+    "label": "17",
+    "decision": true
+  },
+  {
+    "filename": "S005_18_さけ_鮭.wav",
+    "label": "18",
+    "decision": true
+  },
+  {
+    "filename": "S002_41_きって_切手.wav",
+    "label": "41",
+    "decision": true
+  },
+  {
+    "filename": "S010_41_きって_切手.wav",
+    "label": "41",
+    "decision": true
+  },
+  {
+    "filename": "S007_42_きって_切って.wav",
+    "label": "42",
+    "decision": true
+  },
+  {
+    "filename": "S003_42_きって_切って.wav",
+    "label": "42",
+    "decision": true
+  },
+  {
+    "filename": "S004_42_きって_切って.wav",
+    "label": "42",
+    "decision": true
+  },
+  {
+    "filename": "S008_41_きって_切手.wav",
+    "label": "41",
+    "decision": true
+  },
+  {
+    "filename": "S006_41_きって_切手.wav",
+    "label": "41",
+    "decision": true
+  },
+  {
+    "filename": "S008_42_きって_切って.wav",
+    "label": "42",
+    "decision": true
+  },
+  {
+    "filename": "S001_41_きって_切手.wav",
+    "label": "41",
+    "decision": true
+  },
+  {
+    "filename": "S009_42_きって_切って.wav",
+    "label": "42",
+    "decision": true
+  },
+  {
+    "filename": "S004_41_きって_切手.wav",
+    "label": "41",
+    "decision": true
+  },
+  {
+    "filename": "S010_42_きって_切って.wav",
+    "label": "42",
+    "decision": true
+  },
+  {
+    "filename": "S006_42_きって_切って.wav",
+    "label": "42",
+    "decision": true
+  },
+  {
+    "filename": "S005_42_きって_切って.wav",
+    "label": "42",
+    "decision": true
+  },
+  {
+    "filename": "S002_42_きって_切って.wav",
+    "label": "42",
+    "decision": true
+  },
+  {
+    "filename": "S009_41_きって_切手.wav",
+    "label": "41",
+    "decision": true
+  },
+  {
+    "filename": "S001_42_きって_切って.wav",
+    "label": "42",
+    "decision": true
+  },
+  {
+    "filename": "S007_41_きって_切手.wav",
+    "label": "41",
+    "decision": true
+  },
+  {
+    "filename": "S005_41_きって_切手.wav",
+    "label": "41",
+    "decision": true
+  },
+  {
+    "filename": "S003_41_きって_切手.wav",
+    "label": "41",
+    "decision": true
+  },
+  {
+    "filename": "S003_26_いけん_意見.wav",
+    "label": "26",
+    "decision": true
+  },
+  {
+    "filename": "S007_25_いけん_違憲.wav",
+    "label": "25",
+    "decision": true
+  },
+  {
+    "filename": "S004_26_いけん_意見.wav",
+    "label": "26",
+    "decision": true
+  },
+  {
+    "filename": "S002_25_いけん_違憲.wav",
+    "label": "25",
+    "decision": true
+  },
+  {
+    "filename": "S006_26_いけん_意見.wav",
+    "label": "26",
+    "decision": true
+  },
+  {
+    "filename": "S002_26_いけん_意見.wav",
+    "label": "26",
+    "decision": true
+  },
+  {
+    "filename": "S005_26_いけん_意見.wav",
+    "label": "26",
+    "decision": true
+  },
+  {
+    "filename": "S010_25_いけん_違憲.wav",
+    "label": "25",
+    "decision": true
+  },
+  {
+    "filename": "S008_25_いけん_違憲.wav",
+    "label": "25",
+    "decision": true
+  },
+  {
+    "filename": "S001_26_いけん_意見.wav",
+    "label": "26",
+    "decision": true
+  },
+  {
+    "filename": "S010_26_いけん_意見.wav",
+    "label": "26",
+    "decision": true
+  },
+  {
+    "filename": "S009_26_いけん_意見.wav",
+    "label": "26",
+    "decision": true
+  },
+  {
+    "filename": "S001_25_いけん_違憲.wav",
+    "label": "25",
+    "decision": true
+  },
+  {
+    "filename": "S006_25_いけん_違憲.wav",
+    "label": "25",
+    "decision": true
+  },
+  {
+    "filename": "S009_25_いけん_違憲.wav",
+    "label": "25",
+    "decision": true
+  },
+  {
+    "filename": "S008_26_いけん_意見.wav",
+    "label": "26",
+    "decision": true
+  },
+  {
+    "filename": "S007_26_いけん_意見.wav",
+    "label": "26",
+    "decision": true
+  },
+  {
+    "filename": "S005_25_いけん_違憲.wav",
+    "label": "25",
+    "decision": true
+  },
+  {
+    "filename": "S003_25_いけん_違憲.wav",
+    "label": "25",
+    "decision": true
+  },
+  {
+    "filename": "S004_25_いけん_違憲.wav",
+    "label": "25",
+    "decision": true
+  },
+  {
+    "filename": "S004_86_よんで_いつか.wav",
+    "label": "86",
+    "decision": true
+  },
+  {
+    "filename": "S010_86_よんで_いつか.wav",
+    "label": "86",
+    "decision": true
+  },
+  {
+    "filename": "S002_85_よんで_五日.wav",
+    "label": "85",
+    "decision": true
+  },
+  {
+    "filename": "S003_86_よんで_いつか.wav",
+    "label": "86",
+    "decision": true
+  },
+  {
+    "filename": "S005_86_よんで_いつか.wav",
+    "label": "86",
+    "decision": true
+  },
+  {
+    "filename": "S010_85_よんで_五日.wav",
+    "label": "85",
+    "decision": true
+  },
+  {
+    "filename": "S006_86_よんで_いつか.wav",
+    "label": "86",
+    "decision": true
+  },
+  {
+    "filename": "S009_85_よんで_五日.wav",
+    "label": "85",
+    "decision": true
+  },
+  {
+    "filename": "S005_85_よんで_五日.wav",
+    "label": "85",
+    "decision": true
+  },
+  {
+    "filename": "S004_85_よんで_五日.wav",
+    "label": "85",
+    "decision": true
+  },
+  {
+    "filename": "S007_86_よんで_いつか.wav",
+    "label": "86",
+    "decision": true
+  },
+  {
+    "filename": "S009_86_よんで_いつか.wav",
+    "label": "86",
+    "decision": true
+  },
+  {
+    "filename": "S001_86_よんで_いつか.wav",
+    "label": "86",
+    "decision": true
+  },
+  {
+    "filename": "S003_85_よんで_五日.wav",
+    "label": "85",
+    "decision": true
+  },
+  {
+    "filename": "S008_85_よんで_五日.wav",
+    "label": "85",
+    "decision": true
+  },
+  {
+    "filename": "S001_85_よんで_五日.wav",
+    "label": "85",
+    "decision": true
+  },
+  {
+    "filename": "S008_86_よんで_いつか.wav",
+    "label": "86",
+    "decision": true
+  },
+  {
+    "filename": "S002_86_よんで_いつか.wav",
+    "label": "86",
+    "decision": true
+  },
+  {
+    "filename": "S006_85_よんで_五日.wav",
+    "label": "85",
+    "decision": true
+  },
+  {
+    "filename": "S007_85_よんで_五日.wav",
+    "label": "85",
+    "decision": true
+  },
+  {
+    "filename": "S002_15_はなが_鼻が.wav",
+    "label": "15",
+    "decision": true
+  },
+  {
+    "filename": "S004_16_はなが_花が.wav",
+    "label": "16",
+    "decision": true
+  },
+  {
+    "filename": "S009_16_はなが_花が.wav",
+    "label": "16",
+    "decision": true
+  },
+  {
+    "filename": "S010_16_はなが_花が.wav",
+    "label": "16",
+    "decision": true
+  },
+  {
+    "filename": "S007_15_はなが_鼻が.wav",
+    "label": "15",
+    "decision": true
+  },
+  {
+    "filename": "S008_16_はなが_花が.wav",
+    "label": "16",
+    "decision": true
+  },
+  {
+    "filename": "S006_16_はなが_花が.wav",
+    "label": "16",
+    "decision": true
+  },
+  {
+    "filename": "S006_15_はなが_鼻が.wav",
+    "label": "15",
+    "decision": true
+  },
+  {
+    "filename": "S001_16_はなが_花が.wav",
+    "label": "16",
+    "decision": true
+  },
+  {
+    "filename": "S005_16_はなが_花が.wav",
+    "label": "16",
+    "decision": true
+  },
+  {
+    "filename": "S009_15_はなが_鼻が.wav",
+    "label": "15",
+    "decision": true
+  },
+  {
+    "filename": "S010_15_はなが_鼻が.wav",
+    "label": "15",
+    "decision": true
+  },
+  {
+    "filename": "S001_15_はなが_鼻が.wav",
+    "label": "15",
+    "decision": true
+  },
+  {
+    "filename": "S008_15_はなが_鼻が.wav",
+    "label": "15",
+    "decision": true
+  },
+  {
+    "filename": "S007_16_はなが_花が.wav",
+    "label": "16",
+    "decision": true
+  },
+  {
+    "filename": "S003_16_はなが_花が.wav",
+    "label": "16",
+    "decision": true
+  },
+  {
+    "filename": "S002_16_はなが_花が.wav",
+    "label": "16",
+    "decision": true
+  },
+  {
+    "filename": "S005_15_はなが_鼻が.wav",
+    "label": "15",
+    "decision": true
+  },
+  {
+    "filename": "S003_15_はなが_鼻が.wav",
+    "label": "15",
+    "decision": true
+  },
+  {
+    "filename": "S004_15_はなが_鼻が.wav",
+    "label": "15",
+    "decision": true
+  },
+  {
+    "filename": "S004_45_はく_履く.wav",
+    "label": "45",
+    "decision": true
+  },
+  {
+    "filename": "S005_45_はく_履く.wav",
+    "label": "45",
+    "decision": true
+  },
+  {
+    "filename": "S006_45_はく_履く.wav",
+    "label": "45",
+    "decision": true
+  },
+  {
+    "filename": "S003_46_はく_掃く.wav",
+    "label": "46",
+    "decision": true
+  },
+  {
+    "filename": "S009_46_はく_掃く.wav",
+    "label": "46",
+    "decision": true
+  },
+  {
+    "filename": "S004_46_はく_掃く.wav",
+    "label": "46",
+    "decision": true
+  },
+  {
+    "filename": "S003_45_はく_履く.wav",
+    "label": "45",
+    "decision": true
+  },
+  {
+    "filename": "S006_46_はく_掃く.wav",
+    "label": "46",
+    "decision": true
+  },
+  {
+    "filename": "S010_45_はく_履く.wav",
+    "label": "45",
+    "decision": true
+  },
+  {
+    "filename": "S008_46_はく_掃く.wav",
+    "label": "46",
+    "decision": true
+  },
+  {
+    "filename": "S001_45_はく_履く.wav",
+    "label": "45",
+    "decision": true
+  },
+  {
+    "filename": "S002_46_はく_掃く.wav",
+    "label": "46",
+    "decision": true
+  },
+  {
+    "filename": "S009_45_はく_履く.wav",
+    "label": "45",
+    "decision": true
+  },
+  {
+    "filename": "S005_46_はく_掃く.wav",
+    "label": "46",
+    "decision": true
+  },
+  {
+    "filename": "S008_45_はく_履く.wav",
+    "label": "45",
+    "decision": true
+  },
+  {
+    "filename": "S002_45_はく_履く.wav",
+    "label": "45",
+    "decision": true
+  },
+  {
+    "filename": "S001_46_はく_掃く.wav",
+    "label": "46",
+    "decision": true
+  },
+  {
+    "filename": "S007_46_はく_掃く.wav",
+    "label": "46",
+    "decision": true
+  },
+  {
+    "filename": "S007_45_はく_履く.wav",
+    "label": "45",
+    "decision": true
+  },
+  {
+    "filename": "S010_46_はく_掃く.wav",
+    "label": "46",
+    "decision": true
+  }
+]
