@@ -64,8 +64,8 @@ IPA_MAP = {
         "verb": "kənˈdʌkt"
     },
     "discharge": {
-        "noun": "ˈdɪstʃɑːdʒ",
-        "verb": "dɪsˈtʃɑːdʒ"
+        "noun": "ˈdɪstʃɑɹdʒ",
+        "verb": "dɪsˈtʃɑɹdʒ"
     },
     "discount": {
         "noun": "ˈdɪskaʊnt",
@@ -102,10 +102,6 @@ IPA_MAP = {
     "survey": {
         "noun": "ˈsɝˌveɪ",
         "verb": "sɚˈveɪ"
-    },
-    "transfer": {
-        "noun": "ˈtɹæns.fɚ",
-        "verb": "tɹænsˈfɚ"
     },
     "transport": {
         "noun": "ˈtɹæns.pɔɹt",

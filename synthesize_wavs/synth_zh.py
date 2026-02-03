@@ -2,7 +2,7 @@
 import json
 from pathlib import Path
 from google.cloud import texttospeech
-
+import re
 
 
 JSON_PATH = "/home/sunhaitong/ABX_tone/data/tone_abx_triples.json"
@@ -17,6 +17,38 @@ VOICES = {
 
 LANG = "cmn-CN"
 
+def normalize_pinyin_for_ssml(pinyin: str) -> str:
+    """
+    Normalize pinyin for Azure SSML input ONLY.
+    This does NOT affect filenames or directory names.
+
+    Rule priority (top -> bottom):
+      1) Special hard rewrites (Azure quirks)
+      2) ü-handling
+      3) Leading vowel fix
+    """
+
+    s = pinyin
+    hanzi = pinyin+tone
+    # =========================
+    # (1) Special hard rewrites
+    # =========================
+    # order matters
+    s = re.sub(r"^iu$", "yu", s)
+    s = re.sub(r"^ui$", "wei", s)
+    s = re.sub(r"^ie$", "ye", s)
+    s = re.sub(r"^ong$", "yong", s)
+    s = re.sub(r"^ü$", "yu", s)
+    s = re.sub(r"^üe$", "yue", s)
+    s = re.sub(r"^ün$", "yun", s)
+    s = re.sub(r"^u$", "wu", s)
+
+
+    if s.startswith("u") or s.startswith("i"):
+        s = "y" + s
+
+
+    return s
 
 
 client = texttospeech.TextToSpeechClient()
@@ -29,14 +61,14 @@ audio_config = texttospeech.AudioConfig(
 
 
 def synthesize(pinyin, tone, voice_name, out_wav):
+    pinyin_ssml = normalize_pinyin_for_ssml(pinyin)
+    
     ssml = f"""
     <speak>
-      <phoneme alphabet="pinyin" ph="{pinyin}{tone}">
-        {pinyin}{tone}
-      </phoneme>
+      <phoneme alphabet="pinyin" ph="{pinyin_ssml}{tone}">{pinyin_ssml}</phoneme>
     </speak>
     """
-
+    print(ssml)
     synthesis_input = texttospeech.SynthesisInput(ssml=ssml)
 
     voice = texttospeech.VoiceSelectionParams(
