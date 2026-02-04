@@ -22,6 +22,8 @@ const prolific = {
   sessionId: "",
 };
 
+let isProlific = false;
+
 const state = {
   orderedTrials: [],
   playbackId: 0,
@@ -127,12 +129,15 @@ function applyConfigFromParams() {
   prolific.prolificPid = getParam("PROLIFIC_PID") || "";
   prolific.studyId = getParam("STUDY_ID") || "";
   prolific.sessionId = getParam("SESSION_ID") || "";
+  isProlific = !!prolific.prolificPid;
 
   if (submitUrl) config.submitUrl = submitUrl;
 
-  if (prolific.prolificPid) {
-    state.participantId = prolific.prolificPid;
-    els.participantLabel.textContent = `Participant: ${prolific.prolificPid}`;
+  // Use PROLIFIC_PID if available, otherwise fall back to participant_id param
+  const participantId = prolific.prolificPid || getParam("participant_id") || "";
+  if (participantId) {
+    state.participantId = participantId;
+    els.participantLabel.textContent = `Participant: ${participantId}`;
   }
 
   if (list) {
@@ -523,28 +528,34 @@ async function finishStudy() {
 
   showCard(els.doneCard);
 
-  // Update the done card message based on bonus status
-  const doneTitle = document.querySelector("#doneCard h2");
-  const doneMessage = document.querySelector("#doneCard > p");
+  if (isProlific) {
+    // Update the done card message based on bonus status
+    const doneTitle = document.querySelector("#doneCard h2");
+    const doneMessage = document.querySelector("#doneCard > p");
 
-  if (result.ok && result.isBonus) {
-    if (doneTitle) doneTitle.textContent = "Congratulations!";
-    if (doneMessage) {
-      doneMessage.innerHTML = "<strong>Great job!</strong> Your high accuracy earned you a bonus payment.";
+    if (result.ok && result.isBonus) {
+      if (doneTitle) doneTitle.textContent = "Congratulations!";
+      if (doneMessage) {
+        doneMessage.innerHTML = "<strong>Great job!</strong> Your high accuracy earned you a bonus payment.";
+      }
     }
+
+    if (result.ok && result.completionUrl) {
+      // Hide static completion row, show redirect box
+      els.doneCompletionRow.classList.add("hidden");
+      countdownRedirect(result.completionUrl, els.doneRedirectBox, els.doneRedirectCount, els.doneRedirectBtn);
+      return;
+    }
+
+    // Prolific fallback: show completion code
+    els.doneCompletionRow.classList.remove("hidden");
+    els.completionCode.textContent = `Completion code: ${config.completionCode}`;
+  } else {
+    // Non-Prolific: no completion codes or redirects, just show download
+    els.doneCompletionRow.classList.remove("hidden");
+    els.completionCode.classList.add("hidden");
   }
 
-  if (result.ok && result.completionUrl) {
-    // Hide static completion row, show redirect box
-    els.doneCompletionRow.classList.add("hidden");
-    countdownRedirect(result.completionUrl, els.doneRedirectBox, els.doneRedirectCount, els.doneRedirectBtn);
-    return;
-  }
-
-  // Show completion code (fallback or non-Prolific)
-  els.doneCompletionRow.classList.remove("hidden");
-  els.completionCode.textContent = `Completion code: ${config.completionCode}`;
-  
   if (!result.ok && config.submitUrl) {
     if (result.error) els.doneError.textContent = `Error: ${result.error}`;
     els.doneError.classList.remove("hidden");
@@ -608,8 +619,8 @@ function handleChoice(response) {
     if (correct === false) {
       state.catchFails += 1;
 
-      // Check fail rate after minimum catches seen
-      if (state.catchTotal >= config.minCatchesBeforeScreening) {
+      // Only screen out on Prolific — in-person participants always finish
+      if (isProlific && state.catchTotal >= config.minCatchesBeforeScreening) {
         const failRate = state.catchFails / state.catchTotal;
         if (failRate > config.catchFailThreshold) {
           failAttentionCheck();
@@ -963,7 +974,14 @@ window.addEventListener("load", () => {
     wireStart();
     wireIntroSteps();
     setListFromParams();
-    els.completionCode.textContent = `Completion code: ${config.completionCode}`;
+
+    if (isProlific) {
+      els.completionCode.textContent = `Completion code: ${config.completionCode}`;
+    } else {
+      // Hide Prolific-specific UI elements
+      const bonusHint = document.getElementById("bonusHint");
+      if (bonusHint) bonusHint.classList.add("hidden");
+    }
 
     // Skip tutorial if requested via URL param
     if (getParam("skip")) {

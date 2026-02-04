@@ -200,15 +200,17 @@ $response = [
     'qualifies_for_bonus' => $qualifies_for_bonus,
 ];
 
-// Use bonus URL if participant qualifies, otherwise use standard completion URL
-if ($qualifies_for_bonus && !empty($bonus_url)) {
-    $response['completion_url'] = $bonus_url;
-    $response['is_bonus'] = true;
-} elseif (!empty($completion_url)) {
-    $response['completion_url'] = $completion_url;
-}
-if (!empty($attention_fail_url)) {
-    $response['attention_fail_url'] = $attention_fail_url;
+// Only include Prolific URLs when participant came from Prolific
+if (!empty($prolific_pid)) {
+    if ($qualifies_for_bonus && !empty($bonus_url)) {
+        $response['completion_url'] = $bonus_url;
+        $response['is_bonus'] = true;
+    } elseif (!empty($completion_url)) {
+        $response['completion_url'] = $completion_url;
+    }
+    if (!empty($attention_fail_url)) {
+        $response['attention_fail_url'] = $attention_fail_url;
+    }
 }
 
 echo json_encode($response);

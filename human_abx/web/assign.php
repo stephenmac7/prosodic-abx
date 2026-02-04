@@ -55,6 +55,7 @@ if (empty($submit_url)) {
 // Get parameters
 $dataset = $_GET['dataset'] ?? '';
 $prolific_pid = $_GET['PROLIFIC_PID'] ?? '';
+$participant_id = $_GET['participant_id'] ?? '';
 $study_id = $_GET['STUDY_ID'] ?? '';
 $session_id = $_GET['SESSION_ID'] ?? '';
 
@@ -104,7 +105,7 @@ try {
     }
 
     // Participant key
-    $participant_key = $prolific_pid ?: $session_id ?: uniqid('anon_');
+    $participant_key = $prolific_pid ?: $participant_id ?: $session_id ?: uniqid('anon_');
 
     // Check if this participant already has an assignment
     $assigned_list = null;
@@ -170,6 +171,7 @@ $params = [
 ];
 
 if ($prolific_pid) $params['PROLIFIC_PID'] = $prolific_pid;
+if ($participant_id) $params['participant_id'] = $participant_id;
 if ($study_id) $params['STUDY_ID'] = $study_id;
 if ($session_id) $params['SESSION_ID'] = $session_id;
 
