@@ -11,10 +11,183 @@ const config = {
   minCatchesBeforeScreening: 2,
   completionCode: "PROLIFIC-CODE",
   submitUrl: "save_responses.php",
-  // Demo trial uses hardcoded files (X = A, so correct answer is A)
-  demoFileA: "audio/demo_a_UMbrella.wav",
-  demoFileB: "audio/demo_b_umBRElla.wav",
 };
+
+const DEMO_FILES = {
+  stress: { a: "demo_a_UMbrella.wav", b: "demo_b_umBRElla.wav" },
+  pitch_accent: { a: "demo_a_ichien0.wav", b: "demo_b_ichien2.wav" },
+  mandarin_tone: { a: "demo_a_zhua1.wav", b: "demo_b_zhua3.wav" },
+};
+
+const STRINGS = {
+  mandarin_tone: {
+    autoSubmitFailed: "自动提交失败。请下载你的回答。", // machine-translated
+    beginTask: "任务开始",
+    bonusMessage: "<strong>太棒了！</strong> 你的高准确率为你赢得了额外奖励。", // machine-translated
+    bonusTitle: "恭喜！", // machine-translated
+    clipBlocked: "已拦截", // machine-translated
+    clipPlayed: "播放完毕", // machine-translated
+    clipPlaying: "正在播放 {label}", // machine-translated
+    clipReady: "准备就绪",
+    completionCodeLabel: "完成代码", // machine-translated
+    demoCorrect: "正确！你已经掌握了。", // machine-translated
+    demoPrompt: "现在请选择：X 听起来更像 A 还是 B？", // machine-translated
+    demoWrongMsg: "请仔细听 A 和 B，然后决定 X 听起来更像哪一个。让我们再试一次。", // machine-translated
+    demoWrongTitle: "不完全正确", // machine-translated
+    doneMessage: "感谢参加本次任务",
+    doneRedirecting: "正在重定向...", // machine-translated
+    doneTitle: "全部完成",
+    downloadResponses: "下载回答", // machine-translated
+    errorMissingParams: "缺少必要参数。", // machine-translated
+    errorPrefix: "错误", // machine-translated
+    errorTitle: "错误", // machine-translated
+    failMessage: "感谢参加，很遗憾你好像没有认真完成任务",
+    failRedirecting: "正在重定向...", // machine-translated
+    failReturn: "返回", // machine-translated
+    failTitle: "任务结束", // machine-translated
+    failedToLoadList: "加载列表失败。", // machine-translated
+    failedToLoadListStatus: "加载列表失败 ({status})", // machine-translated
+    feedbackOk: "确定", // machine-translated
+    feedbackTitle: "反馈", // machine-translated
+    goBackBtn: "&larr; 返回上一条",
+    gotIt: "我明白了",
+    headphonesNo: "否",
+    headphonesQuestion: '你现在所处的环境是否安静？是否佩戴<strong>有线</strong>耳机？',
+    headphonesSubQuestion: "请避免使用无线耳机（如AirPods等）。无线耳机可能会导致音频截断以及时序问题。",
+    headphonesWarning: "在继续之前，请戴上有线耳机并找一个安静的地方。", // machine-translated
+    headphonesYes: "是的，我准备好了",
+    hintBonus: "<strong>高准确率奖励！</strong><br>准确率高的参与者将获得额外奖励。请保持专注！", // machine-translated
+    hintGoBack: '<strong>改主意了？</strong><br>你可以根据需要多次返回上一个问题并修改你的答案',
+    hintKeyboard: '<strong>快捷键</strong><br>按 <span class="key">1</span> 选择 A，或者 <span class="key">2</span> 选择 B。',
+    hintReplay: '<strong>随时重新播放</strong><br>你可以根据需要随时多次重新播放 A &rarr; B &rarr; X。请按 <span class="key">R</span> 或点击"重新播放"按钮',
+    inProgress: "进行中", // machine-translated
+    labTaskTitle: "语音辨别任务", // machine-translated
+    listLabel: "列表", // machine-translated
+    loadingList: "正在加载列表...", // machine-translated
+    missingAttentionFailUrl: "服务器未返回 attention_fail_url。", // machine-translated
+    missingAudioBase: "错误：缺少 audioBase 参数。", // machine-translated
+    missingAudioSource: "缺少音频源。请刷新并重试。", // machine-translated
+    missingListParam: "错误：缺少 list 参数。", // machine-translated
+    pageTitle: "语音辨别任务", // machine-translated
+    participantLabel: "参与者", // machine-translated
+    playDemo: "播放 A &rarr; B &rarr; X",
+    playbackFailedReplay: "音频播放失败。请允许本网站播放音频并点击“重新播放”。", // machine-translated
+    playbackFailedTryAgain: "音频播放失败。请允许本网站播放音频并重试。", // machine-translated
+    redirectContinue: "继续", // machine-translated
+    replayBtn: '重新播放 A &rarr; B &rarr; X <span class="key">R</span>',
+    replayDemo: "重新播放 A &rarr; B &rarr; X", // machine-translated
+    reportProblem: "报告问题", // machine-translated
+    resumeMessage: "发现了已保存的进度。", // machine-translated
+    resumeNo: "重新开始",
+    resumeTitle: "恢复进度？", // machine-translated
+    resumeYes: "从上次离开处继续",
+    step1Intro: "在本任务中，你将听到一些汉语音节的发音，并需要根据听到的内容做出判断。开始之前，请确认以下事项：",
+    step1Title: "语音辨别任务",
+    step2Clips: '你将依次听到三个汉语普通话的音节录音：<strong>A</strong>、<strong>B</strong>、和 <strong>X</strong>',
+    step2Note: '注意: <strong>A</strong> 和 <strong>B</strong> 是不同的录音.',
+    step2Task: '你的任务：判断音节<strong>X</strong>听起来更像音节<strong>A</strong>还是音节<strong>B</strong>',
+    step2Title: "任务说明",
+    step3Intro: "请先听下方的 A、B 和 X 的音频，再选择 X 听起来更像 A 还是 B。",
+    step3Title: "任务练习",
+    step4Title: "提示",
+    step5Intro: "非常好！你已经可以开始正式的语音辨别任务了",
+    step5Title: "你准备好了！",
+    unableToInferDataset: "无法从路径推断数据集。", // machine-translated
+    unableToStart: "无法开始任务。", // machine-translated
+    xSoundsLike: "X 听起来更像...",
+  },
+  pitch_accent: {
+    autoSubmitFailed: "自動送信に失敗しました。回答をダウンロードしてください。",
+    beginTask: "タスクを開始する",
+    bonusMessage: "<strong>素晴らしい！</strong> 高い正解率を達成したため、ボーナス報酬が確定しました。",
+    bonusTitle: "おめでとうございます！",
+    clipBlocked: "ブロックされました",
+    clipPlayed: "再生済み",
+    clipPlaying: "{label} を再生中",
+    clipReady: "準備完了",
+    completionCodeLabel: "完了コード",
+    demoCorrect: "正解です！その調子です。",
+    demoPrompt: "X は A と B のどちらに近いと感じましたか？",
+    demoWrongMsg: "A と B をよく聞き比べて、X がどちらに近いかもう一度判断してみてください。",
+    demoWrongTitle: "惜しい！",
+    doneMessage: "タスクにご協力いただきありがとうございました。",
+    doneRedirecting: "リダイレクト中...",
+    doneTitle: "完了",
+    downloadResponses: "回答をダウンロード",
+    errorMissingParams: "必要なパラメータが不足しています。",
+    errorPrefix: "エラー",
+    errorTitle: "エラー",
+    failMessage: "ご協力ありがとうございました。誠に残念ながら、タスクが適切に完了されなかったようです。",
+    failRedirecting: "リダイレクト中...",
+    failReturn: "戻る",
+    failTitle: "タスク終了",
+    failedToLoadList: "リストの読み込みに失敗しました。",
+    failedToLoadListStatus: "リストの読み込みに失敗しました ({status})",
+    feedbackOk: "OK",
+    feedbackTitle: "フィードバック",
+    goBackBtn: "&larr; 前の問題に戻る",
+    gotIt: "了解しました",
+    headphonesNo: "いいえ",
+    headphonesQuestion: '周囲の環境は静かですか？また、<strong>有線</strong>ヘッドホンまたはイヤホンを着用していますか？',
+    headphonesSubQuestion: "ワイヤレスイヤホン（AirPodsなど）の使用は避けてください。音声の途切れやタイミングの問題が発生する可能性があります。",
+    headphonesWarning: "有線ヘッドホンを着用し、静かな場所へ移動してから続けてください。",
+    headphonesYes: "はい、準備ができました",
+    hintBonus: '<strong>ボーナスについて</strong><br>正解率が高い方には、追加のボーナス報酬が支払われます！集中して取り組んでください。',
+    hintGoBack: '<strong>答えを直したい場合</strong><br>必要に応じて、前の問題に戻って回答を修正することができます。',
+    hintKeyboard: '<strong>ショートカットキー</strong><br><span class="key">1</span> キーで A を、<span class="key">2</span> キーで B を選択できます。',
+    hintReplay: '<strong>いつでも再再生可能</strong><br>必要に応じて、何度でも A &rarr; B &rarr; X を再生できます。<span class="key">R</span> キーを押すか、「もう一度再生」ボタンをクリックしてください。',
+    inProgress: "進行中",
+    labTaskTitle: "音声判別タスク",
+    listLabel: "リスト番号",
+    loadingList: "リストを読み込み中...",
+    missingAttentionFailUrl: "サーバーから attention_fail_url が返されませんでした。",
+    missingAudioBase: "エラー：audioBase が設定されていません。",
+    missingAudioSource: "音声ソースが見つかりません。ページを更新してもう一度お試しください。",
+    missingListParam: "エラー：list パラメータが必要です。",
+    pageTitle: "音声判別タスク",
+    participantLabel: "参加者ID",
+    playDemo: "A &rarr; B &rarr; X を再生",
+    playbackFailedReplay: "再生に失敗しました。音声再生を許可してから「もう一度再生」を押してください。",
+    playbackFailedTryAgain: "再生に失敗しました。このサイトでの音声再生を許可し、もう一度お試しください。",
+    redirectContinue: "続行",
+    replayBtn: 'A &rarr; B &rarr; X をもう一度再生 <span class="key">R</span>',
+    replayDemo: "A &rarr; B &rarr; X をもう一度再生",
+    reportProblem: "問題を報告",
+    resumeMessage: "保存された進行状況が見つかりました。",
+    resumeNo: "最初からやり直す",
+    resumeTitle: "再開しますか？",
+    resumeYes: "前回の続きから再開",
+    step1Intro: "このタスクでは、日本語の録音を聞き、その内容に基づいて判断を行っていただきます。開始前に、以下の点を確認してください：",
+    step1Title: "音声判別タスク",
+    step2Clips: '日本語の単語の録音が3つ、順番に流れます：<strong>A</strong>、<strong>B</strong>、そして <strong>X</strong>',
+    step2Note: '注意: <strong>A</strong> と <strong>B</strong> は、同じ単語ですがアクセントが異なる録音です。',
+    step2Task: 'あなたのタスク：録音 <strong>X</strong> が、録音 <strong>A</strong> と <strong>B</strong> のどちらに近いと感じるか判断してください。',
+    step2Title: "タスクの説明",
+    step3Intro: "下の A、B、X の音声を聞いて、X が A と B のどちらに近いか選択してください。",
+    step3Title: "練習",
+    step4Title: "ヒント",
+    step5Intro: "素晴らしい！それでは、本番の音声判別タスクを開始しましょう。",
+    step5Title: "準備完了！",
+    unableToInferDataset: "データセットを特定できませんでした。",
+    unableToStart: "タスクを開始できません。",
+    xSoundsLike: "X はどちらに近いですか？",
+  },
+};
+
+function t(key, fallback) {
+  const lang = STRINGS[state.dataset];
+  return (lang && lang[key]) || fallback;
+}
+
+function applyTranslations() {
+  const lang = STRINGS[state.dataset];
+  if (!lang) return;
+  if (lang.pageTitle) document.title = lang.pageTitle;
+  document.querySelectorAll("[data-i18n]").forEach((el) => {
+    const key = el.getAttribute("data-i18n");
+    if (lang[key]) el.innerHTML = lang[key];
+  });
+}
 
 const prolific = {
   prolificPid: "",
@@ -31,6 +204,7 @@ const state = {
   responses: [],
   catchTotal: 0,
   catchFails: 0,
+  dataset: "",
   listId: "--",
   listPath: "",
   participantId: "--",
@@ -66,7 +240,9 @@ const els = {
   startButton: document.getElementById("startButton"),
   introHint: document.getElementById("introHint"),
   participantLabel: document.getElementById("participantLabel"),
+  participantValue: document.getElementById("participantValue"),
   listLabel: document.getElementById("listLabel"),
+  listValue: document.getElementById("listValue"),
   phaseLabel: document.getElementById("phaseLabel"),
   progressFill: document.getElementById("progressFill"),
   progressText: document.getElementById("progressText"),
@@ -137,12 +313,12 @@ function applyConfigFromParams() {
   const participantId = prolific.prolificPid || getParam("participant_id") || "";
   if (participantId) {
     state.participantId = participantId;
-    els.participantLabel.textContent = `Participant: ${participantId}`;
+    if (els.participantValue) els.participantValue.textContent = participantId;
   }
 
   if (list) {
     state.listId = list.split("/").pop() || list;
-    els.listLabel.textContent = `List: ${state.listId}`;
+    if (els.listValue) els.listValue.textContent = state.listId;
   }
 }
 
@@ -307,9 +483,10 @@ function makeAudioUrl(path, source) {
 }
 
 function resetClipStates() {
-  els.stateA.textContent = "Ready";
-  els.stateB.textContent = "Ready";
-  els.stateX.textContent = "Ready";
+  const ready = t("clipReady", "Ready");
+  els.stateA.textContent = ready;
+  els.stateB.textContent = ready;
+  els.stateX.textContent = ready;
   els.clipA.classList.remove("active");
   els.clipB.classList.remove("active");
   els.clipX.classList.remove("active");
@@ -347,25 +524,26 @@ function updateProgress() {
 
 async function playAudio(audioEl, url, clipEl, stateEl, label) {
   if (!url) {
-    setTaskHint("Missing audio source. Please refresh and try again.");
+    setTaskHint(t("missingAudioSource", "Missing audio source. Please refresh and try again."));
     return false;
   }
   audioEl.src = url;
   audioEl.currentTime = 0;
-  setClipState(clipEl, stateEl, `Playing ${label}`);
+  const playing = t("clipPlaying", "Playing {label}").replace("{label}", label);
+  setClipState(clipEl, stateEl, playing);
   try {
     await audioEl.play();
   } catch (err) {
     clipEl.classList.remove("active");
-    stateEl.textContent = "Blocked";
-    setTaskHint("Audio playback failed. Please allow audio for this site and press Replay.");
+    stateEl.textContent = t("clipBlocked", "Blocked");
+    setTaskHint(t("playbackFailedReplay", "Audio playback failed. Please allow audio for this site and press Replay."));
     return false;
   }
   await new Promise((resolve) => {
     audioEl.onended = () => resolve();
   });
   clipEl.classList.remove("active");
-  stateEl.textContent = "Played";
+  stateEl.textContent = t("clipPlayed", "Played");
   setTaskHint("");
   return true;
 }
@@ -474,7 +652,7 @@ function markResponse(trial, response) {
 }
 
 function updatePhase() {
-  els.phaseLabel.textContent = "In progress";
+  els.phaseLabel.textContent = t("inProgress", "In progress");
 }
 
 function showCard(card) {
@@ -534,9 +712,12 @@ async function finishStudy() {
     const doneMessage = document.querySelector("#doneCard > p");
 
     if (result.ok && result.isBonus) {
-      if (doneTitle) doneTitle.textContent = "Congratulations!";
+      if (doneTitle) doneTitle.textContent = t("bonusTitle", "Congratulations!");
       if (doneMessage) {
-        doneMessage.innerHTML = "<strong>Great job!</strong> Your high accuracy earned you a bonus payment.";
+        doneMessage.innerHTML = t(
+          "bonusMessage",
+          "<strong>Great job!</strong> Your high accuracy earned you a bonus payment."
+        );
       }
     }
 
@@ -549,7 +730,8 @@ async function finishStudy() {
 
     // Prolific fallback: show completion code
     els.doneCompletionRow.classList.remove("hidden");
-    els.completionCode.textContent = `Completion code: ${config.completionCode}`;
+    const completionLabel = t("completionCodeLabel", "Completion code");
+    els.completionCode.textContent = `${completionLabel}: ${config.completionCode}`;
   } else {
     // Non-Prolific: no completion codes or redirects, just show download
     els.doneCompletionRow.classList.remove("hidden");
@@ -557,9 +739,12 @@ async function finishStudy() {
   }
 
   if (!result.ok && config.submitUrl) {
-    if (result.error) els.doneError.textContent = `Error: ${result.error}`;
+    if (result.error) {
+      const errorPrefix = t("errorPrefix", "Error");
+      els.doneError.textContent = `${errorPrefix}: ${result.error}`;
+    }
     els.doneError.classList.remove("hidden");
-    setTaskHint("Auto-submit failed. Please download your responses.");
+    setTaskHint(t("autoSubmitFailed", "Auto-submit failed. Please download your responses."));
   }
 }
 
@@ -712,11 +897,17 @@ function csvEscape(value) {
 }
 
 async function loadTrialsFromUrl(listUrl) {
-  setIntroHint("Loading list...");
+  setIntroHint(t("loadingList", "Loading list..."));
   state.loading = true;
   try {
     const res = await fetch(listUrl);
-    if (!res.ok) throw new Error(`Failed to load list (${res.status})`);
+    if (!res.ok) {
+      const message = t("failedToLoadListStatus", "Failed to load list ({status})").replace(
+        "{status}",
+        res.status
+      );
+      throw new Error(message);
+    }
     const text = await res.text();
     const raw = parseCsv(text);
     state.orderedTrials = raw.map(normalizeTrial);
@@ -724,7 +915,7 @@ async function loadTrialsFromUrl(listUrl) {
     setIntroHint("");
     checkAndPromptResume();
   } catch (err) {
-    els.errorText.textContent = err.message || "Failed to load list.";
+    els.errorText.textContent = err.message || t("failedToLoadList", "Failed to load list.");
     showCard(els.errorCard);
   } finally {
     state.loading = false;
@@ -750,7 +941,10 @@ async function submitIfConfigured(screenedOut = false) {
     if (!res.ok) return { ok: false };
     const data = await res.json();
     if (screenedOut && !data.attention_fail_url) {
-      return { ok: false, error: "Missing attention_fail_url from server." };
+      return {
+        ok: false,
+        error: t("missingAttentionFailUrl", "Missing attention_fail_url from server."),
+      };
     }
     return {
       ok: true,
@@ -800,33 +994,35 @@ function wireIntroSteps() {
   });
 
   els.headphonesNo.addEventListener("click", () => {
-    els.headphonesHint.textContent = "Please put on wired headphones and find a quiet spot before continuing.";
+    els.headphonesHint.textContent = t("headphonesWarning", "Please put on wired headphones and find a quiet spot before continuing.");
   });
 
   els.toStep3.addEventListener("click", () => {
     showStep(3);
-    // Demo uses hardcoded files, so always ready
     els.demoPlay.disabled = false;
   });
 
   let demoFirstPlay = true;
 
-  async function playDemoClip(audioEl, url, clipEl, stateEl) {
+  async function playDemoClip(audioEl, url, clipEl, stateEl, label) {
     clipEl.classList.add("active");
-    stateEl.textContent = "Playing...";
+    const playing = t("clipPlaying", "Playing {label}").replace("{label}", label);
+    stateEl.textContent = playing;
     audioEl.src = url;
     audioEl.currentTime = 0;
     try {
       await audioEl.play();
     } catch (err) {
       clipEl.classList.remove("active");
-      stateEl.textContent = "Blocked";
-      els.demoHint.textContent =
-        "Audio playback failed. Please allow audio for this site and try again.";
+      stateEl.textContent = t("clipBlocked", "Blocked");
+      els.demoHint.textContent = t(
+        "playbackFailedTryAgain",
+        "Audio playback failed. Please allow audio for this site and try again."
+      );
       return false;
     }
     await new Promise((r) => (audioEl.onended = r));
-    stateEl.textContent = "Played";
+    stateEl.textContent = t("clipPlayed", "Played");
     clipEl.classList.remove("active");
     return true;
   }
@@ -842,26 +1038,27 @@ function wireIntroSteps() {
     els.demoClipA.classList.remove("active");
     els.demoClipB.classList.remove("active");
     els.demoClipX.classList.remove("active");
-    els.demoStateA.textContent = "Ready";
-    els.demoStateB.textContent = "Ready";
-    els.demoStateX.textContent = "Ready";
+    const ready = t("clipReady", "Ready");
+    els.demoStateA.textContent = ready;
+    els.demoStateB.textContent = ready;
+    els.demoStateX.textContent = ready;
 
     await sleep(config.preDelayMs);
 
     // Play A
-    const okA = await playDemoClip(els.audioA, urlA, els.demoClipA, els.demoStateA);
+    const okA = await playDemoClip(els.audioA, urlA, els.demoClipA, els.demoStateA, "A");
     if (!okA) return false;
 
     await sleep(config.isiMs);
 
     // Play B
-    const okB = await playDemoClip(els.audioB, urlB, els.demoClipB, els.demoStateB);
+    const okB = await playDemoClip(els.audioB, urlB, els.demoClipB, els.demoStateB, "B");
     if (!okB) return false;
 
     await sleep(config.isiMs);
 
     // Play X
-    const okX = await playDemoClip(els.audioX, urlX, els.demoClipX, els.demoStateX);
+    const okX = await playDemoClip(els.audioX, urlX, els.demoClipX, els.demoStateX, "X");
     if (!okX) return false;
     return true;
   }
@@ -873,10 +1070,11 @@ function wireIntroSteps() {
     els.demoChoiceLabel.style.visibility = "hidden";
     els.demoHint.textContent = "";
 
-    // Use hardcoded demo files (X = A)
-    const urlA = config.demoFileA;
-    const urlB = config.demoFileB;
-    const urlX = config.demoFileA; // X = A
+    // Demo files from demo_audio/{dataset}/ (X = A, so correct answer is A)
+    const demo = DEMO_FILES[state.dataset];
+    const urlA = `demo_audio/${state.dataset}/${demo.a}`;
+    const urlB = `demo_audio/${state.dataset}/${demo.b}`;
+    const urlX = urlA;
 
     // Play twice on first play, once on replay
     const repeats = demoFirstPlay ? config.autoPlays : 1;
@@ -901,8 +1099,8 @@ function wireIntroSteps() {
     els.demoChooseA.disabled = false;
     els.demoChooseB.disabled = false;
     els.demoPlay.disabled = false;
-    els.demoPlay.innerHTML = 'Replay A &rarr; B &rarr; X';
-    els.demoHint.textContent = "Now choose: does X sound more like A or B?";
+    els.demoPlay.innerHTML = t("replayDemo", "Replay A &rarr; B &rarr; X");
+    els.demoHint.textContent = t("demoPrompt", "Now choose: does X sound more like A or B?");
   });
 
   const handleDemoChoice = (choice) => {
@@ -913,14 +1111,14 @@ function wireIntroSteps() {
     els.demoChooseB.disabled = true;
 
     if (correct) {
-      els.demoHint.textContent = "Correct! You've got it.";
+      els.demoHint.textContent = t("demoCorrect", "Correct! You've got it.");
       setTimeout(() => {
         showStep(4);
       }, 800);
     } else {
       showFeedback(
-        "Not quite",
-        "Listen carefully to A and B, then decide which one X sounds closer to. Let's try again.",
+        t("demoWrongTitle", "Not quite"),
+        t("demoWrongMsg", "Listen carefully to A and B, then decide which one X sounds closer to. Let's try again."),
         () => {
           els.demoPlay.disabled = false;
           els.demoHint.textContent = "";
@@ -950,17 +1148,21 @@ function setListFromParams() {
   }
 
   if (!listUrl) {
-    throw new Error("Missing required parameter: list (or dataset for auto-assignment)");
+    throw new Error(
+      t("missingListParam", "Missing required parameter: list (or dataset for auto-assignment)")
+    );
   }
   state.listPath = listUrl;
   const inferredDataset = inferDataset(listUrl);
   if (!inferredDataset) {
-    throw new Error("Unable to infer dataset from list path.");
+    throw new Error(t("unableToInferDataset", "Unable to infer dataset from list path."));
   }
+  state.dataset = inferredDataset;
+  applyTranslations();
   config.audioBaseUrl = `audio/${inferredDataset}`;
   config.audioBaseUrlSyn = `audio/${inferredDataset}_syn`;
   state.listId = listUrl.split("/").pop() || listUrl;
-  els.listLabel.textContent = `List: ${state.listId}`;
+  if (els.listValue) els.listValue.textContent = state.listId;
   loadTrialsFromUrl(listUrl);
 }
 
@@ -968,7 +1170,7 @@ window.addEventListener("load", () => {
   try {
     applyConfigFromParams();
     if (!config.audioBaseUrl) {
-      throw new Error("Missing required parameter: audioBase");
+      throw new Error(t("missingAudioBase", "Missing required parameter: audioBase"));
     }
     attachHandlers();
     wireStart();
@@ -976,7 +1178,8 @@ window.addEventListener("load", () => {
     setListFromParams();
 
     if (isProlific) {
-      els.completionCode.textContent = `Completion code: ${config.completionCode}`;
+      const completionLabel = t("completionCodeLabel", "Completion code");
+      els.completionCode.textContent = `${completionLabel}: ${config.completionCode}`;
     } else {
       // Hide Prolific-specific UI elements
       const bonusHint = document.getElementById("bonusHint");
@@ -993,7 +1196,7 @@ window.addEventListener("load", () => {
       }, 100);
     }
   } catch (err) {
-    els.errorText.textContent = err.message || "Unable to start.";
+    els.errorText.textContent = err.message || t("unableToStart", "Unable to start.");
     showCard(els.errorCard);
   }
 });

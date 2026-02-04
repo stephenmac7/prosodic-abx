@@ -38,7 +38,7 @@ def main():
         raise FileNotFoundError(f"Source directory not found: {source}")
 
     # Check for required subdirectories
-    required = ["lists", "audio"]
+    required = ["lists", "audio", "demo_audio"]
     missing = [d for d in required if not (source / d).exists()]
     if missing:
         raise FileNotFoundError(
