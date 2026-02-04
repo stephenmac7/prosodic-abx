@@ -24,6 +24,37 @@ from plot_prosodic_results import MODEL_METADATA, load_results, DATASET_LABELS
 RESULTS_DIR = Path(__file__).parent.parent / "results"
 OUTPUT_DIR = Path(__file__).parent.parent / "plots" / "cross_analysis"
 
+PLOT_STYLE = {
+    "font.size": 14,
+    "axes.titlesize": 16,
+    "axes.labelsize": 15,
+    "xtick.labelsize": 13,
+    "ytick.labelsize": 13,
+    "legend.fontsize": 12,
+    "axes.linewidth": 1.2,
+    "lines.linewidth": 2.0,
+    "lines.markersize": 10,
+    "grid.linewidth": 0.9,
+    "xtick.major.width": 1.1,
+    "ytick.major.width": 1.1,
+}
+plt.rcParams.update(PLOT_STYLE)
+
+TIGHT_LAYOUT_KW = {"pad": 0.4, "w_pad": 0.6, "h_pad": 0.6}
+SAVEFIG_KW = {"dpi": 150, "bbox_inches": "tight", "pad_inches": 0.05}
+
+SCATTER_S_LARGE = 180
+SCATTER_S_MED = 140
+SCATTER_S_SMALL = 100
+SCATTER_EDGEWIDTH = 0.9
+
+LINEWIDTH_THIN = 1.5
+LINEWIDTH_MED = 2.0
+LINEWIDTH_BOLD = 2.5
+
+MARKERSIZE_MED = 12
+MARKERSIZE_LARGE = 14
+
 
 def get_best_error(results_dict, model_name):
     """Get best layer error rate for a model."""
@@ -103,11 +134,11 @@ def plot_cross_task_correlation_simple(all_results, output_dir):
                 baselines[task2],
                 c="tab:gray",
                 alpha=0.8,
-                s=80,
+                s=SCATTER_S_LARGE,
                 marker="s",
                 zorder=2,
                 edgecolors="white",
-                linewidth=0.5,
+                linewidth=SCATTER_EDGEWIDTH,
                 label="Baseline",
             )
 
@@ -119,11 +150,11 @@ def plot_cross_task_correlation_simple(all_results, output_dir):
                 ssl_models[task2],
                 c="tab:blue",
                 alpha=0.6,
-                s=60,
+                s=SCATTER_S_MED,
                 marker="o",
                 zorder=2,
                 edgecolors="white",
-                linewidth=0.5,
+                linewidth=SCATTER_EDGEWIDTH,
                 label="SSL",
             )
 
@@ -136,14 +167,20 @@ def plot_cross_task_correlation_simple(all_results, output_dir):
             z = np.polyfit(valid[task1], valid[task2], 1)
             p_line = np.poly1d(z)
             x_line = np.linspace(valid[task1].min(), valid[task1].max(), 100)
-            ax.plot(x_line, p_line(x_line), "k--", alpha=0.5, linewidth=1)
+            ax.plot(
+                x_line,
+                p_line(x_line),
+                "k--",
+                alpha=0.5,
+                linewidth=LINEWIDTH_THIN,
+            )
 
             ax.text(
                 0.05,
                 0.95,
-                f"r = {r:.3f}\np = {p:.3e}",
+                f"r = {r:.3f}",
                 transform=ax.transAxes,
-                fontsize=10,
+                                fontsize=13,
                 verticalalignment="top",
                 bbox=dict(boxstyle="round", facecolor="white", alpha=0.8),
             )
@@ -153,191 +190,19 @@ def plot_cross_task_correlation_simple(all_results, output_dir):
         ax.set_title(f"{task_labels[task1]} vs {task_labels[task2]}")
         ax.grid(True, alpha=0.3)
 
-        # Add diagonal reference line (y=x)
-        lims = [
-            min(ax.get_xlim()[0], ax.get_ylim()[0]),
-            max(ax.get_xlim()[1], ax.get_ylim()[1]),
-        ]
-        ax.plot(lims, lims, "gray", alpha=0.3, linestyle=":")
-
         if idx == 0:
-            ax.legend(loc="lower right", fontsize=9)
+            ax.legend(loc="lower right", fontsize=10)
 
-    plt.tight_layout()
-    plt.savefig(
-        output_dir / "cross_task_correlation_simple.png", dpi=150, bbox_inches="tight"
-    )
+    plt.tight_layout(**TIGHT_LAYOUT_KW)
+    plt.savefig(output_dir / "cross_task_correlation_simple.png", **SAVEFIG_KW)
 
     # Remove titles for PDF
     for ax in axes:
         ax.set_title("")
-    plt.savefig(
-        output_dir / "cross_task_correlation_simple.pdf", dpi=150, bbox_inches="tight"
-    )
+    plt.savefig(output_dir / "cross_task_correlation_simple.pdf", **SAVEFIG_KW)
     plt.close()
 
     print(f"  - cross_task_correlation_simple.png")
-    return df
-
-
-def plot_cross_task_correlation_all_layers(all_results, output_dir):
-    """
-    Cross-task correlation plot including ALL layers for each model.
-    """
-    tasks = list(all_results.keys())
-    task_labels = {
-        "mandarin_tone": "Mandarin Tone",
-        "stress": "Lexical Stress",
-        "pitch_accent": "Pitch Accent",
-    }
-
-    # Get all models present in all tasks
-    common_models = set(all_results[tasks[0]].keys())
-    for task in tasks[1:]:
-        common_models &= set(all_results[task].keys())
-
-    # Filter to only models in metadata (exclude unknowns)
-    common_models = [m for m in common_models if m in MODEL_METADATA]
-
-    # Collect data points
-    data_points = []
-
-    for model in common_models:
-        meta = MODEL_METADATA[model]
-        is_baseline = meta[0] == "Baseline"
-
-        # Get dfs for this model
-        dfs = {task: all_results[task][model] for task in tasks}
-
-        # Drive by the layers in the first task
-        # We assume layers match across tasks for the same model
-        ref_task = tasks[0]
-        ref_df = dfs[ref_task]
-
-        for _, row in ref_df.iterrows():
-            layer = row["layer"]
-
-            point = {
-                "model": model,
-                "layer": layer,
-                "is_baseline": is_baseline,
-                ref_task: row["error_rate"],
-            }
-
-            valid_point = True
-            for other_task in tasks[1:]:
-                other_df = dfs[other_task]
-                match = other_df[other_df["layer"] == layer]
-                if not match.empty:
-                    point[other_task] = match.iloc[0]["error_rate"]
-                else:
-                    valid_point = False
-                    break
-
-            if valid_point:
-                data_points.append(point)
-
-    df = pd.DataFrame(data_points)
-
-    # Create pairwise scatter plots
-    task_pairs = [
-        ("mandarin_tone", "pitch_accent"),
-        ("mandarin_tone", "stress"),
-        ("pitch_accent", "stress"),
-    ]
-
-    fig, axes = plt.subplots(1, 3, figsize=(14, 4.5))
-
-    for idx, (task1, task2) in enumerate(task_pairs):
-        ax = axes[idx]
-
-        # Plot baselines
-        baselines = df[df["is_baseline"]]
-        if not baselines.empty:
-            ax.scatter(
-                baselines[task1],
-                baselines[task2],
-                c="tab:gray",
-                alpha=0.8,
-                s=80,
-                marker="s",
-                zorder=2,
-                edgecolors="white",
-                linewidth=0.5,
-                label="Baseline",
-            )
-
-        # Plot SSL models
-        ssl_models = df[~df["is_baseline"]]
-        if not ssl_models.empty:
-            # Color points by relative depth if possible, or just blue
-            # For simplicity, keep it consistent with the simple plot
-            ax.scatter(
-                ssl_models[task1],
-                ssl_models[task2],
-                c="tab:blue",
-                alpha=0.3,  # Lower alpha for density
-                s=40,
-                marker="o",
-                zorder=2,
-                edgecolors="none",  # Remove edge for density
-                label="SSL Layers",
-            )
-
-        # Add correlation line and stats
-        valid = df[[task1, task2]].dropna()
-        if len(valid) > 2:
-            r, p = stats.pearsonr(valid[task1], valid[task2])
-
-            # Fit line
-            z = np.polyfit(valid[task1], valid[task2], 1)
-            p_line = np.poly1d(z)
-            x_line = np.linspace(valid[task1].min(), valid[task1].max(), 100)
-            ax.plot(x_line, p_line(x_line), "k--", alpha=0.5, linewidth=1)
-
-            ax.text(
-                0.05,
-                0.95,
-                f"r = {r:.3f}\np = {p:.3e}",
-                transform=ax.transAxes,
-                fontsize=10,
-                verticalalignment="top",
-                bbox=dict(boxstyle="round", facecolor="white", alpha=0.8),
-            )
-
-        ax.set_xlabel(f"{task_labels[task1]} Error Rate")
-        ax.set_ylabel(f"{task_labels[task2]} Error Rate")
-        ax.set_title(f"{task_labels[task1]} vs {task_labels[task2]}\n(All Layers)")
-        ax.grid(True, alpha=0.3)
-
-        # Add diagonal reference line (y=x)
-        lims = [
-            min(ax.get_xlim()[0], ax.get_ylim()[0]),
-            max(ax.get_xlim()[1], ax.get_ylim()[1]),
-        ]
-        ax.plot(lims, lims, "gray", alpha=0.3, linestyle=":")
-
-        if idx == 0:
-            ax.legend(loc="lower right", fontsize=9)
-
-    plt.tight_layout()
-    plt.savefig(
-        output_dir / "cross_task_correlation_all_layers.png",
-        dpi=150,
-        bbox_inches="tight",
-    )
-
-    # Remove titles for PDF
-    for ax in axes:
-        ax.set_title("")
-    plt.savefig(
-        output_dir / "cross_task_correlation_all_layers.pdf",
-        dpi=150,
-        bbox_inches="tight",
-    )
-    plt.close()
-
-    print(f"  - cross_task_correlation_all_layers.png")
     return df
 
 
@@ -392,7 +257,7 @@ def _plot_single_cross_task_panel(
                 [pt_row[task2].values[0], ft_row[task2].values[0]],
                 color="gray",
                 alpha=0.3,
-                linewidth=1,
+                linewidth=LINEWIDTH_THIN,
                 zorder=1,
             )
 
@@ -401,17 +266,17 @@ def _plot_single_cross_task_panel(
         if row["pretrain_lang"] == "Baseline":
             color = "tab:gray"
             marker = "s"
-            size = 60
+            size = SCATTER_S_MED
         elif row["finetuned"]:
             ft_meta = MODEL_METADATA.get(row["model"])
             ft_lang = ft_meta[5] if ft_meta else None
             color = ft_lang_colors.get(ft_lang, "tab:brown")
             marker = "^"
-            size = 60
+            size = SCATTER_S_MED
         else:
             color = get_arch_color(row)
             marker = "o"
-            size = 60
+            size = SCATTER_S_MED
 
         ax.scatter(
             row[task1],
@@ -422,7 +287,7 @@ def _plot_single_cross_task_panel(
             marker=marker,
             zorder=2,
             edgecolors="white",
-            linewidth=0.5,
+            linewidth=SCATTER_EDGEWIDTH,
         )
 
     # Add correlation line and stats
@@ -433,14 +298,20 @@ def _plot_single_cross_task_panel(
         z = np.polyfit(valid[task1], valid[task2], 1)
         p_line = np.poly1d(z)
         x_line = np.linspace(valid[task1].min(), valid[task1].max(), 100)
-        ax.plot(x_line, p_line(x_line), "k--", alpha=0.5, linewidth=1)
+        ax.plot(
+            x_line,
+            p_line(x_line),
+            "k--",
+            alpha=0.5,
+            linewidth=LINEWIDTH_THIN,
+        )
 
         ax.text(
             0.05,
             0.95,
-            f"r = {r:.3f}\np = {p:.3e}",
+            f"r = {r:.3f}",
             transform=ax.transAxes,
-            fontsize=10,
+                            fontsize=13,
             verticalalignment="top",
             bbox=dict(boxstyle="round", facecolor="white", alpha=0.8),
         )
@@ -478,13 +349,6 @@ def _plot_single_cross_task_panel(
             if not out_of_view.empty:
                 baselines_out_of_view = True
 
-    # Add diagonal reference line (y=x)
-    lims = [
-        min(ax.get_xlim()[0], ax.get_ylim()[0]),
-        max(ax.get_xlim()[1], ax.get_ylim()[1]),
-    ]
-    ax.plot(lims, lims, "gray", alpha=0.3, linestyle=":")
-
     if add_legend:
         legend_elements = [
             Line2D(
@@ -493,7 +357,7 @@ def _plot_single_cross_task_panel(
                 marker="s",
                 color="w",
                 markerfacecolor="tab:gray",
-                markersize=8,
+                markersize=MARKERSIZE_MED,
                 label="Baseline (not shown)" if baselines_out_of_view else "Baseline",
             ),
             Line2D(
@@ -502,7 +366,7 @@ def _plot_single_cross_task_panel(
                 marker="o",
                 color="w",
                 markerfacecolor="tab:orange",
-                markersize=8,
+                markersize=MARKERSIZE_MED,
                 label="HuBERT",
             ),
             Line2D(
@@ -511,7 +375,7 @@ def _plot_single_cross_task_panel(
                 marker="o",
                 color="w",
                 markerfacecolor="tab:green",
-                markersize=8,
+                markersize=MARKERSIZE_MED,
                 label="Wav2Vec2/XLSR",
             ),
             Line2D(
@@ -520,7 +384,7 @@ def _plot_single_cross_task_panel(
                 marker="o",
                 color="w",
                 markerfacecolor="tab:cyan",
-                markersize=8,
+                markersize=MARKERSIZE_MED,
                 label="WavLM",
             ),
             Line2D(
@@ -529,7 +393,7 @@ def _plot_single_cross_task_panel(
                 marker="^",
                 color="w",
                 markerfacecolor="tab:blue",
-                markersize=8,
+                markersize=MARKERSIZE_MED,
                 label="FT: English",
             ),
             Line2D(
@@ -538,7 +402,7 @@ def _plot_single_cross_task_panel(
                 marker="^",
                 color="w",
                 markerfacecolor="tab:purple",
-                markersize=8,
+                markersize=MARKERSIZE_MED,
                 label="FT: Japanese",
             ),
             Line2D(
@@ -547,11 +411,11 @@ def _plot_single_cross_task_panel(
                 marker="^",
                 color="w",
                 markerfacecolor="tab:red",
-                markersize=8,
+                markersize=MARKERSIZE_MED,
                 label="FT: Chinese",
             ),
         ]
-        ax.legend(handles=legend_elements, loc="lower right", fontsize=7)
+        ax.legend(handles=legend_elements, loc="lower right", fontsize=9)
 
 
 def plot_cross_task_correlation(all_results, output_dir):
@@ -621,14 +485,14 @@ def plot_cross_task_correlation(all_results, output_dir):
             get_arch_color,
             add_legend=True,
         )
-        plt.tight_layout()
+        plt.tight_layout(**TIGHT_LAYOUT_KW)
         filename = f"cross_task_{task1}_vs_{task2}.png"
-        plt.savefig(output_dir / filename, dpi=150, bbox_inches="tight")
+        plt.savefig(output_dir / filename, **SAVEFIG_KW)
 
         # Remove title for PDF
         ax.set_title("")
         pdf_filename = f"cross_task_{task1}_vs_{task2}.pdf"
-        plt.savefig(output_dir / pdf_filename, dpi=150, bbox_inches="tight")
+        plt.savefig(output_dir / pdf_filename, **SAVEFIG_KW)
         plt.close()
         print(f"  - {filename}")
 
@@ -657,7 +521,7 @@ def plot_cross_task_correlation(all_results, output_dir):
             marker="s",
             color="w",
             markerfacecolor="tab:gray",
-            markersize=8,
+            markersize=MARKERSIZE_MED,
             label="Baseline",
         ),
         Line2D(
@@ -666,7 +530,7 @@ def plot_cross_task_correlation(all_results, output_dir):
             marker="o",
             color="w",
             markerfacecolor="tab:orange",
-            markersize=8,
+            markersize=MARKERSIZE_MED,
             label="HuBERT",
         ),
         Line2D(
@@ -675,7 +539,7 @@ def plot_cross_task_correlation(all_results, output_dir):
             marker="o",
             color="w",
             markerfacecolor="tab:green",
-            markersize=8,
+            markersize=MARKERSIZE_MED,
             label="Wav2Vec2/XLSR",
         ),
         Line2D(
@@ -684,7 +548,7 @@ def plot_cross_task_correlation(all_results, output_dir):
             marker="o",
             color="w",
             markerfacecolor="tab:cyan",
-            markersize=8,
+            markersize=MARKERSIZE_MED,
             label="WavLM",
         ),
         Line2D(
@@ -693,7 +557,7 @@ def plot_cross_task_correlation(all_results, output_dir):
             marker="^",
             color="w",
             markerfacecolor="tab:blue",
-            markersize=8,
+            markersize=MARKERSIZE_MED,
             label="FT: English",
         ),
         Line2D(
@@ -702,7 +566,7 @@ def plot_cross_task_correlation(all_results, output_dir):
             marker="^",
             color="w",
             markerfacecolor="tab:purple",
-            markersize=8,
+            markersize=MARKERSIZE_MED,
             label="FT: Japanese",
         ),
         Line2D(
@@ -711,7 +575,7 @@ def plot_cross_task_correlation(all_results, output_dir):
             marker="^",
             color="w",
             markerfacecolor="tab:red",
-            markersize=8,
+            markersize=MARKERSIZE_MED,
             label="FT: Chinese",
         ),
     ]
@@ -720,153 +584,19 @@ def plot_cross_task_correlation(all_results, output_dir):
         handles=legend_elements,
         loc="center right",
         bbox_to_anchor=(1.12, 0.5),
-        fontsize=9,
+        fontsize=10,
     )
 
-    plt.tight_layout()
-    plt.savefig(output_dir / "cross_task_correlation.png", dpi=150, bbox_inches="tight")
+    plt.tight_layout(**TIGHT_LAYOUT_KW)
+    plt.savefig(output_dir / "cross_task_correlation.png", **SAVEFIG_KW)
 
     # Remove titles for PDF
     for ax in axes:
         ax.set_title("")
-    plt.savefig(output_dir / "cross_task_correlation.pdf", dpi=150, bbox_inches="tight")
+    plt.savefig(output_dir / "cross_task_correlation.pdf", **SAVEFIG_KW)
     plt.close()
 
     print(f"  - cross_task_correlation.png")
-    return df
-
-
-def plot_finetune_language_effect(all_results, output_dir):
-    """
-    Analyze effect of finetuning language match/mismatch.
-    Shows whether finetuning on the same language as the test helps more than cross-language.
-    """
-    # Define which tasks correspond to which languages
-    task_languages = {
-        "mandarin_tone": "Chinese",
-        "pitch_accent": "Japanese",
-        "stress": "English",
-    }
-
-    # XLSR finetuned models with their finetuning languages
-    xlsr_models = {
-        "wav2vec2-large-xlsr-53": None,  # Base (not finetuned)
-        "wav2vec2-large-xlsr-53-english": "English",
-        "wav2vec2-large-xlsr-53-japanese": "Japanese",
-        "wav2vec2-large-xlsr-53-chinese-zh-cn": "Chinese",
-    }
-
-    # Collect data
-    data = []
-    for task, task_lang in task_languages.items():
-        if task not in all_results:
-            continue
-        results = all_results[task]
-
-        for model, ft_lang in xlsr_models.items():
-            if model not in results:
-                continue
-
-            error = get_best_error(results, model)
-            match_type = "Base (No FT)"
-            if ft_lang is not None:
-                match_type = "Match" if ft_lang == task_lang else "Mismatch"
-
-            data.append(
-                {
-                    "model": model,
-                    "task": DATASET_LABELS.get(task, task),
-                    "task_lang": task_lang,
-                    "ft_lang": ft_lang if ft_lang else "None",
-                    "error": error,
-                    "match_type": match_type,
-                }
-            )
-
-    df = pd.DataFrame(data)
-
-    if df.empty:
-        print("  - No XLSR model data found, skipping finetuning analysis")
-        return None
-
-    # Create two plots
-    fig, axes = plt.subplots(1, 2, figsize=(14, 5))
-
-    # Plot 1: Grouped bar chart by task
-    ax = axes[0]
-    tasks = df["task"].unique()
-    x = np.arange(len(tasks))
-    width = 0.2
-
-    ft_langs = ["None", "English", "Japanese", "Chinese"]
-    colors = ["tab:gray", "tab:blue", "tab:purple", "tab:red"]
-
-    for i, (ft_lang, color) in enumerate(zip(ft_langs, colors)):
-        errors = []
-        for task in tasks:
-            subset = df[(df["task"] == task) & (df["ft_lang"] == ft_lang)]
-            errors.append(subset["error"].values[0] if len(subset) > 0 else np.nan)
-
-        offset = (i - 1.5) * width
-        bars = ax.bar(
-            x + offset, errors, width, label=f"FT: {ft_lang}", color=color, alpha=0.7
-        )
-
-    ax.set_ylabel("Error Rate")
-    ax.set_title("XLSR-53 Performance by Finetuning Language")
-    ax.set_xticks(x)
-    ax.set_xticklabels(tasks)
-    ax.legend(title="Finetuning Lang")
-    ax.grid(True, axis="y", alpha=0.3)
-
-    # Plot 2: Match vs Mismatch comparison
-    ax = axes[1]
-
-    # Only look at finetuned models (exclude base)
-    ft_only = df[df["match_type"] != "Base (No FT)"]
-
-    match_data = ft_only[ft_only["match_type"] == "Match"]["error"].values
-    mismatch_data = ft_only[ft_only["match_type"] == "Mismatch"]["error"].values
-
-    positions = [1, 2]
-    bp = ax.boxplot([match_data, mismatch_data], positions=positions, widths=0.5)
-
-    # Scatter individual points
-    for i, (pos, data) in enumerate(zip(positions, [match_data, mismatch_data])):
-        x_jitter = np.random.normal(pos, 0.08, len(data))
-        ax.scatter(x_jitter, data, alpha=0.7, s=60, zorder=3)
-
-    ax.set_xticklabels(["Language Match", "Language Mismatch"])
-    ax.set_ylabel("Error Rate")
-    ax.set_title("Effect of Finetuning Language Match\n(XLSR-53 Finetuned Models)")
-    ax.grid(True, axis="y", alpha=0.3)
-
-    # Add stats
-    if len(match_data) > 0 and len(mismatch_data) > 0:
-        t_stat, p_val = stats.ttest_ind(match_data, mismatch_data)
-        ax.text(
-            0.95,
-            0.95,
-            f"Match mean: {match_data.mean():.3f}\n"
-            f"Mismatch mean: {mismatch_data.mean():.3f}\n"
-            f"p = {p_val:.3f}",
-            transform=ax.transAxes,
-            fontsize=9,
-            verticalalignment="top",
-            horizontalalignment="right",
-            bbox=dict(boxstyle="round", facecolor="white", alpha=0.8),
-        )
-
-    plt.tight_layout()
-    plt.savefig(output_dir / "finetune_language_effect.png", dpi=150)
-
-    # Remove titles for PDF
-    for ax in axes:
-        ax.set_title("")
-    plt.savefig(output_dir / "finetune_language_effect.pdf", dpi=150)
-    plt.close()
-
-    print(f"  - finetune_language_effect.png")
     return df
 
 
@@ -952,8 +682,8 @@ def plot_finetune_effect_by_model(all_results, output_dir):
             x,
             base_errors,
             "ko-",
-            linewidth=2,
-            markersize=10,
+            linewidth=LINEWIDTH_BOLD,
+            markersize=MARKERSIZE_LARGE,
             label="Pretrained",
             zorder=3,
         )
@@ -973,8 +703,8 @@ def plot_finetune_effect_by_model(all_results, output_dir):
                 ft_errors,
                 marker="^",
                 linestyle="--",
-                linewidth=2,
-                markersize=10,
+                linewidth=LINEWIDTH_MED,
+                markersize=MARKERSIZE_LARGE,
                 label=ft_label,
                 color=color,
                 zorder=2,
@@ -990,7 +720,10 @@ def plot_finetune_effect_by_model(all_results, output_dir):
                         xy=(i, ft_err),
                         xytext=(i, base_err),
                         arrowprops=dict(
-                            arrowstyle="->", color=color, alpha=0.5, lw=1.5
+                            arrowstyle="->",
+                            color=color,
+                            alpha=0.5,
+                            lw=LINEWIDTH_THIN,
                         ),
                     )
 
@@ -998,7 +731,7 @@ def plot_finetune_effect_by_model(all_results, output_dir):
         ax.set_xticklabels([task_labels[t] for t in tasks])
         ax.set_ylabel("Error Rate")
         ax.set_title(family_name, fontweight="bold")
-        ax.legend(loc="best", fontsize=8)
+        ax.legend(loc="best", fontsize=9)
         ax.grid(True, axis="y", alpha=0.3)
 
         # Set consistent y-axis range based on data
@@ -1021,345 +754,26 @@ def plot_finetune_effect_by_model(all_results, output_dir):
 
     plt.suptitle(
         "Effect of ASR Finetuning on Prosodic Task Performance",
-        fontsize=14,
+        fontsize=16,
         fontweight="bold",
         y=1.02,
     )
-    plt.tight_layout()
+    plt.tight_layout(**TIGHT_LAYOUT_KW)
     plt.savefig(
-        output_dir / "finetune_effect_by_model.png", dpi=150, bbox_inches="tight"
+        output_dir / "finetune_effect_by_model.png", **SAVEFIG_KW
     )
 
     # Remove titles for PDF
     plt.suptitle("")
     for ax in axes:
         ax.set_title("")
-    plt.savefig(
-        output_dir / "finetune_effect_by_model.pdf", dpi=150, bbox_inches="tight"
-    )
+    plt.savefig(output_dir / "finetune_effect_by_model.pdf", **SAVEFIG_KW)
     plt.close()
 
     print(f"  - finetune_effect_by_model.png")
 
     return None
 
-
-def plot_architecture_controlled_language(all_results, output_dir):
-    """
-    Compare pretraining languages while controlling for architecture.
-    Only compares models with same architecture and size.
-    """
-    # Define controlled comparison groups
-    # Each group: (architecture, size, {lang: model_name})
-    comparison_groups = [
-        (
-            "HuBERT",
-            "Large",
-            {
-                "English": "hubert_large",
-                "Chinese": "chinese-hubert-large",
-                "Japanese": "japanese-hubert-large",
-            },
-        ),
-        (
-            "HuBERT",
-            "Base",
-            {
-                "English": "hubert_base",
-                "Chinese": "chinese-hubert-base",
-                "Japanese": "japanese-hubert-base-k2",
-            },
-        ),
-        (
-            "Wav2Vec2",
-            "Large",
-            {
-                "English": "wav2vec2_large_lv60k",
-                "Chinese": "chinese-wav2vec2-large",
-                "Japanese": "japanese-wav2vec2-large",
-            },
-        ),
-        (
-            "Wav2Vec2",
-            "Base",
-            {
-                "English": "wav2vec2_base",
-                "Chinese": "chinese-wav2vec2-base",
-                "Japanese": "japanese-wav2vec2-base",
-            },
-        ),
-    ]
-
-    tasks = ["mandarin_tone", "stress", "pitch_accent"]
-    task_labels = {
-        "mandarin_tone": "Mandarin Tone",
-        "stress": "Lexical Stress",
-        "pitch_accent": "Pitch Accent",
-    }
-
-    lang_colors = {
-        "English": "tab:blue",
-        "Chinese": "tab:red",
-        "Japanese": "tab:purple",
-    }
-
-    # Create subplot for each comparison group
-    fig, axes = plt.subplots(2, 2, figsize=(12, 10))
-    axes = axes.flatten()
-
-    for idx, (arch, size, lang_models) in enumerate(comparison_groups):
-        ax = axes[idx]
-
-        x = np.arange(len(tasks))
-        width = 0.25
-
-        for i, (lang, model) in enumerate(lang_models.items()):
-            errors = []
-            for task in tasks:
-                if task in all_results and model in all_results[task]:
-                    errors.append(get_best_error(all_results[task], model))
-                else:
-                    errors.append(np.nan)
-
-            offset = (i - len(lang_models) / 2 + 0.5) * width
-            bars = ax.bar(
-                x + offset,
-                errors,
-                width,
-                label=lang,
-                color=lang_colors[lang],
-                alpha=0.7,
-            )
-
-        ax.set_ylabel("Error Rate")
-        ax.set_title(f"{arch} {size}")
-        ax.set_xticks(x)
-        ax.set_xticklabels([task_labels[t] for t in tasks], fontsize=9)
-        ax.legend(title="Pretrain Lang", fontsize=8)
-        ax.grid(True, axis="y", alpha=0.3)
-
-    plt.suptitle(
-        "Pretraining Language Comparison\n(Architecture & Size Controlled)",
-        fontsize=12,
-        fontweight="bold",
-    )
-    plt.tight_layout()
-    plt.savefig(output_dir / "architecture_controlled_language.png", dpi=150)
-
-    # Remove titles for PDF
-    plt.suptitle("")
-    for ax in axes:
-        ax.set_title("")
-    plt.savefig(output_dir / "architecture_controlled_language.pdf", dpi=150)
-    plt.close()
-
-    print(f"  - architecture_controlled_language.png")
-
-    return None
-
-
-def plot_cross_dataset_heatmap(all_results, output_dir):
-    """
-    Create a cross-dataset heatmap showing the effect of pretraining language
-    and model architecture on performance, excluding finetuned models.
-
-    Rows: Pretraining language
-    Columns: Model architecture
-    Values: Mean best-layer error rate averaged across all three datasets
-    """
-    import seaborn as sns
-
-    tasks = list(all_results.keys())
-    task_labels = {
-        "mandarin_tone": "Mandarin Tone",
-        "stress": "Lexical Stress",
-        "pitch_accent": "Pitch Accent",
-    }
-
-    # Collect data for all non-finetuned models across all tasks
-    model_task_errors = {}  # model_name -> {task: best_error}
-
-    for task in tasks:
-        for model_name, df in all_results[task].items():
-            if model_name not in MODEL_METADATA:
-                continue
-            meta = MODEL_METADATA[model_name]
-            pretrain_lang = meta[0]
-            finetuned = meta[4]
-
-            # Skip baselines and finetuned models
-            if pretrain_lang == "Baseline" or finetuned:
-                continue
-
-            if model_name not in model_task_errors:
-                model_task_errors[model_name] = {}
-            model_task_errors[model_name][task] = df["error_rate"].min()
-
-    # Build aggregated data by (pretrain_lang, architecture)
-    # For each cell, average across models and then across tasks
-    agg_data = {}  # (lang, arch) -> list of per-model mean errors
-
-    for model_name, task_errors in model_task_errors.items():
-        meta = MODEL_METADATA[model_name]
-        pretrain_lang = meta[0]
-        architecture = meta[1]
-        # Merge XLSR into Wav2Vec2
-        if architecture == "Wav2Vec2-XLSR":
-            architecture = "Wav2Vec2"
-
-        # Calculate mean error across available tasks for this model
-        if task_errors:
-            mean_error = np.mean(list(task_errors.values()))
-            key = (pretrain_lang, architecture)
-            if key not in agg_data:
-                agg_data[key] = []
-            agg_data[key].append(mean_error)
-
-    # Get unique languages and architectures, sorted
-    # Exclude WavLM (only English data, not informative for cross-language comparison)
-    langs = sorted(set(k[0] for k in agg_data.keys()))
-    archs = sorted(k[1] for k in agg_data.keys() if k[1] != "WavLM")
-    archs = sorted(set(archs))
-
-    # Create matrix with mean values
-    matrix = np.full((len(langs), len(archs)), np.nan)
-    for (lang, arch), errors in agg_data.items():
-        if arch not in archs:
-            continue
-        i = langs.index(lang)
-        j = archs.index(arch)
-        matrix[i, j] = np.mean(errors)
-
-    # Dynamic color range based on actual data
-    valid_vals = matrix[~np.isnan(matrix)]
-    vmin = valid_vals.min() - 0.01
-    vmax = valid_vals.max() + 0.01
-
-    # Create the heatmap
-    fig, ax = plt.subplots(figsize=(10, 6))
-    im = ax.imshow(matrix, cmap="RdYlGn_r", vmin=vmin, vmax=vmax, aspect="auto")
-
-    ax.set_xticks(range(len(archs)))
-    ax.set_xticklabels(archs, rotation=45, ha="right", fontsize=11)
-    ax.set_yticks(range(len(langs)))
-    ax.set_yticklabels(langs, fontsize=11)
-
-    ax.set_xlabel("Model Architecture", fontsize=12)
-    ax.set_ylabel("Pretraining Language", fontsize=12)
-
-    # Add text annotations with dynamic text color
-    for i in range(len(langs)):
-        for j in range(len(archs)):
-            if not np.isnan(matrix[i, j]):
-                val_norm = (matrix[i, j] - vmin) / (vmax - vmin)
-                text_color = "white" if val_norm > 0.6 else "black"
-                ax.text(
-                    j,
-                    i,
-                    f"{matrix[i, j]:.3f}",
-                    ha="center",
-                    va="center",
-                    color=text_color,
-                    fontsize=11,
-                    fontweight="bold",
-                )
-
-    ax.set_title(
-        "Mean Error Rate by Pretraining Language & Architecture\n"
-        "(Averaged Across All Tasks, Excluding Finetuned Models)",
-        fontsize=12,
-        fontweight="bold",
-    )
-
-    plt.tight_layout()
-    plt.savefig(output_dir / "cross_dataset_heatmap.png", dpi=150, bbox_inches="tight")
-
-    # Remove title for PDF version
-    ax.set_title("")
-    plt.savefig(output_dir / "cross_dataset_heatmap.pdf", dpi=150, bbox_inches="tight")
-    plt.close()
-
-    print(f"  - cross_dataset_heatmap.png")
-
-    # Create per-task heatmaps side by side with shared y-axis
-    fig, axes = plt.subplots(1, 3, figsize=(9, 4), sharey=True)
-
-    for idx, task in enumerate(tasks):
-        ax = axes[idx]
-
-        # Build task-specific matrix
-        task_agg = {}
-        for model_name, task_errors in model_task_errors.items():
-            if task not in task_errors:
-                continue
-            meta = MODEL_METADATA[model_name]
-            arch = meta[1]
-            if arch == "Wav2Vec2-XLSR":
-                arch = "Wav2Vec2"
-            key = (meta[0], arch)
-            if key not in task_agg:
-                task_agg[key] = []
-            task_agg[key].append(task_errors[task])
-
-        task_matrix = np.full((len(langs), len(archs)), np.nan)
-        for (lang, arch), errors in task_agg.items():
-            if lang in langs and arch in archs:
-                i = langs.index(lang)
-                j = archs.index(arch)
-                task_matrix[i, j] = np.mean(errors)
-
-        # Task-specific color range
-        task_valid = task_matrix[~np.isnan(task_matrix)]
-        task_vmin = task_valid.min() - 0.01
-        task_vmax = task_valid.max() + 0.01
-
-        im = ax.imshow(
-            task_matrix, cmap="RdYlGn_r", vmin=task_vmin, vmax=task_vmax, aspect="auto"
-        )
-
-        ax.set_xticks(range(len(archs)))
-        ax.set_xticklabels(archs, rotation=45, ha="right", fontsize=9)
-
-        # Add text annotations with task-specific normalization
-        for i in range(len(langs)):
-            for j in range(len(archs)):
-                if not np.isnan(task_matrix[i, j]):
-                    val_norm = (task_matrix[i, j] - task_vmin) / (task_vmax - task_vmin)
-                    text_color = "white" if val_norm > 0.6 else "black"
-                    ax.text(
-                        j,
-                        i,
-                        f"{task_matrix[i, j]:.3f}",
-                        ha="center",
-                        va="center",
-                        color=text_color,
-                        fontsize=9,
-                        fontweight="bold",
-                    )
-
-        ax.set_title(task_labels.get(task, task), fontsize=11, fontweight="bold")
-
-    # Only set y-axis labels on the first panel
-    axes[0].set_yticks(range(len(langs)))
-    axes[0].set_yticklabels(langs, fontsize=10)
-    axes[0].set_ylabel("Pretraining Language", fontsize=10)
-
-    plt.tight_layout()
-    plt.savefig(
-        output_dir / "cross_dataset_heatmap_by_task.png", dpi=150, bbox_inches="tight"
-    )
-
-    # Remove titles for PDF
-    for ax in axes:
-        ax.set_title("")
-    plt.savefig(
-        output_dir / "cross_dataset_heatmap_by_task.pdf", dpi=150, bbox_inches="tight"
-    )
-    plt.close()
-
-    print(f"  - cross_dataset_heatmap_by_task.png")
-
-    return matrix, langs, archs
 
 def plot_cross_dataset_heatmap_4x4(all_results, output_dir):
     """
@@ -1467,7 +881,17 @@ def plot_cross_dataset_heatmap_4x4(all_results, output_dir):
         "wav2vec2-large",
     ]
 
-    fig, axes = plt.subplots(1, 3, figsize=(11, 4), sharey=True)
+    # Reduced width and minimal space between subplots
+    fig, axes = plt.subplots(1, 3, figsize=(10, 4), sharey=True, gridspec_kw={'wspace': 0.02})
+
+    # Language mapping
+    lang_map = {
+        "Chinese": "ZH",
+        "English": "EN",
+        "Japanese": "JA",
+        "Multilingual": "Many"
+    }
+    mapped_langs = [lang_map.get(l, l) for l in langs]
 
     for idx, task in enumerate(tasks):
         ax = axes[idx]
@@ -1512,9 +936,9 @@ def plot_cross_dataset_heatmap_4x4(all_results, output_dir):
         # Task-specific color range (guard against empty panel)
         task_valid = task_matrix[~np.isnan(task_matrix)]
         if task_valid.size == 0:
-            ax.set_title(task_labels.get(task, task), fontsize=11, fontweight="bold")
+            ax.set_title(task_labels.get(task, task), fontsize=14, fontweight="bold")
             ax.set_xticks(range(len(ARCH_SIZE_LABELS)))
-            ax.set_xticklabels(ARCH_SIZE_LABELS, rotation=45, ha="right", fontsize=9)
+            ax.set_xticklabels(ARCH_SIZE_LABELS, rotation=45, ha="right", fontsize=14)
             continue
 
         task_vmin = task_valid.min() - 0.01
@@ -1529,7 +953,7 @@ def plot_cross_dataset_heatmap_4x4(all_results, output_dir):
         )
 
         ax.set_xticks(range(len(ARCH_SIZE_LABELS)))
-        ax.set_xticklabels(ARCH_SIZE_LABELS, rotation=45, ha="right", fontsize=9)
+        ax.set_xticklabels(ARCH_SIZE_LABELS, rotation=45, ha="right", fontsize=14)
 
         # Add text annotations with task-specific normalization
         for i in range(len(langs)):
@@ -1544,24 +968,29 @@ def plot_cross_dataset_heatmap_4x4(all_results, output_dir):
                         ha="center",
                         va="center",
                         color=text_color,
-                        fontsize=9,
+                        fontsize=13,
                         fontweight="bold",
                     )
 
-        ax.set_title(task_labels.get(task, task), fontsize=11, fontweight="bold")
+        ax.set_title(task_labels.get(task, task), fontsize=14, fontweight="bold")
 
     # Only set y-axis labels on the first panel
     axes[0].set_yticks(range(len(langs)))
-    axes[0].set_yticklabels(langs, fontsize=10)
-    axes[0].set_ylabel("Pretraining Language", fontsize=10)
+    # Use mapped langs and increased font size
+    axes[0].set_yticklabels(mapped_langs, fontsize=14)
+    axes[0].set_ylabel("Pretraining Language", fontsize=14)
 
-    plt.tight_layout()
-    plt.savefig(output_dir / "cross_dataset_heatmap_by_task_4x4.png", dpi=150, bbox_inches="tight")
+    # Remove y-ticks for the other panels
+    for ax in axes[1:]:
+        ax.tick_params(axis='y', which='both', left=False, right=False)
+
+    plt.tight_layout(pad=0.2, w_pad=0.02)
+    plt.savefig(output_dir / "cross_dataset_heatmap_by_task_4x4.png", **SAVEFIG_KW)
 
     # Remove titles for PDF
     for ax in axes:
         ax.set_title("")
-    plt.savefig(output_dir / "cross_dataset_heatmap_by_task_4x4.pdf", dpi=150, bbox_inches="tight")
+    plt.savefig(output_dir / "cross_dataset_heatmap_by_task_4x4.pdf", **SAVEFIG_KW)
     plt.close()
 
     print("  - cross_dataset_heatmap_by_task_4x4.png")
@@ -1578,14 +1007,12 @@ def main():
 
     print("\nGenerating cross-analysis plots...")
 
-    plot_cross_task_correlation_simple(all_results, OUTPUT_DIR)
-    plot_cross_task_correlation_all_layers(all_results, OUTPUT_DIR)
-    plot_cross_task_correlation(all_results, OUTPUT_DIR)
-    plot_finetune_effect_by_model(all_results, OUTPUT_DIR)
-    plot_finetune_language_effect(all_results, OUTPUT_DIR)
-    plot_architecture_controlled_language(all_results, OUTPUT_DIR)
-    plot_cross_dataset_heatmap(all_results, OUTPUT_DIR)
     plot_cross_dataset_heatmap_4x4(all_results, OUTPUT_DIR)
+
+    plot_cross_task_correlation(all_results, OUTPUT_DIR)
+    plot_cross_task_correlation_simple(all_results, OUTPUT_DIR)
+
+    plot_finetune_effect_by_model(all_results, OUTPUT_DIR)
 
     print(f"\nAll plots saved to {OUTPUT_DIR}")
 

@@ -21,6 +21,7 @@ The output figure is saved as both PNG and PDF.
 """
 
 from pathlib import Path
+import argparse
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -33,12 +34,34 @@ TASK = "stress"
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 
-HUMAN_DIR = "/home/sunhaitong/fastabx/human_abx/results" / "results" / LANG / "data"
 MACHINE_DIR = SCRIPT_DIR / ".." / "results" / TASK
 CELL_DIR = MACHINE_DIR / "cells"
 
 OUT_DIR = SCRIPT_DIR / ".." / "plots" / "human_abx"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
+
+PLOT_STYLE = {
+    "font.size": 14,
+    "axes.titlesize": 16,
+    "axes.labelsize": 15,
+    "xtick.labelsize": 13,
+    "ytick.labelsize": 13,
+    "legend.fontsize": 12,
+    "axes.linewidth": 1.2,
+    "lines.linewidth": 2.0,
+    "lines.markersize": 10,
+    "grid.linewidth": 0.9,
+    "xtick.major.width": 1.1,
+    "ytick.major.width": 1.1,
+}
+plt.rcParams.update(PLOT_STYLE)
+
+TIGHT_LAYOUT_KW = {"pad": 0.4, "w_pad": 0.6, "h_pad": 0.6}
+SAVEFIG_KW = {"dpi": 300, "bbox_inches": "tight", "pad_inches": 0.05}
+
+SCATTER_S_MED = 140
+SCATTER_EDGEWIDTH = 0.9
+LINEWIDTH_THIN = 1.5
 
 SKIP_MODELS = {"fbank", "mfcc"}
 
@@ -114,37 +137,41 @@ def plot_scatter(human_err, machine_err, out_path: Path):
     reg_x = np.linspace(x.min(), x.max(), 100)
     reg_y = coef[0] * reg_x + coef[1]
 
-    plt.figure(figsize=(8, 8))
+    plt.figure(figsize=(6, 5))
 
     # Scatter points
     plt.scatter(
         x, y,
-        s=60,
-        alpha=0.85,
-        edgecolor="black",
-        linewidth=0.5
+        s=SCATTER_S_MED,
+        alpha=0.7,
+        c="tab:blue",
+        edgecolors="white",
+        linewidth=SCATTER_EDGEWIDTH,
+        zorder=3
     )
 
     # Identity line
     lims = [
-        min(x.min(), y.min()),
-        max(x.max(), y.max())
+        min(x.min(), y.min()) - 0.02,
+        max(x.max(), y.max()) + 0.02
     ]
     plt.plot(
         lims, lims,
         linestyle=":",
         color="gray",
-        lw=1.5,
-        alpha=0.8
+        lw=LINEWIDTH_THIN,
+        alpha=0.5,
+        zorder=1
     )
 
     # Regression line (subtle)
     plt.plot(
         reg_x, reg_y,
         linestyle="--",
-        color="gray",
-        lw=1.5,
-        alpha=0.8
+        color="black",
+        lw=LINEWIDTH_THIN,
+        alpha=0.4,
+        zorder=2
     )
 
     texts = []
@@ -153,44 +180,63 @@ def plot_scatter(human_err, machine_err, out_path: Path):
             plt.text(
                 row["human"], row["machine"],
                 word,
-                fontsize=11,
-                alpha=0.85
+                fontsize=16,
+                fontweight="medium"
             )
         )
 
     adjust_text(
         texts,
-        arrowprops=dict(arrowstyle="-", lw=0.5, color="gray")
+        arrowprops=dict(arrowstyle="-", lw=0.5, color="gray", alpha=0.5)
     )
 
-    plt.xlabel("Human error rate", fontsize=13)
-    plt.ylabel("Machine error rate", fontsize=13)
+    plt.xlabel("Human error rate")
+    plt.ylabel("Machine error rate")
     plt.title(
-        f"Human vs. SSLs Word-level Error Rates\n({LANG}, {TASK})",
-        fontsize=14
+        f"Human vs. Machine Word-level Error Rates\n({LANG}, {TASK})",
+        fontweight="bold"
     )
 
     # Correlation annotation
     plt.text(
-        0.02, 0.98,
-        f"Pearson r = {r:.2f}\n$p$ = {p:.1e}",
+        0.05, 0.95,
+        f"r = {r:.3f}",
         transform=plt.gca().transAxes,
         va="top",
         ha="left",
-        fontsize=12
+        fontsize=13,
+        bbox=dict(boxstyle="round", facecolor="white", alpha=0.8, edgecolor="0.8")
     )
 
     plt.grid(True, linestyle="--", alpha=0.3)
-    plt.tight_layout()
+    plt.tight_layout(**TIGHT_LAYOUT_KW)
 
-    plt.savefig(out_path.with_suffix(".png"), dpi=300)
-    plt.savefig(out_path.with_suffix(".pdf"))
+    plt.savefig(out_path.with_suffix(".png"), **SAVEFIG_KW)
+
+    # Remove title for PDF version
+    plt.title("")
+    plt.savefig(out_path.with_suffix(".pdf"), **SAVEFIG_KW)
     plt.close()
 
 
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Plot human vs. machine word-level error rates."
+    )
+    parser.add_argument(
+        "human_data_dir",
+        type=Path,
+        help="Path to human ABX data directory containing responses*.csv files.",
+    )
+    return parser.parse_args()
+
+
 def main():
+    args = parse_args()
+    human_dir = args.human_data_dir
+
     print("Loading human error rates...")
-    human_err = load_human_error_rates(HUMAN_DIR)
+    human_err = load_human_error_rates(human_dir)
 
     print("Loading machine error rates...")
     machine_err = load_machine_error_rates(MACHINE_DIR)
