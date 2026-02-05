@@ -999,11 +999,27 @@ def plot_cross_dataset_heatmap_4x4(all_results, output_dir):
     return matrix, langs, archs
 
 
+def validate_results(all_results):
+    """Check that every model in MODEL_METADATA has results for every task."""
+    missing = []
+    for task, results in all_results.items():
+        for model in MODEL_METADATA:
+            if model not in results:
+                missing.append((task, model))
+    if missing:
+        lines = [f"  {task}: {model}" for task, model in missing]
+        raise SystemExit(
+            f"Missing results for {len(missing)} model/task combinations:\n"
+            + "\n".join(lines)
+        )
+
+
 def main():
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     print("Loading all task results...")
     all_results = load_all_tasks()
+    validate_results(all_results)
 
     print("\nGenerating cross-analysis plots...")
 

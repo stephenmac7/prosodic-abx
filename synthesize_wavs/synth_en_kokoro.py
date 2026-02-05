@@ -32,7 +32,7 @@ IPA_MAP = {
     },
     "abstract": {
         "noun": "ˈæbstɹˌækt",
-        "verb": "əbstɹˈækt",
+        "verb": "æbstɹˈækt",
     },
     "conduct": {
         "noun": "kˈɑndˌʌkt",
@@ -76,7 +76,7 @@ IPA_MAP = {
     },
     "survey": {
         "noun": "sˈɜɹvˌA",
-        "verb": "səɹvˈA",
+        "verb": "sɜɹvˈA",
     },
     "transport": {
         "noun": "tɹˈænspˌɔɹt",
