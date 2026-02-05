@@ -28,15 +28,15 @@ VOICES = [
 IPA_MAP = {
     "address": {
         "noun": "ˈædɹˌɛs",
-        "verb": "ədɹˈɛs",
+        "verb": "ədɹˈɛs", # weakening expected
     },
     "abstract": {
         "noun": "ˈæbstɹˌækt",
-        "verb": "æbstɹˈækt",
+        "verb": "æbstɹˈækt", # use non-weakened form
     },
     "conduct": {
         "noun": "kˈɑndˌʌkt",
-        "verb": "kəndˈʌkt",
+        "verb": "kəndˈʌkt", # weakening expected
     },
     "discharge": {
         "noun": "dˈɪsʧˌɑɹʤ",
@@ -68,11 +68,11 @@ IPA_MAP = {
     },
     "permit": {
         "noun": "pˈɜɹmɪt",
-        "verb": "pəɹmˈɪt",
+        "verb": "pɜɹmˈɪt",
     },
     "project": {
         "noun": "pɹˈɑʤˌɛkt",
-        "verb": "pɹəʤˈɛkt",
+        "verb": "pɹəʤˈɛkt", # weakening expected
     },
     "survey": {
         "noun": "sˈɜɹvˌA",

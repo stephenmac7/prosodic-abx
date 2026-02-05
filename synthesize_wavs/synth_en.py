@@ -4,7 +4,7 @@ from google.cloud import texttospeech
 
 
 
-OUT_ROOT = Path("/home/sunhaitong/ABX_syn/data/standard_english_stress")
+OUT_ROOT = Path("synth_data/standard_english_stress")
 
 VOICES = {
     "A": "en-US-Standard-A",
@@ -53,15 +53,15 @@ def synthesize(word, pos, ipa, voice_name, out_wav):
 IPA_MAP = {
     "abstract": {
         "noun": "æbˌstɹækt",  
-        "verb": "ˌæbˈstɹækt"
+        "verb": "ˌæbˈstɹækt" # use non-weakened form
     },
     "address": {
         "noun": "ˈædɹɛs",
-        "verb": "əˈdɹɛs"
+        "verb": "əˈdɹɛs" # weakening expected
     },
     "conduct": {
         "noun": "ˈkɒndʌkt",
-        "verb": "kənˈdʌkt"
+        "verb": "kənˈdʌkt" # weakening expected
     },
     "discharge": {
         "noun": "ˈdɪstʃɑɹdʒ",
@@ -93,15 +93,15 @@ IPA_MAP = {
     },
     "permit": {
         "noun": "ˈpɝmɪt",
-        "verb": "pɚˈmɪt"
+        "verb": "pɝˈmɪt"
     },
     "project": {
         "noun": "ˈpɹɑˌd͡ʒɛkt",
-        "verb": "pɹəˈd͡ʒɛkt"
+        "verb": "pɹəˈd͡ʒɛkt" # weakening expected
     },
     "survey": {
         "noun": "ˈsɝˌveɪ",
-        "verb": "sɚˈveɪ"
+        "verb": "sɝˈveɪ"
     },
     "transport": {
         "noun": "ˈtɹæns.pɔɹt",
