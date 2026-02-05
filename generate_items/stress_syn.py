@@ -35,7 +35,7 @@ from pathlib import Path
 # Hardcoded paths (keep style consistent with original script)
 # ============================================================
 
-AUDIO_ROOT = Path("/home/sunhaitong/ABX_syn/data/standard_english_stress")
+AUDIO_ROOT = Path("synth_data/standard_english_stress")
 OUTPUT_DIR = Path("abx_items/stress_syn")
 
 # ============================================================
