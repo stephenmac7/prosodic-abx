@@ -60,6 +60,25 @@ HF_MODELS = {
     "japanese-hubert-base-k2-rs35kh": "reazon-research/japanese-hubert-base-k2-rs35kh",
 }
 
+# Default location for local SSL model mapping:
+# Each entry maps a short model name to a local directory that contains
+# the HuggingFace-style config/processor files (e.g., config.json,
+# preprocessor_config.json, tokenizer.json if needed).
+# Local SSL models (edit this list directly).
+# Format:
+#   "alias_name": "/absolute/path/to/model_dir"
+# Notes:
+# - The directory must contain HuggingFace-style files, e.g.:
+#   config.json, preprocessor_config.json, (optionally) tokenizer.json
+# - Keys are case-insensitive because we normalize to lowercase.
+# Example:
+# LOCAL_SSL_MODELS = {
+#     "my_hubert": "/home/sunhaitong/huggingface_model/my_hubert",
+#     "my_wavlm": "/home/sunhaitong/huggingface_model/my_wavlm",
+# }
+LOCAL_SSL_MODELS: dict[str, str] = {
+    "chinese-wav2vec2-base-ASR": "/home/sunhaitong/experiments/w2v2-zh-cn/checkpoint-1000"
+}
 
 
 def extract_features(
@@ -100,6 +119,9 @@ def extract_features(
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
 
+    # Local SSL mapping, used only if model_name doesn't match
+    # a torchaudio pipeline or a known HF hub ID.
+    local_ssl_map = {k.lower(): v for k, v in LOCAL_SSL_MODELS.items()}
     use_hf = False
     hf_model = None
     hf_processor = None
@@ -116,14 +138,44 @@ def extract_features(
         # Load model
         print(f"Loading {model_name}...")
         bundle = getattr(torchaudio.pipelines, model_key_upper, None)
-        if bundle is not None:
+        is_torchaudio = bundle is not None
+        is_hf_hub = model_key_lower in HF_MODELS
+        is_local = model_key_lower in local_ssl_map
+
+        # If the same name matches multiple sources, we refuse to guess.
+        # Rename the local alias or change the --model name to avoid ambiguity.
+        if sum([is_torchaudio, is_hf_hub, is_local]) > 1:
+            raise ValueError(
+                f"Ambiguous model name: {model_name}. "
+                "It matches multiple sources (torchaudio / HF hub / local). "
+                "Please rename the local alias to be unique."
+            )
+
+        if is_torchaudio:
+            print("Model source: torchaudio pipeline")
             model = bundle.get_model().eval().to(device)
             expected_sr = bundle.sample_rate
-        elif model_key_lower in HF_MODELS:
+        elif is_hf_hub:
             from transformers import AutoFeatureExtractor, AutoModel
+            print("Model source: HuggingFace Hub ID")
             hf_name = HF_MODELS[model_key_lower]
             hf_processor = AutoFeatureExtractor.from_pretrained(hf_name)
             hf_model = AutoModel.from_pretrained(hf_name).to(device).eval()
+            expected_sr = getattr(hf_processor, "sampling_rate", MFCC_SAMPLE_RATE)
+            use_hf = True
+            model = None
+        elif is_local:
+            from transformers import AutoFeatureExtractor, AutoModel
+            # Local SSL model path (must be a directory with HF-style files).
+            # We set local_files_only=True to avoid any network access.
+            local_path = Path(local_ssl_map[model_key_lower]).expanduser()
+            print(f"Model source: local HF model ({local_path})")
+            hf_processor = AutoFeatureExtractor.from_pretrained(
+                local_path, local_files_only=True
+            )
+            hf_model = AutoModel.from_pretrained(
+                local_path, local_files_only=True
+            ).to(device).eval()
             expected_sr = getattr(hf_processor, "sampling_rate", MFCC_SAMPLE_RATE)
             use_hf = True
             model = None
