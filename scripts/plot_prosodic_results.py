@@ -33,7 +33,7 @@ MODEL_METADATA = {
     "hubert_large": ("English", "HuBERT", "Large", "Large", False, None),
     "wav2vec2_base": ("English", "Wav2Vec2", "Base", "Small", False, None),
     "wav2vec2_large": ("English", "Wav2Vec2", "Large", "Small", False, None),
-    "wav2vec2_large_lv60k": ("English", "Wav2Vec2", "Large", "Large", False, None),
+#    "wav2vec2_large_lv60k": ("English", "Wav2Vec2", "Large", "Large", False, None),
     "hubert_asr_large": ("English", "HuBERT", "Large", "Large", True, "English"),
     "wav2vec2_asr_large_960h": (
         "English",
@@ -61,7 +61,7 @@ MODEL_METADATA = {
         None,
     ),
     # 'w2v-bert-2.0' excluded - isolated model with different architecture
-    "wav2vec2-large-xlsr-53-english": (
+    '''"wav2vec2-large-xlsr-53-english": (
         "Multilingual",
         "Wav2Vec2-XLSR",
         "Large",
@@ -85,6 +85,7 @@ MODEL_METADATA = {
         True,
         "Chinese",
     ),
+    '''
     # Chinese pretrained
     "chinese-wav2vec2-base": ("Chinese", "Wav2Vec2", "Base", "Large", False, None),
     "chinese-wav2vec2-large": ("Chinese", "Wav2Vec2", "Large", "Large", False, None),
@@ -95,6 +96,7 @@ MODEL_METADATA = {
     "japanese-wav2vec2-large": ("Japanese", "Wav2Vec2", "Large", "Large", False, None),
     "japanese-hubert-base-k2": ("Japanese", "HuBERT", "Base", "Large", False, None),
     "japanese-hubert-large": ("Japanese", "HuBERT", "Large", "Large", False, None),
+    '''
     "japanese-wav2vec2-base-rs35kh": (
         "Japanese",
         "Wav2Vec2",
@@ -119,13 +121,14 @@ MODEL_METADATA = {
         True,
         "Japanese",
     ),
+    '''
     # Baselines
     "mfcc": ("Baseline", "MFCC", "N/A", "N/A", False, None),
     "fbank": ("Baseline", "FBank", "N/A", "N/A", False, None),
 }
 
 
-def load_results(results_dir):
+def load_results(results_dir, *, filter_metadata=True):
     """Load all CSV results from the directory."""
     results = {}
     results_path = Path(results_dir)
@@ -134,6 +137,15 @@ def load_results(results_dir):
         model_name = csv_file.stem
         df = pd.read_csv(csv_file)
         results[model_name] = df
+
+    if filter_metadata:
+        missing = [m for m in results.keys() if m not in MODEL_METADATA]
+        if missing:
+            print(
+                "Warning: models missing metadata, skipping: "
+                + ", ".join(sorted(missing))
+            )
+        results = {m: df for m, df in results.items() if m in MODEL_METADATA}
 
     return results
 

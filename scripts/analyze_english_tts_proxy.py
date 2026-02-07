@@ -17,6 +17,7 @@ from scipy import stats
 import matplotlib.pyplot as plt
 from adjustText import adjust_text
 
+from plot_prosodic_results import MODEL_METADATA
 
 RESULTS_DIR = Path("results")
 
@@ -97,7 +98,15 @@ def get_common_models() -> list[str]:
     for dataset in DATASETS.values():
         cells_dir = RESULTS_DIR / dataset / "cells"
         models_per_dataset.append(set(p.name for p in cells_dir.iterdir() if p.is_dir()))
-    return sorted(set.intersection(*models_per_dataset))
+    common = sorted(set.intersection(*models_per_dataset))
+    filtered = [m for m in common if m in MODEL_METADATA]
+    missing = [m for m in common if m not in MODEL_METADATA]
+    if missing:
+        print(
+            "Warning: models missing metadata, skipping: "
+            + ", ".join(sorted(missing))
+        )
+    return filtered
 
 
 def analysis_1_per_word_correlation(models: list[str]) -> pl.DataFrame:
@@ -156,13 +165,24 @@ def analysis_1_per_word_correlation(models: list[str]) -> pl.DataFrame:
 
     # Baseline statistics
     print("\nBaselines:")
-    for model in ["mfcc", "fbank"]:
-        for synth in SYNTH_NAMES:
-            row = results_df.filter(
-                (pl.col("model") == model) & (pl.col("synth") == synth)
-            ).row(0, named=True)
-            print(f"  {model.upper()} vs {DISPLAY_NAMES[synth]}: "
-                  f"r={row['pearson_r']:.3f}, ρ={row['spearman_rho']:.3f}")
+    baseline_models = ["mfcc", "fbank"]
+    baselines_present = (
+        results_df.filter(pl.col("model").is_in(baseline_models))["model"].unique()
+    )
+    if baselines_present.is_empty():
+        print("  (no baselines present after metadata filtering)")
+    else:
+        for model in baseline_models:
+            for synth in SYNTH_NAMES:
+                row_df = results_df.filter(
+                    (pl.col("model") == model) & (pl.col("synth") == synth)
+                )
+                if row_df.is_empty():
+                    print(f"  (missing {model.upper()} vs {DISPLAY_NAMES[synth]})")
+                    continue
+                row = row_df.row(0, named=True)
+                print(f"  {model.upper()} vs {DISPLAY_NAMES[synth]}: "
+                      f"r={row['pearson_r']:.3f}, ρ={row['spearman_rho']:.3f}")
 
     return results_df
 

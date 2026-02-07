@@ -28,6 +28,8 @@ import matplotlib.pyplot as plt
 from adjustText import adjust_text
 from scipy.stats import pearsonr
 
+# Import model metadata to filter valid models
+from plot_prosodic_results import MODEL_METADATA
 
 LANG = "English"
 TASK = "stress"
@@ -106,15 +108,25 @@ def load_model_word_errors(model_name: str, layer: str) -> pd.Series:
 
 def load_machine_error_rates(machine_dir: Path) -> pd.Series:
     per_model = []
+    missing = []
 
     for csv in machine_dir.glob("*.csv"):
         model = csv.stem
         if model in SKIP_MODELS:
             continue
+        if model not in MODEL_METADATA:
+            missing.append(model)
+            continue
 
         best_layer = find_best_layer(csv)
         word_error = load_model_word_errors(model, best_layer)
         per_model.append(word_error)
+
+    if missing:
+        missing_list = ", ".join(sorted(missing))
+        print(
+            f"Warning: machine results missing metadata, skipping: {missing_list}"
+        )
 
     machine_error = pd.concat(per_model, axis=1).mean(axis=1)
     return machine_error

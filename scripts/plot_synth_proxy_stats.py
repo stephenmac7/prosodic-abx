@@ -470,6 +470,13 @@ def main():
     syn_results = load_results(syn_dir)
 
     models = sorted(set(nat_results.keys()) & set(syn_results.keys()))
+    missing = [m for m in models if m not in MODEL_METADATA]
+    if missing:
+        print(
+            "Warning: models missing metadata, skipping: "
+            + ", ".join(sorted(missing))
+        )
+    models = [m for m in models if m in MODEL_METADATA]
     if not args.include_baselines:
         models = [
             m

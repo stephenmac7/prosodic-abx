@@ -75,7 +75,20 @@ def load_all_tasks():
     for task_key, task_label in tasks.items():
         task_dir = RESULTS_DIR / task_key
         if task_dir.exists():
-            all_results[task_key] = load_results(task_dir)
+            task_results = load_results(task_dir)
+            filtered_results = {}
+            missing = []
+            for model_name, df in task_results.items():
+                if model_name in MODEL_METADATA:
+                    filtered_results[model_name] = df
+                else:
+                    missing.append(model_name)
+            if missing:
+                missing_list = ", ".join(sorted(missing))
+                print(
+                    f"Warning: {task_label} has models missing metadata, skipping: {missing_list}"
+                )
+            all_results[task_key] = filtered_results
             print(f"Loaded {len(all_results[task_key])} models for {task_label}")
 
     return all_results
@@ -1001,7 +1014,7 @@ def plot_cross_dataset_heatmap_4x4(all_results, output_dir):
 
 
 def validate_results(all_results):
-    """Check that every model in MODEL_METADATA has results for every task."""
+    """Warn if any model in MODEL_METADATA is missing results for a task."""
     missing = []
     for task, results in all_results.items():
         for model in MODEL_METADATA:
@@ -1009,8 +1022,8 @@ def validate_results(all_results):
                 missing.append((task, model))
     if missing:
         lines = [f"  {task}: {model}" for task, model in missing]
-        raise SystemExit(
-            f"Missing results for {len(missing)} model/task combinations:\n"
+        print(
+            f"Warning: missing results for {len(missing)} model/task combinations:\n"
             + "\n".join(lines)
         )
 

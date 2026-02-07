@@ -18,18 +18,16 @@ OUTPUT_DIR = Path(__file__).parent.parent / "plots" / "paired_layerwise"
 
 MODEL_FAMILIES = {
     "HuBERT": [
-        "hubert_base", "hubert_large", "hubert_asr_large",
+        "hubert_base", "hubert_large", 
         "chinese-hubert-base", "chinese-hubert-large",
-        "japanese-hubert-base-k2", "japanese-hubert-large", "japanese-hubert-base-k2-rs35kh",
+        "japanese-hubert-base-k2", "japanese-hubert-large", 
         "mhubert-147",
     ],
     "Wav2Vec2": [
-        "wav2vec2_base", "wav2vec2_large", "wav2vec2_large_lv60k", "wav2vec2_asr_large_960h",
+        "wav2vec2_base", "wav2vec2_large",  "wav2vec2_asr_large_960h",
         "chinese-wav2vec2-base", "chinese-wav2vec2-large",
         "japanese-wav2vec2-base", "japanese-wav2vec2-large",
-        "japanese-wav2vec2-base-rs35kh", "japanese-wav2vec2-large-rs35kh",
-        "wav2vec2-large-xlsr-53", "wav2vec2-large-xlsr-53-english",
-        "wav2vec2-large-xlsr-53-japanese", "wav2vec2-large-xlsr-53-chinese-zh-cn",
+        "wav2vec2-large-xlsr-53"
     ],
     "WavLM": ["wavlm_base", "wavlm_base_plus", "wavlm_large"],
 }
@@ -52,6 +50,7 @@ def is_finetuned(model_name):
 
 
 def plot_family(family_name, models, results_list, datasets, output_dir, finetuned_only, normalize):
+    models = [m for m in models if m in MODEL_METADATA]
     filtered = [m for m in models
                 if all(m in r for r in results_list) and is_finetuned(m) == finetuned_only]
     if not filtered:
@@ -154,6 +153,14 @@ def main():
     finetuned_dir.mkdir(parents=True, exist_ok=True)
 
     print(f"Generating plots for: {' vs '.join(args.datasets)}")
+
+    all_family_models = sorted({m for models in MODEL_FAMILIES.values() for m in models})
+    missing = [m for m in all_family_models if m not in MODEL_METADATA]
+    if missing:
+        print(
+            "Warning: models missing metadata, skipping: "
+            + ", ".join(sorted(missing))
+        )
 
     for family, models in MODEL_FAMILIES.items():
         for finetuned, out_dir in [(False, pretrained_dir), (True, finetuned_dir)]:
