@@ -18,10 +18,11 @@ from pathlib import Path
 from collections import defaultdict
 
 DATASET_LABELS = {
-    "pitch_accent": "Pitch Accent",
-    "stress": "Lexical Stress",
+    "pitch_accent": "English Pitch Accent",
+    "stress": "Japanese Lexical Stress",
     "mandarin_tone": "Mandarin Tone",
 }
+
 
 # Model metadata: (pretrain_lang, architecture, size, corpus_size, finetuned, finetune_lang)
 MODEL_METADATA = {
