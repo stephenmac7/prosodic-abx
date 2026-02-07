@@ -83,9 +83,11 @@ def load_all_tasks():
 
 def plot_cross_task_correlation_simple(all_results, output_dir):
     """
-    Simplified cross-task correlation plot.
-    Only distinguishes between baselines and SSL models, includes all models in-frame.
+    Cross-task correlation plot with all layer combinations.
+    Plots one point per (model, layer) pair, excluding baselines.
     """
+    from plot_prosodic_results import get_layer_num
+
     tasks = list(all_results.keys())
     task_labels = {
         "mandarin_tone": "Mandarin Tone",
@@ -93,24 +95,38 @@ def plot_cross_task_correlation_simple(all_results, output_dir):
         "pitch_accent": "Pitch Accent",
     }
 
-    # Get all models present in all tasks
+    # Get all non-baseline models present in all tasks
     common_models = set(all_results[tasks[0]].keys())
     for task in tasks[1:]:
         common_models &= set(all_results[task].keys())
+    common_models = [
+        m for m in common_models
+        if m in MODEL_METADATA and MODEL_METADATA[m][0] != "Baseline"
+    ]
 
-    # Filter to only models in metadata (exclude unknowns)
-    common_models = [m for m in common_models if m in MODEL_METADATA]
-
-    # Build dataframe with best errors for each task
+    # Build dataframe with one row per (model, layer) combination.
+    # Match layers across tasks by layer number.
     data = []
     for model in common_models:
-        row = {"model": model}
-        meta = MODEL_METADATA[model]
-        row["pretrain_lang"] = meta[0]
-        row["is_baseline"] = meta[0] == "Baseline"
+        # Build {layer_num: error_rate} for each task
+        task_layer_errors = {}
         for task in tasks:
-            row[task] = get_best_error(all_results[task], model)
-        data.append(row)
+            df_model = all_results[task][model]
+            task_layer_errors[task] = {
+                get_layer_num(row["layer"]): row["error_rate"]
+                for _, row in df_model.iterrows()
+            }
+
+        # Find layer numbers common to all tasks
+        common_layers = set(task_layer_errors[tasks[0]].keys())
+        for task in tasks[1:]:
+            common_layers &= set(task_layer_errors[task].keys())
+
+        for layer_num in sorted(common_layers):
+            row = {"model": model, "layer": layer_num}
+            for task in tasks:
+                row[task] = task_layer_errors[task][layer_num]
+            data.append(row)
 
     df = pd.DataFrame(data)
 
@@ -121,42 +137,22 @@ def plot_cross_task_correlation_simple(all_results, output_dir):
         ("pitch_accent", "stress"),
     ]
 
-    fig, axes = plt.subplots(1, 3, figsize=(14, 4.5))
+    fig, axes = plt.subplots(1, 3, figsize=(9, 3.2))
 
     for idx, (task1, task2) in enumerate(task_pairs):
         ax = axes[idx]
 
-        # Plot baselines
-        baselines = df[df["is_baseline"]]
-        if not baselines.empty:
-            ax.scatter(
-                baselines[task1],
-                baselines[task2],
-                c="tab:gray",
-                alpha=0.8,
-                s=SCATTER_S_LARGE,
-                marker="s",
-                zorder=2,
-                edgecolors="white",
-                linewidth=SCATTER_EDGEWIDTH,
-                label="Baseline",
-            )
-
-        # Plot SSL models
-        ssl_models = df[~df["is_baseline"]]
-        if not ssl_models.empty:
-            ax.scatter(
-                ssl_models[task1],
-                ssl_models[task2],
-                c="tab:blue",
-                alpha=0.6,
-                s=SCATTER_S_MED,
-                marker="o",
-                zorder=2,
-                edgecolors="white",
-                linewidth=SCATTER_EDGEWIDTH,
-                label="SSL",
-            )
+        ax.scatter(
+            df[task1],
+            df[task2],
+            c="tab:blue",
+            alpha=0.3,
+            s=SCATTER_S_SMALL,
+            marker="o",
+            zorder=2,
+            edgecolors="white",
+            linewidth=SCATTER_EDGEWIDTH,
+        )
 
         # Add correlation line and stats
         valid = df[[task1, task2]].dropna()
@@ -180,20 +176,19 @@ def plot_cross_task_correlation_simple(all_results, output_dir):
                 0.95,
                 f"r = {r:.3f}",
                 transform=ax.transAxes,
-                                fontsize=13,
+                fontsize=12,
                 verticalalignment="top",
                 bbox=dict(boxstyle="round", facecolor="white", alpha=0.8),
             )
 
-        ax.set_xlabel(f"{task_labels[task1]} Error Rate")
-        ax.set_ylabel(f"{task_labels[task2]} Error Rate")
+        ax.set_xlabel(task_labels[task1], fontsize=12)
+        ax.set_ylabel(task_labels[task2], fontsize=12)
+        ax.tick_params(labelsize=9)
         ax.set_title(f"{task_labels[task1]} vs {task_labels[task2]}")
+        ax.set_box_aspect(1)
         ax.grid(True, alpha=0.3)
 
-        if idx == 0:
-            ax.legend(loc="lower right", fontsize=10)
-
-    plt.tight_layout(**TIGHT_LAYOUT_KW)
+    plt.tight_layout(pad=0.3, w_pad=0.3, h_pad=0.3)
     plt.savefig(output_dir / "cross_task_correlation_simple.png", **SAVEFIG_KW)
 
     # Remove titles for PDF
@@ -215,8 +210,11 @@ def _get_cross_task_data(all_results):
     for task in tasks[1:]:
         common_models &= set(all_results[task].keys())
 
-    # Filter to only models in metadata (exclude unknowns)
-    common_models = [m for m in common_models if m in MODEL_METADATA]
+    # Filter to only models in metadata, exclude baselines
+    common_models = [
+        m for m in common_models
+        if m in MODEL_METADATA and MODEL_METADATA[m][0] != "Baseline"
+    ]
 
     # Build dataframe with best errors for each task
     data = []
@@ -263,11 +261,7 @@ def _plot_single_cross_task_panel(
 
     # Plot all models
     for _, row in df.iterrows():
-        if row["pretrain_lang"] == "Baseline":
-            color = "tab:gray"
-            marker = "s"
-            size = SCATTER_S_MED
-        elif row["finetuned"]:
+        if row["finetuned"]:
             ft_meta = MODEL_METADATA.get(row["model"])
             ft_lang = ft_meta[5] if ft_meta else None
             color = ft_lang_colors.get(ft_lang, "tab:brown")
@@ -321,45 +315,8 @@ def _plot_single_cross_task_panel(
     ax.set_title(f"{task_labels[task1]} vs {task_labels[task2]}")
     ax.grid(True, alpha=0.3)
 
-    # Scale axes based on non-baseline models
-    baselines = df[df["pretrain_lang"] == "Baseline"]
-    non_baseline = df[df["pretrain_lang"] != "Baseline"]
-    baselines_out_of_view = False
-    if not non_baseline.empty:
-        x_min, x_max = non_baseline[task1].min(), non_baseline[task1].max()
-        y_min, y_max = non_baseline[task2].min(), non_baseline[task2].max()
-
-        x_pad = (x_max - x_min) * 0.1
-        y_pad = (y_max - y_min) * 0.1
-
-        ax.set_xlim(x_min - x_pad, x_max + x_pad)
-        ax.set_ylim(y_min - y_pad, y_max + y_pad)
-
-        if not baselines.empty:
-            current_xlim = ax.get_xlim()
-            current_ylim = ax.get_ylim()
-
-            out_of_view = baselines[
-                (baselines[task1] < current_xlim[0])
-                | (baselines[task1] > current_xlim[1])
-                | (baselines[task2] < current_ylim[0])
-                | (baselines[task2] > current_ylim[1])
-            ]
-
-            if not out_of_view.empty:
-                baselines_out_of_view = True
-
     if add_legend:
         legend_elements = [
-            Line2D(
-                [0],
-                [0],
-                marker="s",
-                color="w",
-                markerfacecolor="tab:gray",
-                markersize=MARKERSIZE_MED,
-                label="Baseline (not shown)" if baselines_out_of_view else "Baseline",
-            ),
             Line2D(
                 [0],
                 [0],
@@ -515,15 +472,6 @@ def plot_cross_task_correlation(all_results, output_dir):
         )
 
     legend_elements = [
-        Line2D(
-            [0],
-            [0],
-            marker="s",
-            color="w",
-            markerfacecolor="tab:gray",
-            markersize=MARKERSIZE_MED,
-            label="Baseline",
-        ),
         Line2D(
             [0],
             [0],
@@ -875,14 +823,30 @@ def plot_cross_dataset_heatmap_4x4(all_results, output_dir):
         ("Wav2Vec2", "Large"),
     ]
     ARCH_SIZE_LABELS = [
-        "hubert-base",
-        "hubert-large",
-        "wav2vec2-base",
-        "wav2vec2-large",
+        "HuBERT-B",
+        "HuBERT-L",
+        "w2v2-B",
+        "w2v2-L",
     ]
 
+    # Human baseline error rates per task
+    human_baselines = {
+        "mandarin_tone": 0.0188,
+        "stress": 0.2888,
+        "pitch_accent": 0.1158,
+    }
+
     # Reduced width and minimal space between subplots
-    fig, axes = plt.subplots(1, 3, figsize=(10, 4), sharey=True, gridspec_kw={'wspace': 0.02})
+    from matplotlib.gridspec import GridSpec
+    fig = plt.figure(figsize=(8.5, 5.0))
+    gs = GridSpec(2, 3, figure=fig, height_ratios=[1, 0.05],
+                  wspace=0.1, hspace=0.2)
+    axes = [fig.add_subplot(gs[0, i]) for i in range(3)]
+    cbar_axes = [fig.add_subplot(gs[1, i]) for i in range(3)]
+
+    # Share y-axis across heatmap panels
+    for ax in axes[1:]:
+        ax.sharey(axes[0])
 
     # Language mapping
     lang_map = {
@@ -916,6 +880,10 @@ def plot_cross_dataset_heatmap_4x4(all_results, output_dir):
             if arch == "Wav2Vec2-XLSR":
                 arch = "Wav2Vec2"
 
+            # Map mHuBERT 147M to Base
+            if size == "147M":
+                size = "Base"
+
             key = (arch, size)
             if key not in ARCH_SIZE_ORDER:
                 continue
@@ -941,15 +909,21 @@ def plot_cross_dataset_heatmap_4x4(all_results, output_dir):
             ax.set_xticklabels(ARCH_SIZE_LABELS, rotation=45, ha="right", fontsize=14)
             continue
 
-        task_vmin = task_valid.min() - 0.01
-        task_vmax = task_valid.max() + 0.01
+        baseline = human_baselines.get(task)
+        range_min = task_valid.min()
+        range_max = task_valid.max()
+        if baseline is not None:
+            range_min = min(range_min, baseline)
+            range_max = max(range_max, baseline)
+        task_vmin = range_min
+        task_vmax = range_max
 
-        ax.imshow(
+        im = ax.imshow(
             task_matrix,
-            cmap="RdYlGn_r",
+            cmap="viridis",
             vmin=task_vmin,
             vmax=task_vmax,
-            aspect="auto",
+            aspect="equal",
         )
 
         ax.set_xticks(range(len(ARCH_SIZE_LABELS)))
@@ -960,11 +934,11 @@ def plot_cross_dataset_heatmap_4x4(all_results, output_dir):
             for j in range(len(ARCH_SIZE_LABELS)):
                 if not np.isnan(task_matrix[i, j]):
                     val_norm = (task_matrix[i, j] - task_vmin) / (task_vmax - task_vmin)
-                    text_color = "white" if val_norm > 0.6 else "black"
+                    text_color = "white" if val_norm < 0.6 else "black"
                     ax.text(
                         j,
                         i,
-                        f"{task_matrix[i, j]:.3f}",
+                        f"{task_matrix[i, j] * 100:#.3g}",
                         ha="center",
                         va="center",
                         color=text_color,
@@ -974,23 +948,50 @@ def plot_cross_dataset_heatmap_4x4(all_results, output_dir):
 
         ax.set_title(task_labels.get(task, task), fontsize=14, fontweight="bold")
 
+        # Per-panel colorbar with human baseline marker
+        from matplotlib.ticker import FuncFormatter
+        cbar = fig.colorbar(im, cax=cbar_axes[idx], orientation="horizontal")
+        cbar.outline.set_visible(False)
+        cbar.ax.tick_params(labelsize=8)
+        cbar.ax.xaxis.set_major_formatter(
+            FuncFormatter(lambda x, _: f"{x * 100:#.3g}")
+        )
+
+        # Mark human baseline on this panel's colorbar
+        baseline = human_baselines.get(task)
+        if baseline is not None:
+            cbar.ax.axvline(baseline, color="red", linewidth=2, linestyle="-", zorder=5)
+            cbar.ax.plot(
+                baseline, 1.0, marker="v", color="red", markersize=7,
+                transform=cbar.ax.get_xaxis_transform(), clip_on=False, zorder=5,
+            )
+
     # Only set y-axis labels on the first panel
     axes[0].set_yticks(range(len(langs)))
     # Use mapped langs and increased font size
-    axes[0].set_yticklabels(mapped_langs, fontsize=14)
-    axes[0].set_ylabel("Pretraining Language", fontsize=14)
+    axes[0].set_yticklabels(mapped_langs, fontsize=14, rotation=45, ha="right")
+    # axes[0].set_ylabel("Pretraining Language", fontsize=14, labelpad=0)
 
-    # Remove y-ticks for the other panels
+    # Remove y-tick labels for the other panels
     for ax in axes[1:]:
-        ax.tick_params(axis='y', which='both', left=False, right=False)
+        ax.tick_params(axis='y', which='both', left=False, right=False,
+                       labelleft=False)
 
-    plt.tight_layout(pad=0.2, w_pad=0.02)
+    # Legend for the human baseline marker
+    from matplotlib.lines import Line2D
+    legend_handle = Line2D(
+        [0], [0], color="red", linewidth=2, linestyle="-",
+        marker="v", markersize=7, label="Human error rate",
+    )
+    # Place legend below the right colorbar
+    cbar_axes[2].legend(
+        handles=[legend_handle], loc="upper right",
+        fontsize=10, framealpha=0.8,
+        bbox_to_anchor=(1.04, -1.5),
+    )
+
     plt.savefig(output_dir / "cross_dataset_heatmap_by_task_4x4.png", **SAVEFIG_KW)
-
-    # Remove titles for PDF
-    for ax in axes:
-        ax.set_title("")
-    plt.savefig(output_dir / "cross_dataset_heatmap_by_task_4x4.pdf", **SAVEFIG_KW)
+    plt.savefig(output_dir / "cross_dataset_heatmap_by_task_4x4.pdf", **SAVEFIG_KW) # still needs titles
     plt.close()
 
     print("  - cross_dataset_heatmap_by_task_4x4.png")

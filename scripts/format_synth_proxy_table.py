@@ -63,8 +63,6 @@ def main():
         help="Row label and summary.json path.",
     )
     parser.add_argument("--label", type=str, default=None)
-    parser.add_argument("--topk", type=int, default=3)
-    parser.add_argument("--percent-decimals", type=int, default=0)
     parser.add_argument("--regret-decimals", type=int, default=2)
     parser.add_argument("--corr-decimals", type=int, default=2)
     parser.add_argument("--show-iqr", action="store_true", help="Include IQR for median columns")
@@ -76,40 +74,30 @@ def main():
         path = Path(path_str)
         data = json.loads(path.read_text())
         layer = data["layerwise"]
-        topk_key = f"top{args.topk}_agreement_rate"
-        topk_rate = layer.get(topk_key)
         regret_median = _parse_median_iqr(layer.get("regret_median_iqr"))
-        spearman_median = _parse_median_iqr(layer.get("spearman_median_iqr"))
         pearson_median = _parse_median_iqr(layer.get("pearson_median_iqr"))
 
-        global_regret = data["global"].get("global_regret")
         global_delta = data["global"].get("model_uniform_minus_global")
         global_percentile = data["global"].get("global_percentile")
 
         rows.append(
             {
                 "label": label,
-                "topk": _format_percent_value(topk_rate, args.percent_decimals),
                 "regret": _format_percent_value(regret_median, args.regret_decimals, args.show_iqr),
-                "spearman": _format_value(spearman_median, args.corr_decimals, args.show_iqr),
                 "pearson": _format_value(pearson_median, args.corr_decimals, args.show_iqr),
-                "global_regret": _format_percent_value(global_regret, args.regret_decimals),
+                "global_percentile": _format_value(global_percentile, 0),
                 "global_delta": _format_percent_value(global_delta, args.regret_decimals),
-                "global_percentile": _format_value(global_percentile, args.percent_decimals),
             }
         )
 
     caption_text = (
-        f"\\textbf{{Layer and global selection quality.}} "
+        f"\\textbf{{TTS-based layer and model selection quality.}} "
         f"Subscript $m$ denotes median across models. "
-        f"Top-{args.topk} is the percentage of models where the best layer on synthesized speech is among the "
-        f"top-{args.topk} layers on natural speech. "
-        f"Percentile is the percentile rank of the natural ABX score of the best model+layer according to the synthesized dataset (higher is better). "
-        f"$\\Delta$ ABX vs random is the improvement in ABX score when using synthesized speech to select a model and layer vs. random. "
+        f"$\\Delta$ ABX is the improvement in ABX score when using synthesized speech to select a model and layer vs. random. "
         f"S = standard TTS; K = Kokoro."
     )
     lines = [
-        r"\begin{table*}[t]",
+        r"\begin{table}[t]",
         f"\\caption{{{caption_text}}}",
     ]
     if args.label:
@@ -118,25 +106,25 @@ def main():
         [
             r"\centering",
             r"\small",
-            r"\begin{tabular}{l c c c c c c c}",
+            r"\begin{tabular}{l c c c c}",
             r"\toprule",
-            r"Task & \multicolumn{4}{c}{Local (layer selection)} & \multicolumn{3}{c}{Global (model+layer selection)} \\",
-            r"\cmidrule(lr){2-5} \cmidrule(lr){6-8}",
-            f" & Top-{args.topk} (\\%) & Regret$_m$ (\\%) & $\\rho_m$ & $r_m$ & Regret (\\%) & Percentile & $\\Delta$ ABX vs random (\\%) \\\\",
+            r" & \multicolumn{2}{c}{Local} & \multicolumn{2}{c}{Global} \\",
+            r"\cmidrule(lr){2-3} \cmidrule(lr){4-5}",
+            r" & Regret$_m$ (\%) & $r_m$ & Percentile & $\Delta$ ABX (\%) \\",
             r"\midrule",
         ]
     )
 
     for row in rows:
         lines.append(
-            f"{row['label']} & {row['topk']} & {row['regret']} & {row['spearman']} & {row['pearson']} & {row['global_regret']} & {row['global_percentile']} & {row['global_delta']} \\\\"
+            f"{row['label']} & {row['regret']} & {row['pearson']} & {row['global_percentile']} & {row['global_delta']} \\\\"
         )
 
     lines.extend(
         [
             r"\bottomrule",
             r"\end{tabular}",
-            r"\end{table*}",
+            r"\end{table}",
         ]
     )
 

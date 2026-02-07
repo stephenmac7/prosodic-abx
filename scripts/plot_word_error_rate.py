@@ -137,7 +137,7 @@ def plot_scatter(human_err, machine_err, out_path: Path):
     reg_x = np.linspace(x.min(), x.max(), 100)
     reg_y = coef[0] * reg_x + coef[1]
 
-    plt.figure(figsize=(6, 5))
+    _, ax = plt.subplots(figsize=(6, 6))
 
     # Scatter points
     plt.scatter(
@@ -191,7 +191,7 @@ def plot_scatter(human_err, machine_err, out_path: Path):
     )
 
     plt.xlabel("Human error rate")
-    plt.ylabel("Machine error rate")
+    plt.ylabel("Mean best-layer error rate")
     plt.title(
         f"Human vs. Machine Word-level Error Rates\n({LANG}, {TASK})",
         fontweight="bold"
@@ -208,6 +208,9 @@ def plot_scatter(human_err, machine_err, out_path: Path):
         bbox=dict(boxstyle="round", facecolor="white", alpha=0.8, edgecolor="0.8")
     )
 
+    ax.set_xlim(lims)
+    ax.set_ylim(lims)
+    ax.set_aspect("equal")
     plt.grid(True, linestyle="--", alpha=0.3)
     plt.tight_layout(**TIGHT_LAYOUT_KW)
 
