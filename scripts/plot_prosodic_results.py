@@ -23,7 +23,6 @@ DATASET_LABELS = {
     "mandarin_tone": "Tone",
 }
 
-
 # Model metadata: (pretrain_lang, architecture, size, corpus_size, finetuned, finetune_lang)
 MODEL_METADATA = {
     # English pretrained
@@ -35,15 +34,6 @@ MODEL_METADATA = {
     "wav2vec2_base": ("English", "Wav2Vec2", "Base", "Small", False, None),
     "wav2vec2_large": ("English", "Wav2Vec2", "Large", "Small", False, None),
 #    "wav2vec2_large_lv60k": ("English", "Wav2Vec2", "Large", "Large", False, None),
-    "hubert_asr_large": ("English", "HuBERT", "Large", "Large", True, "English"),
-    "wav2vec2_asr_large_960h": (
-        "English",
-        "Wav2Vec2",
-        "Large",
-        "Small",
-        True,
-        "English",
-    ),
     # Multilingual pretrained
     "wav2vec2-large-xlsr-53": (
         "Multilingual",
@@ -62,31 +52,7 @@ MODEL_METADATA = {
         None,
     ),
     # 'w2v-bert-2.0' excluded - isolated model with different architecture
-    '''"wav2vec2-large-xlsr-53-english": (
-        "Multilingual",
-        "Wav2Vec2-XLSR",
-        "Large",
-        "Large",
-        True,
-        "English",
-    ),
-    "wav2vec2-large-xlsr-53-japanese": (
-        "Multilingual",
-        "Wav2Vec2-XLSR",
-        "Large",
-        "Large",
-        True,
-        "Japanese",
-    ),
-    "wav2vec2-large-xlsr-53-chinese-zh-cn": (
-        "Multilingual",
-        "Wav2Vec2-XLSR",
-        "Large",
-        "Large",
-        True,
-        "Chinese",
-    ),
-    '''
+   
     # Chinese pretrained
     "chinese-wav2vec2-base": ("Chinese", "Wav2Vec2", "Base", "Large", False, None),
     "chinese-wav2vec2-large": ("Chinese", "Wav2Vec2", "Large", "Large", False, None),
@@ -97,32 +63,7 @@ MODEL_METADATA = {
     "japanese-wav2vec2-large": ("Japanese", "Wav2Vec2", "Large", "Large", False, None),
     "japanese-hubert-base-k2": ("Japanese", "HuBERT", "Base", "Large", False, None),
     "japanese-hubert-large": ("Japanese", "HuBERT", "Large", "Large", False, None),
-    '''
-    "japanese-wav2vec2-base-rs35kh": (
-        "Japanese",
-        "Wav2Vec2",
-        "Base",
-        "Large",
-        True,
-        "Japanese",
-    ),
-    "japanese-wav2vec2-large-rs35kh": (
-        "Japanese",
-        "Wav2Vec2",
-        "Large",
-        "Large",
-        True,
-        "Japanese",
-    ),
-    "japanese-hubert-base-k2-rs35kh": (
-        "Japanese",
-        "HuBERT",
-        "Base",
-        "Large",
-        True,
-        "Japanese",
-    ),
-    '''
+
     # Baselines
     "mfcc": ("Baseline", "MFCC", "N/A", "N/A", False, None),
     "fbank": ("Baseline", "FBank", "N/A", "N/A", False, None),
