@@ -227,7 +227,7 @@ def plot_curves_with_phonemes(
         diff,
         color="#1f77b4",
         lw=1.8,
-        label="Dis(B,X)-Dis(A,X)",
+        label="d(B,X)-d(A,X)",
     )
     # Zero reference line for the difference.
     ax_diff.axhline(0.0, color="#4a4a4a", lw=1.0, linestyle="-", alpha=0.8)
@@ -307,8 +307,8 @@ def plot_curves_with_phonemes(
     ax.grid(False)
     from matplotlib.patches import Patch
     legend_handles = [
-        Patch(facecolor="#6baed6", edgecolor="none", alpha=0.25, label="Dis(B,X) > Dis(A,X)"),
-        Patch(facecolor="#fdae6b", edgecolor="none", alpha=0.25, label="Dis(B,X) < Dis(A,X)"),
+        Patch(facecolor="#6baed6", edgecolor="none", alpha=0.25, label="d(B,X) > d(A,X)"),
+        Patch(facecolor="#fdae6b", edgecolor="none", alpha=0.25, label="d(B,X) < d(A,X)"),
     ]
     ax.legend(handles=legend_handles, frameon=True, framealpha=0.95, loc="upper left")
 
