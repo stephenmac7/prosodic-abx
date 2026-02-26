@@ -19,6 +19,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from scipy import stats as sp_stats
 
 from plot_prosodic_results import MODEL_METADATA, load_results, get_layer_num
 
@@ -124,6 +125,43 @@ def compute_per_model_stats(
 
     merged["model"] = model_name
     return stats, merged[["model", "layer", "layer_num", "error_rate_nat", "error_rate_syn"]]
+
+
+def plot_model_rank_bump(model_summary, model_rank_rho, output_path):
+    """Bump chart showing how model rankings change between natural and synthetic."""
+    df = model_summary[["nat_best", "syn_best"]].copy()
+    df["rank_nat"] = df["nat_best"].rank(method="min")
+    df["rank_syn"] = df["syn_best"].rank(method="min")
+
+    n = len(df)
+    fig, ax = plt.subplots(figsize=(6, max(4, n * 0.35)))
+
+    for model, row in df.iterrows():
+        r_nat = row["rank_nat"]
+        r_syn = row["rank_syn"]
+        shift = abs(r_nat - r_syn)
+        color = "tab:red" if shift >= 3 else ("tab:orange" if shift >= 1 else "tab:gray")
+        alpha = 1.0 if shift >= 1 else 0.5
+        ax.plot([0, 1], [r_nat, r_syn], "o-", color=color, alpha=alpha,
+                markersize=5, linewidth=1.5)
+        ax.text(-0.05, r_nat, model, ha="right", va="center", fontsize=6)
+        ax.text(1.05, r_syn, model, ha="left", va="center", fontsize=6)
+
+    ax.set_xlim(-0.5, 1.5)
+    ax.set_ylim(n + 0.5, 0.5)
+    ax.set_xticks([0, 1])
+    ax.set_xticklabels(["Natural", "Synthetic"])
+    ax.set_ylabel("Rank (1 = best)")
+    ax.set_title("Model Ranking: Natural vs Synthetic")
+    ax.grid(True, axis="y", alpha=0.2)
+
+    if model_rank_rho is not None:
+        ax.text(0.5, n + 0.4, f"Spearman ρ = {model_rank_rho:.3f}", ha="center",
+                fontsize=8, style="italic", transform=ax.get_yaxis_transform())
+
+    plt.tight_layout()
+    plt.savefig(output_path, dpi=150, bbox_inches="tight")
+    plt.close()
 
 
 def plot_distributions(stats_df, global_regret, model_uniform_global_regret, within_model_random_regret, output_path):
@@ -277,6 +315,8 @@ def write_summary_table(
     global_percentile_ci,
     model_summary,
     per_model_random_regret,
+    model_rank_rho,
+    model_rank_rho_ci,
     n_boot,
     rng,
     output_path,
@@ -357,6 +397,10 @@ def write_summary_table(
         lines.append(
             f"| Synth-chosen percentile (natural errors) | {global_percentile:.1f} | {_format_ci(global_percentile_ci)} |"
         )
+    if model_rank_rho is not None:
+        lines.append(
+            f"| Model ranking Spearman ρ | {model_rank_rho:.4f} | {_format_ci(model_rank_rho_ci)} |"
+        )
 
     output_path.write_text("\n".join(lines) + "\n")
 
@@ -372,6 +416,8 @@ def write_summary_json(
     global_percentile_ci,
     model_summary,
     per_model_random_regret,
+    model_rank_rho,
+    model_rank_rho_ci,
     n_boot,
     rng,
     output_path,
@@ -440,6 +486,8 @@ def write_summary_json(
             ),
             "global_percentile": None if global_percentile is None else float(global_percentile),
             "global_percentile_ci": _format_ci(global_percentile_ci),
+            "model_rank_rho": model_rank_rho,
+            "model_rank_rho_ci": _format_ci(model_rank_rho_ci),
         },
     }
     output_path.write_text(json.dumps(summary, indent=2) + "\n")
@@ -534,6 +582,25 @@ def main():
         )
         within_model_random_regret = per_model_random_regret.mean()
 
+    # Model ranking Spearman ρ (best-layer error per model)
+    model_rank_rho = None
+    model_rank_rho_ci = None
+    if model_summary is not None and len(model_summary) >= 3:
+        model_rank_rho, _ = sp_stats.spearmanr(
+            model_summary["nat_best"], model_summary["syn_best"]
+        )
+        model_rank_rho = float(model_rank_rho)
+        # Bootstrap CI on model ranking ρ
+        if args.bootstrap > 0 and len(model_summary) >= 2:
+            nat_vals = model_summary["nat_best"].to_numpy()
+            syn_vals = model_summary["syn_best"].to_numpy()
+            n = nat_vals.size
+            boot_rhos = np.empty(args.bootstrap)
+            for i in range(args.bootstrap):
+                idx = rng.integers(0, n, size=n)
+                boot_rhos[i], _ = sp_stats.spearmanr(nat_vals[idx], syn_vals[idx])
+            model_rank_rho_ci = np.quantile(boot_rhos, [0.025, 0.975])
+
     out_dir = args.output_dir or (OUTPUT_DIR / f"{args.natural_dataset}_vs_{args.synth_dataset}")
     out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -549,6 +616,11 @@ def main():
         plot_path,
     )
 
+    if model_summary is not None and len(model_summary) >= 2:
+        bump_path = out_dir / "model_rank_bump.png"
+        plot_model_rank_bump(model_summary, model_rank_rho, bump_path)
+        print(f"Saved: {bump_path}")
+
     summary_path = out_dir / "summary.md"
     write_summary_table(
         stats_df,
@@ -561,6 +633,8 @@ def main():
         global_percentile_ci,
         model_summary,
         per_model_random_regret,
+        model_rank_rho,
+        model_rank_rho_ci,
         args.bootstrap,
         rng,
         summary_path,
@@ -578,6 +652,8 @@ def main():
         global_percentile_ci,
         model_summary,
         per_model_random_regret,
+        model_rank_rho,
+        model_rank_rho_ci,
         args.bootstrap,
         rng,
         summary_json_path,
@@ -593,6 +669,8 @@ def main():
         print(f"Model-uniform global regret: {model_uniform_global_regret:.4f}")
     if within_model_random_regret is not None:
         print(f"Within-model random regret: {within_model_random_regret:.4f}")
+    if model_rank_rho is not None:
+        print(f"Model ranking Spearman ρ: {model_rank_rho:.4f} {_format_ci(model_rank_rho_ci)}")
 
 
 if __name__ == "__main__":

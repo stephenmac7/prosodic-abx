@@ -124,7 +124,8 @@ def human_error_and_bootstrap(
 
 
 def main():
-    tasks = ["pitch_accent", "stress", "mandarin_tone"]
+    tasks = ["stress", "pitch_accent", "mandarin_tone"]
+    tasks.reverse()
     labels = [DATASET_LABELS.get(t, t) for t in tasks]
 
     data = []
@@ -145,7 +146,7 @@ def main():
     fig, ax = plt.subplots(figsize=(6.0, 2.4))
     box = ax.boxplot(
         data,
-        labels=labels,
+        tick_labels=labels,
         vert=False,
         showfliers=False,
         patch_artist=True,
@@ -160,7 +161,7 @@ def main():
 
     # Overlay per-model scatter points with small jitter.
     rng = np.random.default_rng(0)
-    scatter_colors = ["#4c78a8", "#72b7b2", "#f58518"]
+    scatter_colors = ["#ffb000", "#648fff", "#fe6100"]
     for idx, vals in enumerate(data, start=1):
         if not vals:
             continue
@@ -184,7 +185,7 @@ def main():
             idx,
             low,
             high,
-            color="#d62728",
+            color="#dc267f",
             linewidth=2.0,
             zorder=5,
             label="Human baseline" if idx == 1 else None,
@@ -193,7 +194,7 @@ def main():
             [low, high],
             idx - 0.12,
             idx + 0.12,
-            color="#d62728",
+            color="#dc267f",
             linewidth=1.6,
             zorder=6,
         )
@@ -206,7 +207,7 @@ def main():
     # Legend with a simple vertical line.
     legend_handle = Line2D(
         [0], [0],
-        color="#d62728",
+        color="#dc267f",
         marker="|",
         linestyle="None",
         markersize=10,
@@ -219,7 +220,7 @@ def main():
         framealpha=1.0,
         facecolor="white",
         edgecolor="#cccccc",
-        loc="upper right",
+        loc="lower right",
     )
 
     out_path = OUTPUT_DIR / "human_ssl_boxplot"

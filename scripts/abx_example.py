@@ -14,6 +14,7 @@ from pathlib import Path
 import numpy as np
 import torch
 import matplotlib.pyplot as plt
+from matplotlib.patches import Patch
 
 
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -160,19 +161,6 @@ def parse_phone_intervals(textgrid_path: Path):
     return intervals
 
 
-def _prepare_waveform(audio: torch.Tensor, sr: int, max_points: int = 5000):
-    """Return time axis and normalized waveform for lightweight plotting."""
-    y = audio.squeeze(0).cpu().numpy()
-    if y.size == 0:
-        return np.array([]), np.array([])
-    if y.size > max_points:
-        step = int(np.ceil(y.size / max_points))
-        y = y[::step]
-    y = y / (np.max(np.abs(y)) + 1e-8)
-    t = np.linspace(0, len(audio.squeeze(0)) / sr, num=y.size)
-    return t, y
-
-
 def plot_curves_with_phonemes(
     t,
     curve_a,
@@ -184,40 +172,16 @@ def plot_curves_with_phonemes(
         {
             "font.size": 13,
             "axes.titlesize": 15,
-            "axes.labelsize": 13,
+            "axes.labelsize": 12,
             "xtick.labelsize": 11,
             "ytick.labelsize": 11,
         }
     )
 
-    fig, ax = plt.subplots(figsize=(7.2, 3.6))
+    fig, ax = plt.subplots(figsize=(7, 2.5))
     # White background.
     fig.patch.set_facecolor("white")
     ax.set_facecolor("white")
-
-    # DTW curves (A↔X, B↔X).
-    # ax.plot(
-    #     t,
-    #     curve_a,
-    #     color="#7aa6d8",
-    #     lw=1.6,
-    #     marker="s",
-    #     markersize=5.5,
-    #     markerfacecolor="#2b6cb0",
-    #     markeredgewidth=0.0,
-    #     label="A ↔ X",
-    # )
-    # ax.plot(
-    #     t,
-    #     curve_b,
-    #     color="#e0a07a",
-    #     lw=1.6,
-    #     marker="s",
-    #     markersize=5.5,
-    #     markerfacecolor="#c05621",
-    #     markeredgewidth=0.0,
-    #     label="B ↔ X",
-    # )
 
     # BX - AX difference curve (on its own hidden y-axis).
     diff = curve_b - curve_a
@@ -225,15 +189,16 @@ def plot_curves_with_phonemes(
     ax_diff.plot(
         t,
         diff,
-        color="#1f77b4",
+        color="#4a4a4a",
         lw=1.8,
-        label="d(B,X)-d(A,X)",
+        label=r"$d(R_B, R_X) - d(R_A, R_X)$",
     )
     # Zero reference line for the difference.
     ax_diff.axhline(0.0, color="#4a4a4a", lw=1.0, linestyle="-", alpha=0.8)
-    # Increase amplitude visually by widening the symmetric limits.
-    max_abs = float(np.max(np.abs(diff))) if diff.size else 1.0
-    ax_diff.set_ylim(-1.5 * max_abs, 1.5 * max_abs)
+    # Asymmetric limits: tight below zero, padded above for the curve.
+    diff_min = float(np.min(diff)) if diff.size else -1.0
+    diff_max = float(np.max(diff)) if diff.size else 1.0
+    ax_diff.set_ylim(1.8 * diff_min, 1.1 * diff_max)
     ax_diff.set_yticks([])
     ax_diff.spines["right"].set_visible(False)
     ax_diff.spines["left"].set_visible(False)
@@ -246,8 +211,8 @@ def plot_curves_with_phonemes(
         0,
         diff,
         where=diff >= 0,
-        color="#6baed6",
-        alpha=0.25,
+        color="#FFB000",
+        alpha=1.,
         interpolate=True,
         zorder=0,
     )
@@ -256,37 +221,30 @@ def plot_curves_with_phonemes(
         0,
         diff,
         where=diff < 0,
-        color="#fdae6b",
-        alpha=0.25,
+        color="#648FFF",
+        alpha=1.,
         interpolate=True,
         zorder=0,
     )
 
-    # Waveform on a secondary axis (kept subtle)
-    # t_wav, y_wav = _prepare_waveform(audio_x, sr)
-    # ax_wav = ax.twinx()
-    # ax_wav.plot(t_wav, y_wav, color="#bfbfbf", lw=0.8, alpha=0.4, zorder=0)
-    # ax_wav.set_ylim(-1.0, 1.0)
-    # ax_wav.set_yticks([])
-    # ax_wav.spines["right"].set_visible(False)
-    # ax_wav.spines["left"].set_visible(False)
-    # ax_wav.spines["top"].set_visible(False)
-    # ax_wav.spines["bottom"].set_visible(False)
-
     # Overlay phoneme boundaries aligned to X time axis.
+    data_end = float(t[-1]) if t.size > 0 else 0.0
     if textgrid_path.exists():
         intervals = parse_phone_intervals(textgrid_path)
+        # Clip intervals to the data range.
+        intervals = [(t0, min(t1, data_end), label) for t0, t1, label in intervals
+                      if t0 < data_end]
         # Draw boundaries first
         for idx, (t0, t1, label) in enumerate(intervals):
             ax.axvline(t0, color="#4a4a4a", linewidth=1.0, alpha=0.7, zorder=1)
             if idx == len(intervals) - 1:
                 ax.axvline(t1, color="#4a4a4a", linewidth=1.0, alpha=0.7, zorder=1)
-        # Then draw phoneme labels on top of everything
+        # Then draw phoneme labels near the bottom of the plot
         for (t0, t1, label) in intervals:
             mid = 0.5 * (t0 + t1)
-            ax.text(
+            ax_diff.text(
                 mid,
-                0.5,
+                0.08,
                 label,
                 ha="center",
                 va="center",
@@ -294,46 +252,30 @@ def plot_curves_with_phonemes(
                 fontsize=24,
                 fontweight="bold",
                 color="#1f2a44",
-                bbox=dict(boxstyle="round,pad=0.2", facecolor="white", alpha=0.9, edgecolor="none"),
                 zorder=10,
             )
     else:
         print(f"Warning: TextGrid not found, skipping phoneme overlay: {textgrid_path}")
 
-    ax.set_xlabel("")
-    ax.set_ylabel("")
     ax.set_yticks([])
-    ax.set_title("")
-    ax.grid(False)
-    from matplotlib.patches import Patch
-    legend_handles = [
-        Patch(facecolor="#6baed6", edgecolor="none", alpha=0.25, label="d(B,X) > d(A,X)"),
-        Patch(facecolor="#fdae6b", edgecolor="none", alpha=0.25, label="d(B,X) < d(A,X)"),
-    ]
-    ax.legend(handles=legend_handles, frameon=True, framealpha=0.95, loc="upper left")
-
+    ax.set_xticks([])
+    ax.set_xlabel("Time in X")
+    ax.set_ylabel(r"$d(R_B, R_X) - d(R_A, R_X)$")
     for spine in ax.spines.values():
         spine.set_visible(True)
         spine.set_color("black")
         spine.set_linewidth(1.0)
 
-    # X-axis label
-    ax.set_xlabel("Time in X (s)")
+    legend_handles = [
+        Patch(facecolor="#648FFF", edgecolor="none", alpha=1., label=r"$d(R_A, R_X) > d(R_B, R_X)$"),
+        Patch(facecolor="#FFB000", edgecolor="none", alpha=1., label=r"$d(R_A, R_X) < d(R_B, R_X)$"),
+    ]
+    ax.legend(handles=legend_handles, frameon=True, framealpha=0.95, loc="upper left")
 
-    # Trim view to [0, waveform_end] if waveform is enabled, otherwise use t.
-    if textgrid_path.exists():
-        try:
-            xmax = intervals[-1][1]
-            ax.set_xlim(0.0, float(xmax))
-        except Exception:
-            if t.size > 0:
-                ax.set_xlim(0.0, float(t[-1]))
-    elif t.size > 0:
+    # Trim view to the end of the feature data (the CNN encoder produces
+    # slightly fewer frames than the full audio duration).
+    if t.size > 0:
         ax.set_xlim(0.0, float(t[-1]))
-
-    # Add an arrow at the end of the x-axis with unit label.
-    # No axis arrow; keep the x-axis clean.
-
 
     plt.tight_layout()
     plt.savefig(out_path.with_suffix(".png"), dpi=200, bbox_inches="tight")
@@ -383,7 +325,7 @@ def main():
     curve_a = np.mean(np.stack(a_curves, axis=0), axis=0)
     curve_b = np.mean(np.stack(b_curves, axis=0), axis=0)
 
-    time_x = np.arange(len(curve_a)) / frequency
+    time_x = (np.arange(len(curve_a)) + 0.5) / frequency
     out_path = OUT_DIR / "ryoshin_dtw_japanese-hubert-large_l18"
     plot_curves_with_phonemes(
         time_x,

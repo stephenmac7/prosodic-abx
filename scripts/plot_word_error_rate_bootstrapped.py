@@ -209,8 +209,8 @@ def plot_scatter(human_err, machine_err, r_low, r_high, out_path: Path):
     plt.scatter(
         x, y,
         s=SCATTER_S_MED,
-        alpha=0.7,
-        c="tab:blue",
+        alpha=1.,
+        c="#648FFF",
         edgecolors="white",
         linewidth=SCATTER_EDGEWIDTH,
         zorder=3

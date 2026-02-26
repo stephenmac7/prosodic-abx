@@ -67,6 +67,16 @@ def main():
             print(f"Warning: no model data found for {t}")
         data.append(vals)
 
+    # Print IQR statistics to contextualize regret
+    print("Best-layer error rate statistics (across SSL models):")
+    for t, label, vals in zip(tasks, labels, data):
+        if not vals:
+            continue
+        arr = np.array(vals)
+        q1, median, q3 = np.percentile(arr, [25, 50, 75])
+        iqr = q3 - q1
+        print(f"  {label}: median={median:.4f}, Q1={q1:.4f}, Q3={q3:.4f}, IQR={iqr:.4f}, min={arr.min():.4f}, max={arr.max():.4f}, n={len(arr)}")
+
     fig, ax = plt.subplots(figsize=(6.0, 2.4))
     box = ax.boxplot(
         data,

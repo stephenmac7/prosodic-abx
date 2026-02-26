@@ -97,6 +97,28 @@ def compute_per_model_stats(model_name, df_out, df_in, topk=3):
     within_1 = int(abs(layer_diff) <= 1)
     within_2 = int(abs(layer_diff) <= 2)
 
+    # Depth-delta correlation: does the in-context advantage grow with depth?
+    max_layer = merged["layer_num"].max()
+    if max_layer > 0 and len(merged) >= 3:
+        norm_depth = merged["layer_num"].values / max_layer
+        depth_delta_rho, _ = sp_stats.spearmanr(norm_depth, delta_all)
+    else:
+        norm_depth = None
+        depth_delta_rho = np.nan
+
+    # Partial correlation: curve similarity after removing depth trend
+    if norm_depth is not None and len(merged) >= 4:
+        # Residualize both curves against depth
+        coef_out = np.polyfit(norm_depth, errors_out, 1)
+        coef_in = np.polyfit(norm_depth, errors_in, 1)
+        resid_out = errors_out - np.polyval(coef_out, norm_depth)
+        resid_in = errors_in - np.polyval(coef_in, norm_depth)
+        partial_pearson, _ = sp_stats.pearsonr(resid_out, resid_in)
+        partial_spearman, _ = sp_stats.spearmanr(resid_out, resid_in)
+    else:
+        partial_pearson = np.nan
+        partial_spearman = np.nan
+
     stats_dict = {
         "model": model_name,
         "n_layers": len(merged),
@@ -121,6 +143,9 @@ def compute_per_model_stats(model_name, df_out, df_in, topk=3):
         "delta_at_out_best": delta_best_out,
         "delta_at_in_best": delta_best_in,
         "delta_best_vs_best": delta_best_layer_error,
+        "depth_delta_rho": depth_delta_rho,
+        "partial_pearson": partial_pearson,
+        "partial_spearman": partial_spearman,
     }
 
     merged["model"] = model_name
@@ -285,6 +310,45 @@ def plot_correlation_scatter(all_merged, output_path):
     plt.close()
 
 
+def plot_model_rank_bump(stats_df, output_path):
+    """Bump chart showing how model rankings change between conditions."""
+    df = stats_df[["model", "out_best_error", "in_best_error"]].copy()
+    df["rank_out"] = df["out_best_error"].rank(method="min")
+    df["rank_in"] = df["in_best_error"].rank(method="min")
+
+    n = len(df)
+    fig, ax = plt.subplots(figsize=(6, max(4, n * 0.35)))
+
+    for _, row in df.iterrows():
+        r_out = row["rank_out"]
+        r_in = row["rank_in"]
+        shift = abs(r_out - r_in)
+        color = "tab:red" if shift >= 3 else ("tab:orange" if shift >= 1 else "tab:gray")
+        alpha = 1.0 if shift >= 1 else 0.5
+        ax.plot([0, 1], [r_out, r_in], "o-", color=color, alpha=alpha,
+                markersize=5, linewidth=1.5)
+        ax.text(-0.05, r_out, row["model"], ha="right", va="center", fontsize=6)
+        ax.text(1.05, r_in, row["model"], ha="left", va="center", fontsize=6)
+
+    ax.set_xlim(-0.5, 1.5)
+    ax.set_ylim(n + 0.5, 0.5)
+    ax.set_xticks([0, 1])
+    ax.set_xticklabels(["Out-of-context", "In-context"])
+    ax.set_ylabel("Rank (1 = best)")
+    ax.set_title("Model Ranking: Out-of-context vs In-context")
+    ax.grid(True, axis="y", alpha=0.2)
+
+    # Compute rank correlation for subtitle
+    from scipy.stats import spearmanr
+    rho, _ = spearmanr(df["rank_out"], df["rank_in"])
+    ax.text(0.5, n + 0.4, f"Spearman ρ = {rho:.3f}", ha="center", fontsize=8,
+            style="italic", transform=ax.get_yaxis_transform())
+
+    plt.tight_layout()
+    plt.savefig(output_path, dpi=150, bbox_inches="tight")
+    plt.close()
+
+
 def write_summary(stats_df, all_merged, n_boot, rng, output_path, dataset_label=""):
     """Write summary statistics to markdown file."""
     topk = 3
@@ -296,6 +360,8 @@ def write_summary(stats_df, all_merged, n_boot, rng, output_path, dataset_label=
         "spearman_r": bootstrap_ci(stats_df["spearman_r"], np.median, n_boot, rng),
         "slope_pearson": bootstrap_ci(stats_df["slope_pearson"], np.median, n_boot, rng),
         "slope_spearman": bootstrap_ci(stats_df["slope_spearman"], np.median, n_boot, rng),
+        "partial_pearson": bootstrap_ci(stats_df["partial_pearson"], np.median, n_boot, rng),
+        "partial_spearman": bootstrap_ci(stats_df["partial_spearman"], np.median, n_boot, rng),
         "delta_mean": bootstrap_ci(stats_df["delta_mean"], np.median, n_boot, rng),
         "delta_at_out_best": bootstrap_ci(stats_df["delta_at_out_best"], np.median, n_boot, rng),
         "layer_diff": bootstrap_ci(stats_df["layer_diff"], np.median, n_boot, rng),
@@ -323,6 +389,25 @@ def write_summary(stats_df, all_merged, n_boot, rng, output_path, dataset_label=
     else:
         layer_sign_p = np.nan
 
+    # Wilcoxon signed-rank test on layer_diff (more powerful than sign test)
+    layer_diffs_nonzero = layer_diffs[layer_diffs != 0]
+    if len(layer_diffs_nonzero) >= 1:
+        wilcoxon_stat, wilcoxon_p = sp_stats.wilcoxon(
+            layer_diffs_nonzero, alternative='less'
+        )
+    else:
+        wilcoxon_stat, wilcoxon_p = np.nan, np.nan
+
+    # Depth-delta Spearman: does in-context advantage grow with depth?
+    depth_delta_rhos = stats_df["depth_delta_rho"].dropna()
+    depth_delta_rho_median = depth_delta_rhos.median() if len(depth_delta_rhos) > 0 else np.nan
+    if len(depth_delta_rhos) >= 1:
+        dd_wilcoxon_stat, dd_wilcoxon_p = sp_stats.wilcoxon(
+            depth_delta_rhos, alternative='greater'
+        )
+    else:
+        dd_wilcoxon_stat, dd_wilcoxon_p = np.nan, np.nan
+
     # Overall correlation across all points
     overall_r, _ = sp_stats.pearsonr(all_merged["error_rate_out"], all_merged["error_rate_in"])
     overall_rho, _ = sp_stats.spearmanr(all_merged["error_rate_out"], all_merged["error_rate_in"])
@@ -338,6 +423,8 @@ def write_summary(stats_df, all_merged, n_boot, rng, output_path, dataset_label=
         f"| Spearman ρ (layer-wise) | {format_median_iqr(stats_df['spearman_r'])} | {format_ci(cis['spearman_r'])} |",
         f"| Slope Pearson r | {format_median_iqr(stats_df['slope_pearson'])} | {format_ci(cis['slope_pearson'])} |",
         f"| Slope Spearman ρ | {format_median_iqr(stats_df['slope_spearman'])} | {format_ci(cis['slope_spearman'])} |",
+        f"| Partial Pearson r (depth removed) | {format_median_iqr(stats_df['partial_pearson'])} | {format_ci(cis['partial_pearson'])} |",
+        f"| Partial Spearman ρ (depth removed) | {format_median_iqr(stats_df['partial_spearman'])} | {format_ci(cis['partial_spearman'])} |",
         "",
         f"Overall correlation (all model-layer points): r={overall_r:.4f}, ρ={overall_rho:.4f}",
         "",
@@ -350,12 +437,17 @@ def write_summary(stats_df, all_merged, n_boot, rng, output_path, dataset_label=
         f"| Within ±2 layers | {stats_df['within_2'].mean():.1%} | {format_ci(cis['within_2'])} |",
         f"| Layer diff median [IQR] | {format_median_iqr(stats_df['layer_diff'])} | {format_ci(cis['layer_diff'])} |",
         "",
-        "### Layer shift direction (one-sided sign test)",
+        "### Layer shift direction",
         f"Among {n_layer_nonzero} models with different best layers:",
         f"- {n_layer_neg} ({n_layer_neg}/{n_layer_nonzero}) prefer **deeper** layers in-context (negative diff)",
         f"- {n_layer_pos} ({n_layer_pos}/{n_layer_nonzero}) prefer **shallower** layers in-context (positive diff)",
         f"- {n_layer_zero} models have identical best layers",
-        f"- One-sided sign test p-value: {layer_sign_p:.4f} (H1: in-context prefers deeper)",
+        f"- Sign test p-value: {layer_sign_p:.4f} (H1: in-context prefers deeper)",
+        f"- Wilcoxon signed-rank p-value: {wilcoxon_p:.4f} (H1: in-context prefers deeper)",
+        "",
+        "### Depth-delta correlation (all layers)",
+        f"Per-model Spearman ρ(depth, Δ) median [IQR]: {format_median_iqr(depth_delta_rhos)}",
+        f"- Wilcoxon signed-rank p-value: {dd_wilcoxon_p:.4f} (H1: in-context advantage grows with depth)",
         "",
         "## Performance Differences",
         "| Metric | Median [IQR] | 95% CI |",
@@ -404,6 +496,22 @@ def write_summary_json(stats_df, all_merged, n_boot, rng, output_path):
     else:
         layer_sign_p = None
 
+    # Wilcoxon signed-rank test on layer_diff
+    layer_diffs_nonzero = layer_diffs[layer_diffs != 0]
+    if len(layer_diffs_nonzero) >= 1:
+        _, wilcoxon_p = sp_stats.wilcoxon(layer_diffs_nonzero, alternative='less')
+        wilcoxon_p = float(wilcoxon_p)
+    else:
+        wilcoxon_p = None
+
+    # Depth-delta Spearman
+    depth_delta_rhos = stats_df["depth_delta_rho"].dropna()
+    if len(depth_delta_rhos) >= 1:
+        _, dd_wilcoxon_p = sp_stats.wilcoxon(depth_delta_rhos, alternative='greater')
+        dd_wilcoxon_p = float(dd_wilcoxon_p)
+    else:
+        dd_wilcoxon_p = None
+
     summary = {
         "meta": {
             "n_models": int(len(stats_df)),
@@ -416,6 +524,8 @@ def write_summary_json(stats_df, all_merged, n_boot, rng, output_path):
             "spearman_ci": format_ci(bootstrap_ci(stats_df["spearman_r"], np.median, n_boot, rng)),
             "slope_pearson_median": float(stats_df["slope_pearson"].median()) if not stats_df["slope_pearson"].isna().all() else None,
             "slope_spearman_median": float(stats_df["slope_spearman"].median()) if not stats_df["slope_spearman"].isna().all() else None,
+            "partial_pearson_median": float(stats_df["partial_pearson"].median()) if not stats_df["partial_pearson"].isna().all() else None,
+            "partial_spearman_median": float(stats_df["partial_spearman"].median()) if not stats_df["partial_spearman"].isna().all() else None,
             "overall_r": float(overall_r),
             "overall_rho": float(overall_rho),
         },
@@ -429,6 +539,9 @@ def write_summary_json(stats_df, all_merged, n_boot, rng, output_path):
             "layer_shift_n_shallower": n_layer_pos,
             "layer_shift_n_same": n_layer_zero,
             "layer_shift_sign_test_p": layer_sign_p,
+            "layer_shift_wilcoxon_p": wilcoxon_p,
+            "depth_delta_rho_median": float(depth_delta_rhos.median()) if len(depth_delta_rhos) > 0 else None,
+            "depth_delta_wilcoxon_p": dd_wilcoxon_p,
         },
         "performance_diff": {
             "delta_mean_median": float(stats_df["delta_mean"].median()),
@@ -532,6 +645,9 @@ def main():
     plot_correlation_scatter(all_merged, output_dir / "correlation_scatter.png")
     print(f"Saved: {output_dir / 'correlation_scatter.png'}")
 
+    plot_model_rank_bump(stats_df, output_dir / "model_rank_bump.png")
+    print(f"Saved: {output_dir / 'model_rank_bump.png'}")
+
     # Write summaries
     write_summary(stats_df, all_merged, args.bootstrap, rng, output_dir / "summary.md", dataset_label)
     print(f"Saved: {output_dir / 'summary.md'}")
@@ -547,13 +663,15 @@ def main():
     print(f"  Layer-wise Pearson r:  {stats_df['pearson_r'].median():.3f}")
     print(f"  Layer-wise Spearman ρ: {stats_df['spearman_r'].median():.3f}")
     print(f"  Slope Pearson r:       {stats_df['slope_pearson'].median():.3f}")
+    print(f"  Partial Pearson r:    {stats_df['partial_pearson'].median():.3f}  (depth removed)")
+    print(f"  Partial Spearman ρ:   {stats_df['partial_spearman'].median():.3f}  (depth removed)")
 
     print(f"\nBest layer agreement:")
     print(f"  Exact match:    {stats_df['best_match'].mean():.1%}")
     print(f"  Within ±1:      {stats_df['within_1'].mean():.1%}")
     print(f"  Within ±2:      {stats_df['within_2'].mean():.1%}")
 
-    # Layer shift sign test
+    # Layer shift tests
     layer_diffs = stats_df["layer_diff"]
     n_layer_neg = (layer_diffs < 0).sum()
     n_layer_pos = (layer_diffs > 0).sum()
@@ -561,10 +679,20 @@ def main():
     n_layer_nonzero = n_layer_neg + n_layer_pos
     if n_layer_nonzero > 0:
         layer_sign_p = sp_stats.binomtest(n_layer_pos, n_layer_nonzero, 0.5, alternative='less').pvalue
-        print(f"\nLayer shift (one-sided sign test, H1: deeper):")
-        print(f"  {n_layer_neg}/{n_layer_nonzero} prefer deeper in-context, {n_layer_pos}/{n_layer_nonzero} shallower")
-        print(f"  {n_layer_zero} models have same best layer")
-        print(f"  p-value: {layer_sign_p:.4f}")
+        layer_diffs_nonzero = layer_diffs[layer_diffs != 0]
+        _, wilcoxon_p = sp_stats.wilcoxon(layer_diffs_nonzero, alternative='less')
+        print(f"\nLayer shift (H1: in-context prefers deeper):")
+        print(f"  {n_layer_neg}/{n_layer_nonzero} prefer deeper, {n_layer_pos}/{n_layer_nonzero} shallower, {n_layer_zero} same")
+        print(f"  Sign test p-value:    {layer_sign_p:.4f}")
+        print(f"  Wilcoxon SR p-value:  {wilcoxon_p:.4f}")
+
+    # Depth-delta correlation
+    depth_delta_rhos = stats_df["depth_delta_rho"].dropna()
+    if len(depth_delta_rhos) >= 1:
+        _, dd_wilcoxon_p = sp_stats.wilcoxon(depth_delta_rhos, alternative='greater')
+        print(f"\nDepth-delta correlation (H1: in-context advantage grows with depth):")
+        print(f"  Median ρ(depth, Δ):   {depth_delta_rhos.median():.3f}")
+        print(f"  Wilcoxon SR p-value:  {dd_wilcoxon_p:.4f}")
 
     print(f"\nPerformance difference (out − in):")
     print(f"  Median Δ per model: {stats_df['delta_mean'].median():.4f}")

@@ -65,7 +65,7 @@ SCATTER_S_MED = 140
 SCATTER_EDGEWIDTH = 0.9
 LINEWIDTH_THIN = 1.5
 
-SKIP_MODELS = {"fbank", "mfcc"}
+BASELINE_MODELS = {"fbank", "mfcc"}
 
 
 def load_human_error_rates(human_dir: Path) -> pd.Series:
@@ -112,7 +112,7 @@ def load_machine_error_rates(machine_dir: Path) -> pd.Series:
 
     for csv in machine_dir.glob("*.csv"):
         model = csv.stem
-        if model in SKIP_MODELS:
+        if model in BASELINE_MODELS:
             continue
         if model not in MODEL_METADATA:
             missing.append(model)
@@ -130,6 +130,34 @@ def load_machine_error_rates(machine_dir: Path) -> pd.Series:
 
     machine_error = pd.concat(per_model, axis=1).mean(axis=1)
     return machine_error
+
+
+def load_baseline_error_rates(machine_dir: Path) -> dict[str, pd.Series]:
+    baselines = {}
+    for model in sorted(BASELINE_MODELS):
+        csv = machine_dir / f"{model}.csv"
+        if not csv.exists():
+            continue
+        best_layer = find_best_layer(csv)
+        baselines[model] = load_model_word_errors(model, best_layer)
+    return baselines
+
+
+def parse_skip_words(raw_words: list[str] | None) -> list[str]:
+    if not raw_words:
+        return []
+    words = []
+    for item in raw_words:
+        if not item:
+            continue
+        words.extend([word for word in item.split(",") if word])
+    return sorted(set(words))
+
+
+def filter_word_errors(word_err: pd.Series, skip_words: list[str]) -> pd.Series:
+    if not skip_words:
+        return word_err
+    return word_err.drop(index=skip_words, errors="ignore")
 
 def plot_scatter(human_err, machine_err, out_path: Path):
     df = pd.concat(
@@ -155,8 +183,8 @@ def plot_scatter(human_err, machine_err, out_path: Path):
     plt.scatter(
         x, y,
         s=SCATTER_S_MED,
-        alpha=0.7,
-        c="tab:blue",
+        alpha=1.0,
+        c="#648FFF",
         edgecolors="white",
         linewidth=SCATTER_EDGEWIDTH,
         zorder=3
@@ -243,24 +271,53 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         help="Path to human ABX data directory containing responses*.csv files.",
     )
+    parser.add_argument(
+        "--baselines",
+        action="store_true",
+        help="Also plot MFCC/FBANK baselines as separate figures.",
+    )
+    parser.add_argument(
+        "--skip-words",
+        nargs="*",
+        default=None,
+        help=(
+            "Words (phone_sequence) to exclude. "
+            "Provide space-separated values and/or comma-separated groups."
+        ),
+    )
     return parser.parse_args()
 
 
 def main():
     args = parse_args()
     human_dir = args.human_data_dir
+    skip_words = parse_skip_words(args.skip_words)
+    if skip_words:
+        print(f"Skipping {len(skip_words)} word(s): {', '.join(skip_words)}")
 
     print("Loading human error rates...")
     human_err = load_human_error_rates(human_dir)
+    human_err = filter_word_errors(human_err, skip_words)
 
     print("Loading machine error rates...")
     machine_err = load_machine_error_rates(MACHINE_DIR)
+    machine_err = filter_word_errors(machine_err, skip_words)
 
     out_name = f"human_vs_machine_word_error_{LANG}_{TASK}"
     out_path = OUT_DIR / out_name
 
     print(f"Saving plot to {out_path}")
     plot_scatter(human_err, machine_err, out_path)
+
+    if args.baselines:
+        print("Loading baseline error rates...")
+        baselines = load_baseline_error_rates(MACHINE_DIR)
+        for model, baseline_err in baselines.items():
+            baseline_err = filter_word_errors(baseline_err, skip_words)
+            base_out_name = f"human_vs_{model}_word_error_{LANG}_{TASK}"
+            base_out_path = OUT_DIR / base_out_name
+            print(f"Saving baseline plot to {base_out_path}")
+            plot_scatter(human_err, baseline_err, base_out_path)
 
 
 if __name__ == "__main__":

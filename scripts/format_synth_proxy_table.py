@@ -16,6 +16,18 @@ import json
 from pathlib import Path
 
 
+def _parse_ci(ci_str):
+    """Parse '[lower, upper]' string, return (lower, upper) or None."""
+    if ci_str is None or ci_str == "N/A":
+        return None
+    try:
+        stripped = ci_str.strip("[]")
+        parts = stripped.split(",")
+        return (float(parts[0].strip()), float(parts[1].strip()))
+    except (ValueError, IndexError):
+        return None
+
+
 def _parse_median_iqr(value):
     """Parse 'median [q1, q3]' string, return (median, q1, q3) or None."""
     if value is None or value == "N/A":
@@ -30,26 +42,17 @@ def _parse_median_iqr(value):
         return None
 
 
-def _format_value(value, decimals, show_iqr=False):
-    if value is None:
+def _format_ci_latex(ci, decimals=2, scale=1.0):
+    """Format CI as LaTeX: $[lower, upper]$."""
+    if ci is None:
         return "N/A"
-    if isinstance(value, tuple):
-        median, q1, q3 = value
-        if show_iqr:
-            return f"{median:.{decimals}f}$^{{{q3:.{decimals}f}}}_{{{q1:.{decimals}f}}}$"
-        return f"{median:.{decimals}f}"
-    return f"{value:.{decimals}f}"
-
-
-def _format_percent_value(value, decimals, show_iqr=False):
-    if value is None:
-        return "N/A"
-    if isinstance(value, tuple):
-        median, q1, q3 = value
-        if show_iqr:
-            return f"{median * 100:.{decimals}f}$^{{{q3 * 100:.{decimals}f}}}_{{{q1 * 100:.{decimals}f}}}$"
-        return f"{median * 100:.{decimals}f}"
-    return f"{value * 100:.{decimals}f}"
+    lo, hi = ci
+    lo_s = f"{lo * scale:.{decimals}f}"
+    hi_s = f"{hi * scale:.{decimals}f}"
+    # Add \phantom{-} for positive values to align with negatives
+    if lo * scale >= 0:
+        lo_s = f"\\phantom{{-}}{lo_s}"
+    return f"$[{lo_s},$ & ${hi_s}]$"
 
 
 def main():
@@ -65,7 +68,6 @@ def main():
     parser.add_argument("--label", type=str, default=None)
     parser.add_argument("--regret-decimals", type=int, default=2)
     parser.add_argument("--corr-decimals", type=int, default=2)
-    parser.add_argument("--show-iqr", action="store_true", help="Include IQR for median columns")
     parser.add_argument("--output", type=Path, default=None)
     args = parser.parse_args()
 
@@ -74,27 +76,36 @@ def main():
         path = Path(path_str)
         data = json.loads(path.read_text())
         layer = data["layerwise"]
-        regret_median = _parse_median_iqr(layer.get("regret_median_iqr"))
-        pearson_median = _parse_median_iqr(layer.get("pearson_median_iqr"))
+        glob = data["global"]
 
-        global_delta = data["global"].get("model_uniform_minus_global")
-        global_percentile = data["global"].get("global_percentile")
+        regret_parsed = _parse_median_iqr(layer.get("regret_median_iqr"))
+        regret_pct = f"{regret_parsed[0] * 100:.{args.regret_decimals}f}" if regret_parsed else "N/A"
+
+        pearson_parsed = _parse_median_iqr(layer.get("pearson_median_iqr"))
+        pearson_str = f"{pearson_parsed[0]:.{args.corr_decimals}f}" if pearson_parsed else "N/A"
+
+        rho = glob.get("model_rank_rho")
+        rho_str = f"{rho:.{args.corr_decimals}f}" if rho is not None else "N/A"
+
+        rho_ci = _parse_ci(glob.get("model_rank_rho_ci"))
+        rho_ci_str = _format_ci_latex(rho_ci, args.corr_decimals)
 
         rows.append(
             {
                 "label": label,
-                "regret": _format_percent_value(regret_median, args.regret_decimals, args.show_iqr),
-                "pearson": _format_value(pearson_median, args.corr_decimals, args.show_iqr),
-                "global_percentile": _format_value(global_percentile, 0),
-                "global_delta": _format_percent_value(global_delta, args.regret_decimals),
+                "regret": regret_pct,
+                "pearson": pearson_str,
+                "rho": rho_str,
+                "rho_ci": rho_ci_str,
             }
         )
 
     caption_text = (
-        f"\\textbf{{TTS-based layer and model selection quality.}} "
-        f"Subscript $m$ denotes median across models. "
-        f"$\\Delta$ ABX is the improvement in ABX score when using synthesized speech to select a model and layer vs. random. "
-        f"S = standard TTS; K = Kokoro."
+        r"\textbf{TTS proxy quality for layer and model selection.} "
+        r"Subscript $m$ denotes median across models. "
+        r"Regret is the increase in error rate on natural speech when choosing a layer based on synthesized speech. "
+        r"$\rho_\textrm{model}$ is the Spearman rank correlation of best-layer error rates across models. "
+        r"S = standard TTS; K = Kokoro."
     )
     lines = [
         r"\begin{table}[t]",
@@ -106,24 +117,24 @@ def main():
         [
             r"\centering",
             r"\small",
-            r"\begin{tabular}{l c c c c}",
+            r"\resizebox{\columnwidth}{!}{%",
+            r"\begin{tabular}{l c c @{\quad} c @{\enspace} l @{\;} r}",
             r"\toprule",
-            r" & \multicolumn{2}{c}{Local} & \multicolumn{2}{c}{Global} \\",
-            r"\cmidrule(lr){2-3} \cmidrule(lr){4-5}",
-            r" & Regret$_m$ (\%) & $r_m$ & Percentile & $\Delta$ ABX (\%) \\",
-            r"\midrule",
+            r" & $r_m$ & Regret$_m$ (\%) & \multicolumn{3}{c}{$\rho_\textrm{model}$ [95\% CI]} \\",
+            r"\cmidrule(r){2-3} \cmidrule(l){4-6}",
         ]
     )
 
     for row in rows:
         lines.append(
-            f"{row['label']} & {row['regret']} & {row['pearson']} & {row['global_percentile']} & {row['global_delta']} \\\\"
+            f"{row['label']} & {row['pearson']} & {row['regret']} & {row['rho']} & {row['rho_ci']}\\\\"
         )
 
     lines.extend(
         [
             r"\bottomrule",
             r"\end{tabular}",
+            r"}",
             r"\end{table}",
         ]
     )

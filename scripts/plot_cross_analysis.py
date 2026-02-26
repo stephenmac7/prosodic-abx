@@ -67,7 +67,7 @@ def load_all_tasks():
     """Load results from all three main tasks."""
     tasks = {
         "mandarin_tone": "Mandarin Tone",
-        "stress": "Lexical Stress",
+        "stress": "Stress",
         "pitch_accent": "Pitch Accent",
     }
 
@@ -103,9 +103,9 @@ def plot_cross_task_correlation_simple(all_results, output_dir):
 
     tasks = list(all_results.keys())
     task_labels = {
-        "mandarin_tone": "Mandarin Tone",
-        "stress": "Lexical Stress",
-        "pitch_accent": "Pitch Accent",
+        "mandarin_tone": "Tone (ZH)",
+        "stress": "Stress (EN)",
+        "pitch_accent": "Pitch Accent (JA)",
     }
 
     # Get all non-baseline models present in all tasks
@@ -150,7 +150,7 @@ def plot_cross_task_correlation_simple(all_results, output_dir):
         ("pitch_accent", "stress"),
     ]
 
-    fig, axes = plt.subplots(1, 3, figsize=(9, 3.2))
+    fig, axes = plt.subplots(1, 3, figsize=(6.7, 2.2))
 
     for idx, (task1, task2) in enumerate(task_pairs):
         ax = axes[idx]
@@ -158,7 +158,7 @@ def plot_cross_task_correlation_simple(all_results, output_dir):
         ax.scatter(
             df[task1],
             df[task2],
-            c="tab:blue",
+            c="#648FFF",
             alpha=0.3,
             s=SCATTER_S_SMALL,
             marker="o",
@@ -397,7 +397,7 @@ def plot_cross_task_correlation(all_results, output_dir):
     """
     task_labels = {
         "mandarin_tone": "Mandarin Tone",
-        "stress": "Lexical Stress",
+        "stress": "Stress",
         "pitch_accent": "Pitch Accent",
     }
 
@@ -760,7 +760,7 @@ def plot_cross_dataset_heatmap_4x4(all_results, output_dir):
     tasks = list(all_results.keys())
     task_labels = {
         "mandarin_tone": "Mandarin Tone",
-        "stress": "Lexical Stress",
+        "stress": "Stress",
         "pitch_accent": "Pitch Accent",
     }
 
