@@ -44,9 +44,9 @@ from torchcodec.decoders import AudioDecoder
 
 # Hardcoded input paths
 ANN_JSON = Path(__file__).parent / "metadata" / "stress_recording_annotations.json"
-AUDIO_ROOT_SENTENCES = Path("/home/sunhaitong/ABX_stress/data/recording_sentences")
-TEXTGRID_ROOT = Path("/home/sunhaitong/ABX_stress/data/recording_sentences_MFA_aligned")
-MANUAL_TIMESTAMPS = Path(__file__).parent / "metadata" / "stress_recording_manual_timestamps.json"
+AUDIO_ROOT_SENTENCES = Path("/home/sunhaitong/ABX_stress/data/recording_sentences_48k")
+TEXTGRID_ROOT = Path("/home/sunhaitong/ABX_stress/data/recording_sentences_48k_MFA_aligned")
+MANUAL_TIMESTAMPS = Path(__file__).parent / "metadata" / "stress_recording_manual_timestamps_48k.json"
 OUTPUT_DIR = Path("abx_items/stress")
 
 # Processing parameters
