@@ -62,6 +62,26 @@ def load_best_errors(task: str) -> list[float]:
     return values
 
 
+def load_acoustic_baselines(task: str) -> dict[str, float]:
+    """Load MFCC/FBANK error rates for one task as acoustic baselines."""
+    task_dir = RESULTS_DIR / task
+    if not task_dir.exists():
+        raise FileNotFoundError(f"Missing results directory: {task_dir}")
+
+    baselines = {}
+    for name in ("mfcc", "fbank"):
+        csv_path = task_dir / f"{name}.csv"
+        if not csv_path.exists():
+            continue
+        df = pd.read_csv(csv_path)
+        if "mode" in df.columns:
+            df = df[df["mode"] == "across"]
+        if df.empty:
+            continue
+        baselines[name] = float(df["error_rate"].min())
+    return baselines
+
+
 def _list_response_files(data_dir: Path) -> list[Path]:
     return sorted(data_dir.glob("responses*.csv"))
 
@@ -130,11 +150,18 @@ def main():
 
     data = []
     human_stats = {}
+    acoustic_stats = {}
     for t in tasks:
         vals = load_best_errors(t)
         if not vals:
             print(f"Warning: no model data found for {t}")
         data.append(vals)
+        acoustic_stats[t] = load_acoustic_baselines(t)
+        if acoustic_stats[t]:
+            print(
+                f"[{t}] acoustic baselines: "
+                + ", ".join(f"{k}={v:.4f}" for k, v in acoustic_stats[t].items())
+            )
 
         data_dir = HUMAN_DATA_DIRS.get(t)
         if data_dir is None:
@@ -161,7 +188,6 @@ def main():
 
     # Overlay per-model scatter points with small jitter.
     rng = np.random.default_rng(0)
-    scatter_colors = ["#ffb000", "#648fff", "#fe6100"]
     for idx, vals in enumerate(data, start=1):
         if not vals:
             continue
@@ -170,13 +196,42 @@ def main():
             vals,
             idx + jitter,
             s=18,
-            color=scatter_colors[(idx - 1) % len(scatter_colors)],
+            color="#FE6100",
             alpha=0.7,
             zorder=4,
         )
 
-    # Overlay human baseline markers as short red horizontal lines.
+    # Overlay human baseline markers and acoustic baseline points.
+    acoustic_legend_added = False
     for idx, task in enumerate(tasks, start=1):
+        if task in acoustic_stats:
+            mfcc_val = acoustic_stats[task].get("mfcc")
+            fbank_val = acoustic_stats[task].get("fbank")
+            if mfcc_val is not None:
+                ax.scatter(
+                    [mfcc_val],
+                    [idx],
+                    s=18,
+                    marker="o",
+                    facecolor="#785ef0",
+                    edgecolor="#785ef0",
+                    zorder=5,
+                    label="Acoustic baseline" if not acoustic_legend_added else None,
+                )
+                acoustic_legend_added = True
+            if fbank_val is not None:
+                ax.scatter(
+                    [fbank_val],
+                    [idx],
+                    s=18,
+                    marker="o",
+                    facecolor="#785ef0",
+                    edgecolor="#785ef0",
+                    zorder=5,
+                    label="Acoustic baseline" if not acoustic_legend_added else None,
+                )
+                acoustic_legend_added = True
+
         if task not in human_stats:
             continue
         human_val, low, high = human_stats[task]
@@ -204,23 +259,47 @@ def main():
 #    ax.set_title("S3Ms vs Human Baseline")
     ax.grid(True, axis="x", alpha=0.3)
     from matplotlib.lines import Line2D
-    # Legend with a simple vertical line.
-    legend_handle = Line2D(
-        [0], [0],
-        color="#dc267f",
-        marker="|",
-        linestyle="None",
-        markersize=10,
-        markeredgewidth=2.0,
+    # Use an errorbar container so legend shows the same I/H-like interval glyph.
+    human_legend_handle = ax.errorbar(
+        [np.nan],
+        [np.nan],
+        xerr=[[0.04], [0.04]],
+        fmt="none",
+        ecolor="#dc267f",
+        elinewidth=2.0,
+        capsize=4,
+        capthick=1.6,
         label="Human baseline",
     )
+    acoustic_legend_handle = Line2D(
+        [0], [0],
+        color="#785ef0",
+        marker="o",
+        linestyle="None",
+        markersize=5,
+        markerfacecolor="#785ef0",
+        markeredgecolor="#785ef0",
+        label="Acoustic baseline",
+    )
+    s3m_legend_handle = Line2D(
+        [0], [0],
+        color="#FE6100",
+        marker="o",
+        linestyle="None",
+        markersize=5,
+        markerfacecolor="#FE6100",
+        markeredgecolor="#FE6100",
+        label="S3M",
+    )
     ax.legend(
-        handles=[legend_handle],
+        handles=[s3m_legend_handle, acoustic_legend_handle, human_legend_handle],
         frameon=True,
-        framealpha=1.0,
-        facecolor="white",
-        edgecolor="#cccccc",
-        loc="lower right",
+        loc="upper right",
+        bbox_to_anchor=(1.0, 1.22),
+        ncol=3,
+        columnspacing=1.2,
+        handletextpad=0.5,
+        borderaxespad=0.0,
     )
 
     out_path = OUTPUT_DIR / "human_ssl_boxplot"
