@@ -44,7 +44,7 @@ Then run:
 python prepare_data.py --tone
 ```
 
-## Synthetic Data
+## Synthesis Corpus
 
 ```bash
 python synthesize_wavs/synth_en.py
