@@ -12,6 +12,14 @@ source .venv/bin/activate
 bash install.sh
 ```
 
+Google Text-to-Speech synthesis requires a Google Cloud project with the
+Text-to-Speech API enabled, billing enabled, and application-default credentials
+configured for the account you want to use.
+
+Kokoro English synthesis uses Montreal Forced Aligner for word alignment. Install
+MFA following the official MFA documentation, and make sure the `mfa` command is
+available before running the Kokoro synthesis script.
+
 ## Data
 
 Prepare the English stress and Japanese pitch accent data:
@@ -35,3 +43,15 @@ Then run:
 ```bash
 python prepare_data.py --tone
 ```
+
+## Synthetic Data
+
+```bash
+python synthesize_wavs/synth_en.py
+python synthesize_wavs/synth_jp.py
+python synthesize_wavs/synth_zh.py
+python synthesize_wavs/synth_en_kokoro.py --mfa-command /path/to/mfa
+```
+
+
+

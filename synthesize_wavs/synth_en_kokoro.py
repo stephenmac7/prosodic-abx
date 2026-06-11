@@ -1,16 +1,24 @@
 #!/usr/bin/env python3
-"""Synthesize English stress minimal pairs using Kokoro TTS.
+"""Build Kokoro English lexical stress data with MFA word alignment.
 
-Generates WAV files for noun/verb stress pairs.
-Output structure matches /home/sunhaitong/ABX_syn/data/standard_english_stress.
+The script writes:
+  data/stress_kokoro/raw/      carrier-sentence WAV and LAB files for MFA
+  data/stress_kokoro/aligned/  MFA TextGrid files
+  data/stress_kokoro/audio/    clipped target-word WAV files
+  data/stress_kokoro/metadata.csv
 """
 
 import argparse
+import csv
+import os
+import shutil
+import subprocess
+import wave
 from pathlib import Path
 
 import numpy as np
-import pandas as pd
 import soundfile as sf
+import tgt
 from kokoro import KPipeline
 from tqdm import tqdm
 
@@ -89,17 +97,52 @@ IPA_MAP = {
 }
 
 SAMPLE_RATE = 24000  # Kokoro native sample rate
-
+OUTPUT_ROOT = Path("data/stress_kokoro")
+METADATA_COLUMNS = [
+    "id",
+    "audio_file",
+    "speaker",
+    "text",
+    "target",
+    "target_onset",
+    "target_offset",
+    "label",
+    "lexical_category",
+]
+LABELS = {
+    "noun": "1",
+    "verb": "2",
+}
 
 def get_args():
     parser = argparse.ArgumentParser(
-        description="Synthesize English stress minimal pairs using Kokoro TTS"
+        description="Build Kokoro English lexical stress data"
     )
     parser.add_argument(
-        "--output_path",
+        "--output-root",
         type=Path,
-        default=Path("synth_data/kokoro_english_stress"),
-        help="Output directory for generated files",
+        default=OUTPUT_ROOT,
+        help=f"Output data directory (default: {OUTPUT_ROOT})",
+    )
+    parser.add_argument(
+        "--mfa-command",
+        default="mfa",
+        help="MFA command or executable path (default: mfa)",
+    )
+    parser.add_argument(
+        "--dictionary",
+        default="english_us_arpa",
+        help="MFA dictionary name or path (default: english_us_arpa)",
+    )
+    parser.add_argument(
+        "--acoustic-model",
+        default="english_us_arpa",
+        help="MFA acoustic model name or path (default: english_us_arpa)",
+    )
+    parser.add_argument(
+        "--skip-mfa",
+        action="store_true",
+        help="Skip MFA alignment and use existing TextGrids in aligned/.",
     )
     parser.add_argument(
         "--seed",
@@ -144,85 +187,184 @@ def synthesize(pipeline, word, ipa, voice):
     return full_audio, phonemes
 
 
-def main():
-    args = get_args()
+def run_mfa(
+    mfa_command: str,
+    corpus_dir: Path,
+    dictionary: str,
+    acoustic_model: str,
+    aligned_dir: Path,
+) -> None:
+    """Run MFA alignment with an external mfa command."""
+    executable = shutil.which(mfa_command) if "/" not in mfa_command else mfa_command
+    if executable is None:
+        raise FileNotFoundError(
+            f"MFA command not found: {mfa_command}. Install MFA separately and "
+            "pass --mfa-command /path/to/mfa if it is not on PATH."
+        )
 
-    # Set random seed
-    np.random.seed(args.seed)
+    aligned_dir.mkdir(parents=True, exist_ok=True)
+    env = os.environ.copy()
+    mfa_bin = str(Path(executable).resolve().parent)
+    env["PATH"] = f"{mfa_bin}{os.pathsep}{env.get('PATH', '')}"
 
-    # Create output directory
-    args.output_path.mkdir(parents=True, exist_ok=True)
+    cmd = [
+        executable,
+        "align",
+        str(corpus_dir),
+        dictionary,
+        acoustic_model,
+        str(aligned_dir),
+        "--clean",
+        "--overwrite",
+    ]
+    print("Running MFA:", " ".join(cmd))
+    subprocess.run(cmd, check=True, env=env)
 
-    # Initialize Kokoro pipeline
+
+def find_word_interval(textgrid_path: Path, target_word: str) -> tuple[float, float]:
+    """Find target-word onset and offset in an MFA TextGrid."""
+    textgrid = tgt.io.read_textgrid(str(textgrid_path))
+    words_tier = textgrid.get_tier_by_name("words")
+    target = target_word.lower()
+
+    for interval in words_tier.intervals:
+        if interval.text.lower() == target:
+            return interval.start_time, interval.end_time
+
+    raise ValueError(f"Target word '{target_word}' not found in {textgrid_path}")
+
+
+def clip_audio(src: Path, dst: Path, onset: float, offset: float) -> None:
+    """Cut a segment from a WAV file."""
+    audio, sr = sf.read(str(src), always_2d=True)
+    start = max(0, int(round(onset * sr)))
+    end = min(len(audio), int(round(offset * sr)))
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    sf.write(str(dst), audio[start:end], sr)
+
+
+def get_duration_seconds(audio_path: Path) -> float:
+    """Return WAV duration in seconds."""
+    with wave.open(str(audio_path), "rb") as wf:
+        return wf.getnframes() / wf.getframerate()
+
+
+def write_metadata(rows: list[dict[str, object]], metadata_path: Path) -> None:
+    """Write final clipped-word metadata."""
+    metadata_path.parent.mkdir(parents=True, exist_ok=True)
+    with metadata_path.open("w", encoding="utf-8", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=METADATA_COLUMNS)
+        writer.writeheader()
+        writer.writerows(rows)
+
+
+def synthesize_raw_corpus(raw_dir: Path, seed: int) -> list[dict[str, str]]:
+    """Synthesize carrier sentences and write MFA LAB files."""
+    np.random.seed(seed)
+
     print("Initializing Kokoro TTS pipeline...")
     pipeline = KPipeline(lang_code='a')  # American English
-
-    # Calculate total iterations for progress bar
-    total = len(IPA_MAP) * 2 * len(VOICES)  # words * (noun+verb) * voices
-
-    metadata = []
-    
-    # Create voice directories
-    for voice_name in VOICES:
-        (args.output_path / voice_name).mkdir(parents=True, exist_ok=True)
+    total = len(IPA_MAP) * 2 * len(VOICES)
+    raw_rows = []
 
     with tqdm(total=total, desc="Synthesizing") as pbar:
-        for word, forms in IPA_MAP.items():
-            for pos in ["noun", "verb"]:
-                ipa = forms[pos]
+        for suffix, voice_name in enumerate(VOICES, start=1):
+            speaker = f"EN_KOKORO_{suffix:02d}"
+            item_number = 1
 
-                for voice_name in VOICES:
-                    voice_dir = args.output_path / voice_name
-                    
-                    # Generate filename
-                    wav_filename = f"{word}_{pos}.wav"
-                    wav_path = voice_dir / wav_filename
-                    lab_filename = f"{word}_{pos}.lab"
-                    lab_path = voice_dir / lab_filename
+            for word, forms in IPA_MAP.items():
+                for lexical_category in ["noun", "verb"]:
+                    ipa = forms[lexical_category]
+                    item_id = f"{speaker}_{item_number:03d}"
+                    wav_path = raw_dir / f"{item_id}.wav"
+                    lab_path = raw_dir / f"{item_id}.lab"
 
-                    # Skip if already exists
-                    if wav_path.exists() and lab_path.exists():
-                        pbar.update(1)
-                        continue
-
-                    # Synthesize
-                    try:
-                        audio, phonemes = synthesize(
-                            pipeline, word, ipa, voice_name
-                        )
-
-                        # Save audio
+                    if not wav_path.exists() or not lab_path.exists():
+                        audio, _phonemes = synthesize(pipeline, word, ipa, voice_name)
+                        wav_path.parent.mkdir(parents=True, exist_ok=True)
                         sf.write(str(wav_path), audio, SAMPLE_RATE)
-                        
-                        # Save lab file
-                        # Minimal pair carrier phrase: "I say [word], again."
-                        lab_content = f"I say {word} again."
-                        with open(lab_path, "w") as f:
-                            f.write(lab_content)
+                        lab_path.write_text(f"I say {word} again.", encoding="utf-8")
 
-                        # Record metadata
-                        metadata.append({
-                            "word": word,
-                            "pos": pos,
-                            "voice_name": voice_name,
-                            "ipa": ipa,
-                            "audio_path": str(wav_path.relative_to(args.output_path)),
-                            "duration": len(audio) / SAMPLE_RATE,
-                            "phonemes": phonemes,
-                        })
-
-                    except Exception as e:
-                        print(f"Error synthesizing {word} ({pos}, {voice_name}): {e}")
+                    raw_rows.append(
+                        {
+                            "id": item_id,
+                            "speaker": speaker,
+                            "text": f"I say {word} again.",
+                            "target": word,
+                            "label": LABELS[lexical_category],
+                            "lexical_category": lexical_category,
+                        }
+                    )
 
                     pbar.update(1)
+                    item_number += 1
 
-    # Save metadata
-    if metadata:
-        df = pd.DataFrame(metadata)
-        df.to_csv(args.output_path / "metadata.csv", index=False)
-        print(f"Saved metadata to {args.output_path / 'metadata.csv'}")
+    return raw_rows
 
-    print(f"Generated {len(metadata)} audio files in {args.output_path}")
+
+def build_clipped_data(
+    raw_rows: list[dict[str, str]],
+    raw_dir: Path,
+    aligned_dir: Path,
+    audio_dir: Path,
+) -> list[dict[str, object]]:
+    """Cut target words using MFA TextGrids and build final metadata."""
+    metadata_rows = []
+
+    for row in raw_rows:
+        item_id = row["id"]
+        raw_wav = raw_dir / f"{item_id}.wav"
+        textgrid = aligned_dir / f"{item_id}.TextGrid"
+        clipped_wav = audio_dir / f"{item_id}.wav"
+
+        onset, offset = find_word_interval(textgrid, row["target"])
+        if not clipped_wav.exists():
+            clip_audio(raw_wav, clipped_wav, onset, offset)
+
+        metadata_rows.append(
+            {
+                "id": item_id,
+                "audio_file": f"audio/{item_id}.wav",
+                "speaker": row["speaker"],
+                "text": row["text"],
+                "target": row["target"],
+                "target_onset": 0.0,
+                "target_offset": get_duration_seconds(clipped_wav),
+                "label": row["label"],
+                "lexical_category": row["lexical_category"],
+            }
+        )
+
+    return metadata_rows
+
+
+def main() -> None:
+    args = get_args()
+
+    raw_dir = args.output_root / "raw"
+    aligned_dir = args.output_root / "aligned"
+    audio_dir = args.output_root / "audio"
+    metadata_path = args.output_root / "metadata.csv"
+
+    raw_dir.mkdir(parents=True, exist_ok=True)
+    aligned_dir.mkdir(parents=True, exist_ok=True)
+    audio_dir.mkdir(parents=True, exist_ok=True)
+
+    raw_rows = synthesize_raw_corpus(raw_dir, args.seed)
+
+    if not args.skip_mfa:
+        run_mfa(
+            mfa_command=args.mfa_command,
+            corpus_dir=raw_dir,
+            dictionary=args.dictionary,
+            acoustic_model=args.acoustic_model,
+            aligned_dir=aligned_dir,
+        )
+
+    metadata_rows = build_clipped_data(raw_rows, raw_dir, aligned_dir, audio_dir)
+    write_metadata(metadata_rows, metadata_path)
+
+    print(f"Wrote {len(metadata_rows)} metadata rows to {metadata_path}")
 
 
 if __name__ == "__main__":

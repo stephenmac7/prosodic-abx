@@ -88,3 +88,6 @@ synth_data/
 plots/
 data/
 *.out
+
+# test scripts
+test_scripts/
