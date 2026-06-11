@@ -1,11 +1,14 @@
 
 generate configurations
 -----------------------
-generate_items/csj.py --max-moras 4 --word
+generate_items/stress.py
+generate_items/pitch_accent.py
+generate_items/tone.py
+
 
 extract features
 ----------------
-while IFS= read -r model; do uv run extract_features.py abx_items/mandarin_tone/ features/ --model $model; done < models_to_test.txt
+while IFS= read -r model; do uv run extract_features.py abx_items/tone/ features/ --model $model; done < models_to_test.txt
 
 run_abx.py configurations
 -------------------------

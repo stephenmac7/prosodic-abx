@@ -5,10 +5,9 @@ analysis scripts. The paper for Prosodic ABX is available at https://arxiv.org/a
 
 ## Installation
 
-The recommended setup uses Python 3.12 and a local `venv`.
-
 ```bash
-python3.12 -m venv .venv
+uv python install 3.12
+uv venv --python 3.12
 source .venv/bin/activate
 bash install.sh
 ```
@@ -34,7 +33,5 @@ data/tone/neutral.zip
 Then run:
 
 ```bash
-python prepare_data.py -tone
+python prepare_data.py --tone
 ```
-
-

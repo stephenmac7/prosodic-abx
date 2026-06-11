@@ -87,3 +87,4 @@ results/
 synth_data/
 plots/
 data/
+*.out

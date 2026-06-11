@@ -252,7 +252,7 @@ def write_tone_metadata(csv_path: Path, audio_dir: Path, output_path: Path) -> N
 def main() -> None:
     parser = argparse.ArgumentParser(description="Prepare local Prosodic ABX data.")
     parser.add_argument(
-        "-tone",
+        "--tone",
         action="store_true",
         help="Prepare manually downloaded MCAE-monosyllable files in data/tone.",
     )
