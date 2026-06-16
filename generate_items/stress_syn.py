@@ -1,118 +1,87 @@
 #!/usr/bin/env python3
-"""
-Generate fastabx-compatible item file for English stress ABX (TTS, clipped).
+"""Generate fastabx items for synthesized English lexical stress.
 
-Annotation-free version.
-Each audio file contains a single word.
+Run synthesize_wavs/synth_en.py before this script. It reads the synthesized
+single-word WAV files and metadata from data/stress_syn/, arranges the audio
+under abx_items/stress_syn/audio/ by target word, and writes items.csv for
+extract_features.py and run_abx.py.
 
-Expected directory structure:
-  /home/sunhaitong/ABX_syn/data/standard_english_stress/
-    └── abstract/
-        └── abstract_noun_A.wav
-
-Filename format:
-  abstract_noun_A.wav
-    - parts[0]: phone_sequence (word)
-    - parts[1]: accent_pattern (stress label, e.g., noun/verb)
-    - parts[2]: speaker (TTS voice)
-
-Output format matches run_abx.py expectations:
-  - #file: path relative to audio_root (without extension)
-  - onset / offset: full word (0, duration)
-  - phone_sequence: word (BY condition)
-  - accent_pattern: stress label (ON condition)
-  - speaker: speaker ID (ACROSS condition)
+The output item file uses:
+  - #file: path relative to audio_path.txt, without extension
+  - onset / offset: full-word boundaries in seconds
+  - phone_sequence: target word, used as the BY condition
+  - accent_pattern: stress label, used as the ON condition
+  - speaker: TTS speaker ID
+  - lexical_category: noun or verb
 """
 
 from __future__ import annotations
 
 import argparse
 import csv
+import shutil
 import wave
 from pathlib import Path
 
-# ============================================================
-# Hardcoded paths (keep style consistent with original script)
-# ============================================================
 
-AUDIO_ROOT = Path("synth_data/standard_english_stress")
+METADATA_CSV = Path("data/stress_syn/metadata.csv")
 OUTPUT_DIR = Path("abx_items/stress_syn")
 
-# ============================================================
-# Filename parsing (stress logic, slot-based)
-# ============================================================
-
-def parse_filename(fname: str) -> tuple[str, str, str]:
-    """
-    Parse filename like abstract_noun_A.wav
-
-    Returns:
-      phone_sequence, accent_pattern, speaker
-    """
-    stem = Path(fname).stem
-    parts = stem.split("_")
-    if len(parts) != 3:
-        raise ValueError(f"Unexpected filename format: {fname}")
-
-    phone_sequence = parts[0]   # abstract
-    accent_pattern = parts[1]   # noun / verb
-    speaker = parts[2]          # A / B / C ...
-
-    return phone_sequence, accent_pattern, speaker
-
-
-# ============================================================
-# Audio utility
-# ============================================================
 
 def get_duration_seconds(audio_path: Path) -> float:
+    """Return WAV duration in seconds."""
     with wave.open(str(audio_path), "rb") as wf:
         return wf.getnframes() / wf.getframerate()
 
 
-# ============================================================
-# Build items (annotation-free, clipped)
-# ============================================================
+def load_metadata(path: Path) -> list[dict[str, str]]:
+    """Load synthesized stress metadata rows."""
+    with path.open("r", encoding="utf-8-sig", newline="") as f:
+        return list(csv.DictReader(f))
 
-def build_items_from_wavs(audio_root: Path) -> list[dict]:
-    items: list[dict] = []
-    skipped_badname = 0
 
-    for wav_path in sorted(audio_root.rglob("*.wav")):
-        try:
-            phone_sequence, accent_pattern, speaker = parse_filename(wav_path.name)
-        except ValueError as e:
-            print(f"Skip (filename): {e}")
-            skipped_badname += 1
-            continue
+def build_items(
+    rows: list[dict[str, str]],
+    metadata_root: Path,
+    output_audio_dir: Path,
+) -> list[dict[str, object]]:
+    """Arrange synthesized word audio and build item rows."""
+    items: list[dict[str, object]] = []
+    copied_count = 0
 
-        duration = get_duration_seconds(wav_path)
+    for row in rows:
+        item_id = row["id"]
+        target = row["target"]
+        src_audio = metadata_root / row["audio_file"]
+        if not src_audio.exists():
+            raise FileNotFoundError(f"Audio not found: {src_audio}")
 
-        # #file must be relative to audio_root, without extension
-        rel_stem = wav_path.relative_to(audio_root).with_suffix("")
+        item_audio = output_audio_dir / target / f"{item_id}.wav"
+        if not item_audio.exists():
+            item_audio.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(src_audio, item_audio)
+            copied_count += 1
 
         items.append(
             {
-                "#file": str(rel_stem),
+                "#file": f"{target}/{item_id}",
                 "onset": 0.0,
-                "offset": duration,
-                "phone_sequence": phone_sequence,
-                "accent_pattern": accent_pattern,
-                "speaker": speaker,
+                "offset": get_duration_seconds(item_audio),
+                "phone_sequence": target,
+                "accent_pattern": row["label"],
+                "speaker": row["speaker"],
+                "lexical_category": row["lexical_category"],
             }
         )
 
-    if skipped_badname > 0:
-        print(f"Skipped {skipped_badname} files due to unexpected filename format")
+    if copied_count:
+        print(f"Copied {copied_count} audio files")
 
     return items
 
 
-# ============================================================
-# CSV writer (same style as original stress script)
-# ============================================================
-
-def write_items(items: list[dict], output_path: Path) -> None:
+def write_items(items: list[dict[str, object]], output_path: Path) -> None:
+    """Write the fastabx item CSV."""
     output_path.parent.mkdir(parents=True, exist_ok=True)
     header = [
         "#file",
@@ -121,21 +90,17 @@ def write_items(items: list[dict], output_path: Path) -> None:
         "phone_sequence",
         "accent_pattern",
         "speaker",
+        "lexical_category",
     ]
     with output_path.open("w", encoding="utf-8", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=header)
         writer.writeheader()
-        for item in items:
-            writer.writerow(item)
+        writer.writerows(items)
 
-
-# ============================================================
-# Main
-# ============================================================
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Generate fastabx item file for English stress ABX (TTS, clipped)"
+        description="Generate fastabx items for synthesized English lexical stress"
     )
     parser.add_argument(
         "--output-dir",
@@ -146,25 +111,33 @@ def main() -> None:
     args = parser.parse_args()
 
     output_dir = args.output_dir
+    output_audio_dir = output_dir / "audio"
 
-    print("Mode: clipped (TTS, annotation-free)")
-    print(f"Audio root: {AUDIO_ROOT}")
+    print("Mode: synthesized clipped target words")
+    print(f"Metadata file: {METADATA_CSV}")
+    print(f"Output audio directory: {output_audio_dir}")
     print(f"Output directory: {output_dir}")
     print()
 
-    items = build_items_from_wavs(AUDIO_ROOT)
+    rows = load_metadata(METADATA_CSV)
+    print(f"Loaded {len(rows)} metadata rows")
+
+    items = build_items(
+        rows=rows,
+        metadata_root=METADATA_CSV.parent,
+        output_audio_dir=output_audio_dir,
+    )
 
     output_path = output_dir / "items.csv"
     write_items(items, output_path)
 
-    # Write audio path for extract_features.py
-    with (output_dir / "audio_path.txt").open("w") as f:
-        f.write(str(AUDIO_ROOT))
+    with (output_dir / "audio_path.txt").open("w", encoding="utf-8") as f:
+        f.write(str(output_audio_dir))
 
     print(f"\nWrote {len(items)} items to {output_path}")
     print(f"Unique speakers: {len({i['speaker'] for i in items})}")
     print(f"Unique words: {len({i['phone_sequence'] for i in items})}")
-    print(f"Unique stress labels: {len({i['accent_pattern'] for i in items})}")
+    print(f"Accent patterns: {sorted({i['accent_pattern'] for i in items})}")
 
 
 if __name__ == "__main__":

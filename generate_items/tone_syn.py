@@ -1,116 +1,85 @@
 #!/usr/bin/env python3
-"""
-Generate fastabx-compatible item file for Mandarin tone ABX (TTS, clipped).
+"""Generate fastabx items for synthesized Mandarin tone.
 
-Annotation-free version.
-Each audio file contains a single syllable.
+Run synthesize_wavs/synth_zh.py before this script. It reads synthesized
+single-syllable WAV files and metadata from data/tone_syn/, arranges the audio
+under abx_items/tone_syn/audio/ by pinyin, and writes items.csv for
+extract_features.py and run_abx.py.
 
-Expected directory structure:
-  /home/sunhaitong/ABX_syn/data/standard_mandarin_syllable/
-    └── ai/
-        └── ai1_A.wav
-
-Filename format:
-  ai1_A.wav
-    - parts[0]: syllable+tone (e.g., ai1)
-    - parts[1]: speaker (TTS voice)
-
-Derived fields:
-  - phone_sequence = ai
-  - accent_pattern = 1
-  - speaker = A
-
-Output format matches run_abx.py expectations:
-  - #file: path relative to audio_root (without extension)
-  - onset / offset: full syllable (0, duration)
-  - phone_sequence: syllable (BY condition)
-  - accent_pattern: tone (ON condition)
-  - speaker: speaker ID (ACROSS condition)
+The output item file uses:
+  - #file: path relative to audio_path.txt, without extension
+  - onset / offset: full-syllable boundaries in seconds
+  - phone_sequence: pinyin, used as the BY condition
+  - accent_pattern: tone label, used as the ON condition
+  - speaker: TTS speaker ID
 """
 
 from __future__ import annotations
 
 import argparse
 import csv
+import shutil
 import wave
 from pathlib import Path
 
 
-
-AUDIO_ROOT = Path("/home/sunhaitong/ABX_syn/data/standard_mandarin_syllable")
-OUTPUT_DIR = Path("abx_items/mandarin_tone_syn")
-
-
-
-def parse_filename(fname: str) -> tuple[str, str, str]:
-    """
-    Parse filename like ai1_A.wav
-
-    Returns:
-      phone_sequence, accent_pattern, speaker
-    """
-    stem = Path(fname).stem
-    parts = stem.split("_")
-    if len(parts) != 2:
-        raise ValueError(f"Unexpected filename format: {fname}")
-
-    syllable_tone = parts[0]   # ai1
-    speaker = parts[1]         # A
-
-    # Split syllable and tone number
-    if not syllable_tone[-1].isdigit():
-        raise ValueError(f"Expected tone number at end of syllable: {fname}")
-
-    phone_sequence = syllable_tone[:-1]   # ai
-    accent_pattern = syllable_tone[-1]    # 1 / 2 / 3 / 4
-
-    return phone_sequence, accent_pattern, speaker
-
+METADATA_CSV = Path("data/tone_syn/metadata.csv")
+OUTPUT_DIR = Path("abx_items/tone_syn")
 
 
 def get_duration_seconds(audio_path: Path) -> float:
+    """Return WAV duration in seconds."""
     with wave.open(str(audio_path), "rb") as wf:
         return wf.getnframes() / wf.getframerate()
 
 
+def load_metadata(path: Path) -> list[dict[str, str]]:
+    """Load synthesized tone metadata rows."""
+    with path.open("r", encoding="utf-8-sig", newline="") as f:
+        return list(csv.DictReader(f))
 
 
-def build_items_from_wavs(audio_root: Path) -> list[dict]:
-    items: list[dict] = []
-    skipped_badname = 0
+def build_items(
+    rows: list[dict[str, str]],
+    metadata_root: Path,
+    output_audio_dir: Path,
+) -> list[dict[str, object]]:
+    """Arrange synthesized syllable audio and build item rows."""
+    items: list[dict[str, object]] = []
+    copied_count = 0
 
-    for wav_path in sorted(audio_root.rglob("*.wav")):
-        try:
-            phone_sequence, accent_pattern, speaker = parse_filename(wav_path.name)
-        except ValueError as e:
-            print(f"Skip (filename): {e}")
-            skipped_badname += 1
-            continue
+    for row in rows:
+        item_id = row["id"]
+        target = row["target"]
+        src_audio = metadata_root / row["audio_file"]
+        if not src_audio.exists():
+            raise FileNotFoundError(f"Audio not found: {src_audio}")
 
-        duration = get_duration_seconds(wav_path)
-
-        # #file must be relative to audio_root, without extension
-        rel_stem = wav_path.relative_to(audio_root).with_suffix("")
+        item_audio = output_audio_dir / target / f"{item_id}.wav"
+        if not item_audio.exists():
+            item_audio.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(src_audio, item_audio)
+            copied_count += 1
 
         items.append(
             {
-                "#file": str(rel_stem),
+                "#file": f"{target}/{item_id}",
                 "onset": 0.0,
-                "offset": duration,
-                "phone_sequence": phone_sequence,
-                "accent_pattern": accent_pattern,
-                "speaker": speaker,
+                "offset": get_duration_seconds(item_audio),
+                "phone_sequence": target,
+                "accent_pattern": row["label"],
+                "speaker": row["speaker"],
             }
         )
 
-    if skipped_badname > 0:
-        print(f"Skipped {skipped_badname} files due to unexpected filename format")
+    if copied_count:
+        print(f"Copied {copied_count} audio files")
 
     return items
 
 
-
-def write_items(items: list[dict], output_path: Path) -> None:
+def write_items(items: list[dict[str, object]], output_path: Path) -> None:
+    """Write the fastabx item CSV."""
     output_path.parent.mkdir(parents=True, exist_ok=True)
     header = [
         "#file",
@@ -123,42 +92,49 @@ def write_items(items: list[dict], output_path: Path) -> None:
     with output_path.open("w", encoding="utf-8", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=header)
         writer.writeheader()
-        for item in items:
-            writer.writerow(item)
+        writer.writerows(items)
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Generate fastabx item file for Mandarin tone ABX (TTS, clipped)"
+        description="Generate fastabx items for synthesized Mandarin tone"
     )
     parser.add_argument(
         "--output-dir",
         type=Path,
         default=OUTPUT_DIR,
-        help="Output directory (default: abx_items/mandarin_tone_syn)",
+        help="Output directory (default: abx_items/tone_syn)",
     )
     args = parser.parse_args()
 
     output_dir = args.output_dir
+    output_audio_dir = output_dir / "audio"
 
-    print("Mode: clipped (TTS, annotation-free)")
-    print(f"Audio root: {AUDIO_ROOT}")
+    print("Mode: synthesized clipped target syllables")
+    print(f"Metadata file: {METADATA_CSV}")
+    print(f"Output audio directory: {output_audio_dir}")
     print(f"Output directory: {output_dir}")
     print()
 
-    items = build_items_from_wavs(AUDIO_ROOT)
+    rows = load_metadata(METADATA_CSV)
+    print(f"Loaded {len(rows)} metadata rows")
+
+    items = build_items(
+        rows=rows,
+        metadata_root=METADATA_CSV.parent,
+        output_audio_dir=output_audio_dir,
+    )
 
     output_path = output_dir / "items.csv"
     write_items(items, output_path)
 
-    # Write audio path for extract_features.py
-    with (output_dir / "audio_path.txt").open("w") as f:
-        f.write(str(AUDIO_ROOT))
+    with (output_dir / "audio_path.txt").open("w", encoding="utf-8") as f:
+        f.write(str(output_audio_dir))
 
     print(f"\nWrote {len(items)} items to {output_path}")
     print(f"Unique speakers: {len({i['speaker'] for i in items})}")
-    print(f"Unique syllables: {len({i['phone_sequence'] for i in items})}")
-    print(f"Unique tones: {len({i['accent_pattern'] for i in items})}")
+    print(f"Unique pinyin: {len({i['phone_sequence'] for i in items})}")
+    print(f"Unique tones: {sorted({i['accent_pattern'] for i in items})}")
 
 
 if __name__ == "__main__":
