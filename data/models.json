@@ -1,0 +1,154 @@
+{
+  "wavlm_base": {
+    "pretrain_lang": "English",
+    "architecture": "WavLM",
+    "size": "Base",
+    "finetuned": false,
+    "finetune_lang": null,
+    "display": "WavLM-Base (EN)"
+  },
+  "wavlm_base_plus": {
+    "pretrain_lang": "English",
+    "architecture": "WavLM",
+    "size": "Base",
+    "finetuned": false,
+    "finetune_lang": null,
+    "display": "WavLM-Base+ (EN)"
+  },
+  "wavlm_large": {
+    "pretrain_lang": "English",
+    "architecture": "WavLM",
+    "size": "Large",
+    "finetuned": false,
+    "finetune_lang": null,
+    "display": "WavLM-Large (EN)"
+  },
+  "hubert_base": {
+    "pretrain_lang": "English",
+    "architecture": "HuBERT",
+    "size": "Base",
+    "finetuned": false,
+    "finetune_lang": null,
+    "display": "HuBERT-Base (EN)"
+  },
+  "hubert_large": {
+    "pretrain_lang": "English",
+    "architecture": "HuBERT",
+    "size": "Large",
+    "finetuned": false,
+    "finetune_lang": null,
+    "display": "HuBERT-Large (EN)"
+  },
+  "wav2vec2_base": {
+    "pretrain_lang": "English",
+    "architecture": "Wav2Vec2",
+    "size": "Base",
+    "finetuned": false,
+    "finetune_lang": null,
+    "display": "Wav2Vec2-Base (EN)"
+  },
+  "wav2vec2_large": {
+    "pretrain_lang": "English",
+    "architecture": "Wav2Vec2",
+    "size": "Large",
+    "finetuned": false,
+    "finetune_lang": null,
+    "display": "Wav2Vec2-Large (EN)"
+  },
+  "wav2vec2-large-xlsr-53": {
+    "pretrain_lang": "Multilingual",
+    "architecture": "Wav2Vec2-XLSR",
+    "size": "Large",
+    "finetuned": false,
+    "finetune_lang": null,
+    "display": "XLSR-53 (Multi)"
+  },
+  "mhubert-147": {
+    "pretrain_lang": "Multilingual",
+    "architecture": "HuBERT",
+    "size": "Base",
+    "finetuned": false,
+    "finetune_lang": null,
+    "display": "mHuBERT-147 (Multi)"
+  },
+  "chinese-wav2vec2-base": {
+    "pretrain_lang": "Chinese",
+    "architecture": "Wav2Vec2",
+    "size": "Base",
+    "finetuned": false,
+    "finetune_lang": null,
+    "display": "Wav2Vec2-Base (ZH)"
+  },
+  "chinese-wav2vec2-large": {
+    "pretrain_lang": "Chinese",
+    "architecture": "Wav2Vec2",
+    "size": "Large",
+    "finetuned": false,
+    "finetune_lang": null,
+    "display": "Wav2Vec2-Large (ZH)"
+  },
+  "chinese-hubert-base": {
+    "pretrain_lang": "Chinese",
+    "architecture": "HuBERT",
+    "size": "Base",
+    "finetuned": false,
+    "finetune_lang": null,
+    "display": "HuBERT-Base (ZH)"
+  },
+  "chinese-hubert-large": {
+    "pretrain_lang": "Chinese",
+    "architecture": "HuBERT",
+    "size": "Large",
+    "finetuned": false,
+    "finetune_lang": null,
+    "display": "HuBERT-Large (ZH)"
+  },
+  "japanese-wav2vec2-base": {
+    "pretrain_lang": "Japanese",
+    "architecture": "Wav2Vec2",
+    "size": "Base",
+    "finetuned": false,
+    "finetune_lang": null,
+    "display": "Wav2Vec2-Base (JA)"
+  },
+  "japanese-wav2vec2-large": {
+    "pretrain_lang": "Japanese",
+    "architecture": "Wav2Vec2",
+    "size": "Large",
+    "finetuned": false,
+    "finetune_lang": null,
+    "display": "Wav2Vec2-Large (JA)"
+  },
+  "japanese-hubert-base-k2": {
+    "pretrain_lang": "Japanese",
+    "architecture": "HuBERT",
+    "size": "Base",
+    "finetuned": false,
+    "finetune_lang": null,
+    "display": "HuBERT-Base (JA)"
+  },
+  "japanese-hubert-large": {
+    "pretrain_lang": "Japanese",
+    "architecture": "HuBERT",
+    "size": "Large",
+    "finetuned": false,
+    "finetune_lang": null,
+    "display": "HuBERT-Large (JA)"
+  },
+  "mfcc": {
+    "pretrain_lang": "Baseline",
+    "architecture": "MFCC",
+    "size": "N/A",
+    "finetuned": false,
+    "finetune_lang": null,
+    "display": "MFCC"
+  },
+  "fbank": {
+    "pretrain_lang": "Baseline",
+    "architecture": "FBank",
+    "size": "N/A",
+    "finetuned": false,
+    "finetune_lang": null,
+    "display": "FBank"
+  }
+}

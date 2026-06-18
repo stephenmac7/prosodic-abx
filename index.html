@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prosodic ABX — Supplementary Material</title>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+  <script src="data/data.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem;
+      color: #222; line-height: 1.6; font-size: 1.05rem;
+    }
+    h1 { font-size: 1.7rem; margin-bottom: 0.2rem; }
+    h2 { font-size: 1.35rem; margin-top: 3rem; margin-bottom: 0.6rem;
+         border-bottom: 1px solid #ddd; padding-bottom: 0.3rem; }
+    p { margin: 0.4rem 0 0.9rem; }
+    a { color: #0072B2; }
+    .subtitle { color: #555; font-size: 1rem; margin-bottom: 1.4rem; }
+    .tabs { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+    .tab {
+      padding: 0.4rem 1rem; border: 1px solid #bbb; border-radius: 4px;
+      cursor: pointer; background: #f5f5f5; font-size: 0.95rem; line-height: 1.4;
+      transition: background 0.15s;
+    }
+    .tab:hover { background: #e8e8e8; }
+    .tab.active { background: #0072B2; color: #fff; border-color: #0072B2; }
+    .tab:disabled { opacity: 0.35; cursor: not-allowed; }
+    .tab:disabled:hover { background: #f5f5f5; }
+    .controls { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 1rem 1.5rem; margin-bottom: 0.7rem; }
+    .filter-group { display: flex; flex-direction: column; gap: 0.25rem; }
+    .filter-label { font-size: 0.82rem; color: #555; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; }
+    select {
+      padding: 0.35rem 0.6rem; border: 1px solid #bbb; border-radius: 4px;
+      font-size: 0.95rem; background: #fff;
+    }
+    .chart { width: 100%; height: 560px; }
+    .chart-rank { width: 100%; height: 620px; }
+
+    /* Color legend */
+    .color-legend { display: flex; flex-wrap: wrap; gap: 0.7rem 1.5rem; font-size: 0.92rem; margin-bottom: 1rem; }
+    .legend-item { display: flex; align-items: center; gap: 0.4rem; }
+    .legend-swatch { width: 28px; height: 5px; border-radius: 2px; }
+  </style>
+</head>
+<body>
+
+<h1>Prosodic ABX — Supplementary Material</h1>
+<p class="subtitle">
+  <em>Prosodic ABX: A Language-Agnostic Method for Measuring Prosodic Contrast in Speech Representations</em><br>
+  Submitted to Interspeech 2026
+</p>
+
+<!-- ─── Layer-wise ────────────────────────────────────────────────────── -->
+<h2 id="layer-wise">Layer-wise Error Curves</h2>
+<p>ABX error rate (%) by layer for all 17 S3Ms and 2 baselines. Lower is better.
+   Labeled dots mark each model's best layer. The human baseline is the dashed <span style="color:#D55E00">vermillion</span> line.
+   Click legend entries to isolate or hide individual models.</p>
+<div class="filter-group" style="margin-bottom: 0.9rem;">
+  <span class="filter-label">Pretraining language (line color)</span>
+  <div class="color-legend" id="color-legend-lw"></div>
+</div>
+
+<div class="tabs" id="tabs-lw-task">
+  <button class="tab active" data-task="stress">English Stress</button>
+  <button class="tab" data-task="pitch_accent">Japanese Pitch Accent</button>
+  <button class="tab" data-task="mandarin_tone">Mandarin Tone</button>
+</div>
+<div class="controls">
+  <div class="filter-group">
+    <span class="filter-label">Size</span>
+    <div class="tabs" id="tabs-lw-size">
+      <button class="tab" data-size="Base">Base</button>
+      <button class="tab active" data-size="Large">Large</button>
+    </div>
+  </div>
+  <div class="filter-group">
+    <span class="filter-label">Pretraining language</span>
+    <div class="tabs" id="tabs-lw-lang">
+      <button class="tab active" data-lang="">All</button>
+      <button class="tab" data-lang="English">English</button>
+      <button class="tab" data-lang="Multilingual">Multilingual</button>
+      <button class="tab" data-lang="Chinese">Chinese</button>
+      <button class="tab" data-lang="Japanese">Japanese</button>
+    </div>
+  </div>
+  <div class="filter-group">
+    <span class="filter-label">Architecture</span>
+    <div class="tabs" id="tabs-lw-arch">
+      <button class="tab" data-arch="">All</button>
+      <button class="tab active" data-arch="HuBERT">HuBERT</button>
+      <button class="tab" data-arch="Wav2Vec2">Wav2Vec2</button>
+      <button class="tab" data-arch="WavLM">WavLM</button>
+    </div>
+  </div>
+</div>
+<div id="chart-lw" class="chart"></div>
+
+<!-- ─── Rankings ─────────────────────────────────────────────────────── -->
+<h2 id="rankings">Per-Task Model Rankings</h2>
+<p>Best-layer ABX error rate (%), ranked best to worst.
+   The human baseline is the dashed vertical line.</p>
+<div class="filter-group" style="margin-bottom: 0.9rem;">
+  <span class="filter-label">Pretraining language (bar color)</span>
+  <div class="color-legend" id="color-legend-rank"></div>
+</div>
+
+<div class="tabs" id="tabs-rank-task">
+  <button class="tab active" data-task="stress">English Stress</button>
+  <button class="tab" data-task="pitch_accent">Japanese Pitch Accent</button>
+  <button class="tab" data-task="mandarin_tone">Mandarin Tone</button>
+</div>
+<div id="chart-rank" class="chart-rank"></div>
+
+<!-- ─── TTS Proxy ─────────────────────────────────────────────────────── -->
+<h2 id="tts-proxy">Paired Layer-wise Error Curves on Synthesized and Natural Speech</h2>
+<p>Layer-wise performance on <span style="color:#4477AA">natural</span> vs. <span style="color:#EE6677">synthesized</span> speech for a selected model.
+   For English, both G-TTS (solid) and Kokoro (dotted) are shown.</p>
+
+<div class="tabs" id="tabs-tts">
+  <button class="tab active" data-tts="stress">English Stress</button>
+  <button class="tab" data-tts="pitch_accent">Japanese Pitch Accent</button>
+  <button class="tab" data-tts="mandarin_tone">Mandarin Tone</button>
+</div>
+<div class="controls">
+  <label for="sel-tts">Model: <select id="sel-tts"></select></label>
+</div>
+<p><small>Models ordered best to worst by natural-speech error rate.</small></p>
+<div id="chart-tts-lw" class="chart"></div>
+
+<!-- ─── In-Context ────────────────────────────────────────────────────── -->
+<h2 id="in-context">In-Context Effects (Japanese Pitch Accent)</h2>
+<p><span style="color:#EE6677">Out-of-context</span> ABX clips the target word before encoding.
+   <span style="color:#4477AA">In-context</span> encodes the full utterance, then compares frames at the target word position.
+   Only the Japanese pitch accent dataset has identical carrier sentences enabling this comparison.</p>
+
+<div class="controls">
+  <label for="sel-ctx">Model: <select id="sel-ctx"></select></label>
+</div>
+<p><small>Models ordered best to worst by out-of-context error rate.</small></p>
+<div id="chart-ctx-lw" class="chart"></div>
+
+<script>
+'use strict';
+const D = window.WEBPAGE_DATA;
+
+// ── Constants ──────────────────────────────────────────────────────────
+const LANG_COLORS = {
+  English:      '#0072B2',
+  Multilingual: '#E69F00',
+  Chinese:      '#009E73',
+  Japanese:     '#CC79A7',
+  Baseline:     '#999999',
+};
+// Fixed colours for natural vs. synthesized/in-context comparison charts
+// (Paul Tol "bright" palette — colorblind-friendly)
+const NAT_COLOR   = '#4477AA'; // blue
+const SYNTH_COLOR = '#EE6677'; // rose
+const HUMAN_BASELINES = { stress: 29, pitch_accent: 9, mandarin_tone: 2 };
+const TASK_LABELS = {
+  stress: 'English Stress',
+  pitch_accent: 'Japanese Pitch Accent',
+  mandarin_tone: 'Mandarin Tone',
+};
+const TTS_CONFIG = {
+  stress:        { natTask: 'stress',        comps: [
+    { synthKey: 'stress_gtts',        label: 'G-TTS',  dash: 'solid'  },
+    { synthKey: 'stress_kokoro',      label: 'Kokoro', dash: 'dotted' },
+  ]},
+  pitch_accent:  { natTask: 'pitch_accent',  comps: [
+    { synthKey: 'pitch_accent_gtts',  label: 'G-TTS',  dash: 'solid'  },
+  ]},
+  mandarin_tone: { natTask: 'mandarin_tone', comps: [
+    { synthKey: 'mandarin_tone_gtts', label: 'G-TTS',  dash: 'solid'  },
+  ]},
+};
+// Architecture groupings (Wav2Vec2-XLSR counts as Wav2Vec2)
+const ARCH_GROUPS = {
+  HuBERT:   arch => arch === 'HuBERT',
+  Wav2Vec2: arch => arch === 'Wav2Vec2' || arch === 'Wav2Vec2-XLSR',
+  WavLM:    arch => arch === 'WavLM',
+};
+// Dash patterns to distinguish models of the same pretraining language
+const DASHES = ['solid', 'dashed', 'dotted', [8, 4, 2, 4]];
+
+// ── State ──────────────────────────────────────────────────────────────
+const S = {
+  lwTask: 'stress', lwSize: 'Large', lwLang: '', lwArch: 'HuBERT',
+  rankTask: 'stress',
+  ttsKey: 'stress', ttsModel: null,
+  ctxModel: null,
+};
+
+// ── Helpers ────────────────────────────────────────────────────────────
+function modelColor(id) { return LANG_COLORS[D.models[id]?.pretrain_lang] ?? '#333'; }
+
+function modelsBySize(size) {
+  const ok = size === 'Large' ? ['Large'] : ['Base', '147M', 'N/A'];
+  return Object.keys(D.models).filter(m => ok.includes(D.models[m].size));
+}
+
+function bestError(taskData, model) {
+  const rows = taskData?.[model];
+  return rows?.length ? Math.min(...rows.map(r => r.error_rate)) : null;
+}
+
+function bestLayer(taskData, model) {
+  const rows = taskData?.[model];
+  if (!rows?.length) return null;
+  const minErr = Math.min(...rows.map(r => r.error_rate));
+  return rows.find(r => r.error_rate === minErr)?.layer_num ?? null;
+}
+
+function assignDashes(models) {
+  const counts = {};
+  return Object.fromEntries(models.map(m => {
+    const lang = D.models[m]?.pretrain_lang ?? 'Baseline';
+    const i = counts[lang] ?? 0;
+    counts[lang] = i + 1;
+    return [m, DASHES[i % DASHES.length]];
+  }));
+}
+
+function humanMarkLine(task) {
+  const val = HUMAN_BASELINES[task];
+  if (val == null) return null;
+  return {
+    silent: true,
+    lineStyle: { color: '#D55E00', type: 'dashed', width: 2.5 },
+    label: { formatter: `Human ${val}%`, position: 'insideEndTop', color: '#D55E00', fontSize: 15 },
+    data: [{ yAxis: val }],
+  };
+}
+
+function getOrInit(id) {
+  const el = document.getElementById(id);
+  return echarts.getInstanceByDom(el) ?? echarts.init(el, null, { devicePixelRatio: window.devicePixelRatio || 1 });
+}
+
+// ── Render: Layerwise ──────────────────────────────────────────────────
+function renderLayerwise(task, size) {
+  const taskData = D.results_natural[task];
+  let models = modelsBySize(size).filter(m => taskData?.[m] && D.models[m]?.pretrain_lang !== 'Baseline');
+  if (S.lwLang) models = models.filter(m => D.models[m]?.pretrain_lang === S.lwLang);
+  if (S.lwArch) { const archFn = ARCH_GROUPS[S.lwArch]; models = models.filter(m => archFn?.(D.models[m]?.architecture)); }
+  const dashes = assignDashes(models);
+  const nameToDash = Object.fromEntries(models.map(m => [D.models[m]?.display ?? m, dashes[m]]));
+  let maxLayer = 1;
+  const series = models.map(m => {
+    const rows = taskData[m];
+    const pts = rows.map(r => {
+      if (r.layer_num > maxLayer) maxLayer = r.layer_num;
+      return [r.layer_num, +(r.error_rate * 100).toFixed(2)];
+    });
+    const color = modelColor(m);
+    return {
+      type: 'line', name: D.models[m]?.display ?? m,
+      data: pts, symbol: pts.length === 1 ? 'circle' : 'none',
+      itemStyle: { color },
+      lineStyle: { color, type: dashes[m], width: 3 },
+      emphasis: { lineStyle: { width: 4 } },
+      markPoint: { data: [{ type: 'min' }], symbol: 'circle', symbolSize: 12,
+                   label: { show: true, position: 'top', formatter: p => `${(+p.value).toFixed(1)}%`,
+                            fontSize: 12, distance: 5, color: '#333' },
+                   itemStyle: { color, borderColor: '#fff', borderWidth: 2 } },
+    };
+  });
+  const ml = humanMarkLine(task);
+  if (ml) series.push({ type: 'line', name: 'Human', data: [], markLine: ml, color: '#D55E00' });
+
+  getOrInit('chart-lw').setOption({
+    animation: false,
+    title: { text: `${TASK_LABELS[task]} — Layer-wise Error Rate`, left: 'center', textStyle: { fontSize: 18 } },
+    tooltip: {
+      trigger: 'axis',
+      formatter: p => {
+        const dashLabel = d => !d || d === 'solid' ? '' : Array.isArray(d) ? ' (dash-dot)' : ` (${d})`;
+        const pts = p.filter(s => s.value?.[1] != null);
+        return `Layer ${pts[0]?.axisValue}<br>` +
+          pts.map(s => `${s.marker}${s.seriesName}${dashLabel(nameToDash[s.seriesName])}: ${s.value[1].toFixed(2)}%`).join('<br>');
+      },
+    },
+    legend: { type: 'scroll', top: 30, textStyle: { fontSize: 15 }, itemGap: 10,
+              data: models.map(m => D.models[m]?.display ?? m) },
+    grid: { top: 70, bottom: 60, left: 68, right: 20 },
+    xAxis: { type: 'value', name: 'Layer', min: 1, max: maxLayer, nameLocation: 'middle', nameGap: 30,
+             nameTextStyle: { fontSize: 15 }, axisLabel: { fontSize: 15, formatter: v => Number.isInteger(v) ? v : '' } },
+    yAxis: { type: 'value', name: 'Error Rate (%)', nameLocation: 'middle', nameGap: 52, scale: true,
+             nameTextStyle: { fontSize: 15 }, axisLabel: { fontSize: 15 } },
+    series,
+  }, true);
+}
+
+// ── Filter button state ─────────────────────────────────────────────────
+function countLwModels(task, size, lang, arch) {
+  const taskData = D.results_natural[task];
+  let models = modelsBySize(size).filter(m => taskData?.[m] && D.models[m]?.pretrain_lang !== 'Baseline');
+  if (lang) models = models.filter(m => D.models[m]?.pretrain_lang === lang);
+  if (arch) { const fn = ARCH_GROUPS[arch]; models = models.filter(m => fn?.(D.models[m]?.architecture)); }
+  return models.length;
+}
+
+function updateLwDisabled() {
+  document.getElementById('tabs-lw-size').querySelectorAll('.tab').forEach(btn => {
+    btn.disabled = !btn.classList.contains('active') && countLwModels(S.lwTask, btn.dataset.size, S.lwLang, S.lwArch) === 0;
+  });
+  document.getElementById('tabs-lw-lang').querySelectorAll('.tab').forEach(btn => {
+    btn.disabled = !btn.classList.contains('active') && countLwModels(S.lwTask, S.lwSize, btn.dataset.lang || null, S.lwArch) === 0;
+  });
+  document.getElementById('tabs-lw-arch').querySelectorAll('.tab').forEach(btn => {
+    btn.disabled = !btn.classList.contains('active') && countLwModels(S.lwTask, S.lwSize, S.lwLang, btn.dataset.arch || null) === 0;
+  });
+}
+
+// ── Render: Rankings ───────────────────────────────────────────────────
+function renderRankings(task) {
+  const taskData = D.results_natural[task];
+  const models = Object.keys(D.models).filter(m => taskData?.[m]);
+  models.sort((a, b) => (bestError(taskData, a) ?? 1) - (bestError(taskData, b) ?? 1));
+  const vals = models.map(m => ({
+    value: +(bestError(taskData, m) * 100).toFixed(2),
+    bestLayer: bestLayer(taskData, m),
+    isBaseline: D.models[m]?.pretrain_lang === 'Baseline',
+    itemStyle: { color: modelColor(m) },
+  }));
+  const human = HUMAN_BASELINES[task];
+  const maxVal = Math.max(...vals.map(v => v.value), human ?? 0) * 1.12;
+
+  getOrInit('chart-rank').setOption({
+    animation: false,
+    title: { text: `${TASK_LABELS[task]} — Best-Layer Rankings`, left: 'center', textStyle: { fontSize: 18 } },
+    tooltip: { trigger: 'axis', formatter: p => {
+      const d = p[0];
+      return d?.data?.isBaseline ? `${d?.name}: ${d?.value}%` : `${d?.name}: ${d?.value}% (Layer ${d?.data?.bestLayer})`;
+    }},
+    grid: { top: 52, bottom: 40, left: 20, right: 80, containLabel: true },
+    xAxis: { type: 'value', name: 'Best-Layer Error Rate (%)', nameLocation: 'middle', nameGap: 30,
+             nameTextStyle: { fontSize: 15 }, min: 0, max: maxVal, axisLabel: { formatter: '{value}%', fontSize: 15 } },
+    yAxis: { type: 'category', data: models.map(m => D.models[m]?.display ?? m),
+             axisLabel: { fontSize: 15 }, inverse: true },
+    series: [{
+      type: 'bar', data: vals,
+      label: { show: true, position: 'right', formatter: p => p.data.isBaseline ? `${p.value}%` : `${p.value}% (L${p.data.bestLayer})`, fontSize: 14 },
+      markLine: human != null ? {
+        silent: true,
+        lineStyle: { color: '#D55E00', type: 'dashed', width: 2.5 },
+        label: { formatter: `Human ${human}%`, color: '#D55E00', fontSize: 15, position: 'start' },
+        data: [{ xAxis: human }],
+      } : undefined,
+    }],
+  }, true);
+}
+
+// ── Render: Comparison Layerwise (TTS or In-Context) ───────────────────
+// compSeries: [{data, label, dash}]
+// natColor / synthColor can be swapped for in-context chart
+function renderCompLW(chartId, natData, compSeries, model, natLabel,
+                      natColor = NAT_COLOR, synthColor = SYNTH_COLOR) {
+  const display = D.models[model]?.display ?? model;
+  const natRows = natData?.[model] ?? [];
+  const maxLayer = Math.max(1,
+    ...natRows.map(r => r.layer_num),
+    ...compSeries.flatMap(cs => (cs.data?.[model] ?? []).map(r => r.layer_num)));
+  const allLabels = [natLabel, ...compSeries.map(cs => cs.label)];
+  const mkPt = color => ({
+    data: [{ type: 'min' }], symbol: 'circle', symbolSize: 12,
+    label: { show: true, position: 'top', formatter: p => `${(+p.value).toFixed(1)}%`,
+             fontSize: 12, distance: 5, color: '#333' },
+    itemStyle: { color, borderColor: '#fff', borderWidth: 2 },
+  });
+
+  getOrInit(chartId).setOption({
+    animation: false,
+    title: { text: `${natLabel} vs. ${compSeries.map(cs => cs.label).join(' & ')} - Layer-wise Error Rate - ${display}`, left: 'center', textStyle: { fontSize: 18 } },
+    tooltip: {
+      trigger: 'axis',
+      formatter: p => `Layer ${p[0]?.axisValue}<br>` + p.map(s => `${s.marker}${s.seriesName}: ${s.value[1].toFixed(2)}%`).join('<br>'),
+    },
+    legend: { top: 30, data: allLabels, textStyle: { fontSize: 15 } },
+    grid: { top: 70, bottom: 44, left: 68, right: 20 },
+    xAxis: { type: 'value', name: 'Layer', min: 1, max: maxLayer, nameLocation: 'middle', nameGap: 30,
+             nameTextStyle: { fontSize: 15 }, axisLabel: { fontSize: 15, formatter: v => Number.isInteger(v) ? v : '' } },
+    yAxis: { type: 'value', name: 'Error Rate (%)', nameLocation: 'middle', nameGap: 52, scale: true,
+             nameTextStyle: { fontSize: 15 }, axisLabel: { fontSize: 15 } },
+    series: [
+      { type: 'line', name: natLabel, data: natRows.map(r => [r.layer_num, +(r.error_rate * 100).toFixed(2)]),
+        lineStyle: { color: natColor, type: 'solid', width: 3 }, itemStyle: { color: natColor },
+        symbol: 'none', markPoint: mkPt(natColor) },
+      ...compSeries.map(cs => ({
+        type: 'line', name: cs.label, data: (cs.data?.[model] ?? []).map(r => [r.layer_num, +(r.error_rate * 100).toFixed(2)]),
+        lineStyle: { color: synthColor, type: cs.dash ?? 'solid', width: 3 }, itemStyle: { color: synthColor },
+        symbol: 'none', markPoint: mkPt(synthColor),
+      })),
+    ],
+  }, true);
+}
+
+function ttsCompSeries(cfg) {
+  return cfg.comps.map(c => ({ data: D.results_synth[c.synthKey], label: c.label, dash: c.dash }));
+}
+
+// ── Populate model dropdowns ────────────────────────────────────────────
+function populateTTSSel() {
+  const cfg = TTS_CONFIG[S.ttsKey];
+  const natData = D.results_natural[cfg.natTask];
+  const models = Object.keys(D.models).filter(m => natData?.[m] && D.models[m]?.pretrain_lang !== 'Baseline' && cfg.comps.every(c => D.results_synth[c.synthKey]?.[m]));
+  models.sort((a, b) => (bestError(natData, a) ?? 1) - (bestError(natData, b) ?? 1));
+  const sel = document.getElementById('sel-tts');
+  sel.innerHTML = models.map(m => `<option value="${m}">${D.models[m]?.display ?? m}</option>`).join('');
+  if (!S.ttsModel || !models.includes(S.ttsModel)) S.ttsModel = models[0] ?? null;
+  sel.value = S.ttsModel;
+}
+
+function populateCtxSel() {
+  const natData = D.results_incontext.pitch_accent;
+  const ctxData = D.results_incontext.pitch_accent_in_context;
+  const models = Object.keys(D.models).filter(m => natData?.[m] && ctxData?.[m] && D.models[m]?.pretrain_lang !== 'Baseline');
+  models.sort((a, b) => (bestError(natData, a) ?? 1) - (bestError(natData, b) ?? 1));
+  const sel = document.getElementById('sel-ctx');
+  sel.innerHTML = models.map(m => `<option value="${m}">${D.models[m]?.display ?? m}</option>`).join('');
+  if (!S.ctxModel || !models.includes(S.ctxModel)) S.ctxModel = models[0] ?? null;
+  sel.value = S.ctxModel;
+}
+
+// ── Tab helper ─────────────────────────────────────────────────────────
+function bindTabs(containerId, onActive) {
+  document.getElementById(containerId).querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.getElementById(containerId).querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      onActive(tab.dataset);
+    });
+  });
+}
+
+// ── Color legend ───────────────────────────────────────────────────────
+function buildLegend() {
+  const items = Object.entries(LANG_COLORS).map(([lang, color]) =>
+    `<div class="legend-item">
+      <div class="legend-swatch" style="background:${color}"></div>
+      <span>${lang}</span>
+    </div>`);
+  const humanItem = `<div class="legend-item">
+    <div class="legend-swatch" style="background:#D55E00;height:2px;border-top:2px dashed #D55E00"></div>
+    <span>Human baseline</span>
+  </div>`;
+  const html = items.join('') + humanItem;
+  document.getElementById('color-legend-lw').innerHTML = html;
+  document.getElementById('color-legend-rank').innerHTML = html;
+}
+
+// ── Init ────────────────────────────────────────────────────────────────
+buildLegend();
+
+bindTabs('tabs-lw-task', d => { S.lwTask = d.task; updateLwDisabled(); renderLayerwise(S.lwTask, S.lwSize); });
+bindTabs('tabs-lw-size', d => { S.lwSize = d.size; updateLwDisabled(); renderLayerwise(S.lwTask, S.lwSize); });
+bindTabs('tabs-lw-lang', d => { S.lwLang = d.lang || null; updateLwDisabled(); renderLayerwise(S.lwTask, S.lwSize); });
+bindTabs('tabs-lw-arch', d => { S.lwArch = d.arch || null; updateLwDisabled(); renderLayerwise(S.lwTask, S.lwSize); });
+bindTabs('tabs-rank-task', d => { S.rankTask = d.task; renderRankings(S.rankTask); });
+bindTabs('tabs-tts', d => {
+  S.ttsKey = d.tts;
+  const cfg = TTS_CONFIG[S.ttsKey];
+  populateTTSSel();
+  if (S.ttsModel) renderCompLW('chart-tts-lw', D.results_natural[cfg.natTask], ttsCompSeries(cfg), S.ttsModel, 'Natural');
+});
+
+document.getElementById('sel-tts').addEventListener('change', e => {
+  S.ttsModel = e.target.value;
+  const cfg = TTS_CONFIG[S.ttsKey];
+  renderCompLW('chart-tts-lw', D.results_natural[cfg.natTask], ttsCompSeries(cfg), S.ttsModel, 'Natural');
+});
+document.getElementById('sel-ctx').addEventListener('change', e => {
+  S.ctxModel = e.target.value;
+  renderCompLW('chart-ctx-lw', D.results_incontext.pitch_accent,
+    [{data: D.results_incontext.pitch_accent_in_context, label: 'In-context', dash: 'solid'}],
+    S.ctxModel, 'Out-of-context', SYNTH_COLOR, NAT_COLOR);
+});
+window.addEventListener('resize', () => {
+  ['chart-lw', 'chart-rank', 'chart-tts-lw', 'chart-ctx-lw'].forEach(id => {
+    echarts.getInstanceByDom(document.getElementById(id))?.resize();
+  });
+});
+
+// Initial render
+populateTTSSel();
+populateCtxSel();
+updateLwDisabled();
+renderLayerwise(S.lwTask, S.lwSize);
+renderRankings(S.rankTask);
+const initCfg = TTS_CONFIG[S.ttsKey];
+if (S.ttsModel) renderCompLW('chart-tts-lw', D.results_natural[initCfg.natTask], ttsCompSeries(initCfg), S.ttsModel, 'Natural');
+if (S.ctxModel) renderCompLW('chart-ctx-lw', D.results_incontext.pitch_accent,
+  [{data: D.results_incontext.pitch_accent_in_context, label: 'In-context', dash: 'solid'}],
+  S.ctxModel, 'Out-of-context', SYNTH_COLOR, NAT_COLOR);
+</script>
+</body>
+</html>
