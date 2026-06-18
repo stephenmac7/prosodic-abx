@@ -4,7 +4,7 @@
 """
 Box-and-whisker plot comparing SSL model performance to human baseline.
 
-For each task (pitch_accent, stress, mandarin_tone):
+For each task (pitch_accent, stress, tone):
   - Load per-model CSVs from results/<task>/.
   - For each model in MODEL_METADATA, take the best (min) error_rate.
   - Plot a boxplot across models (human baseline not included in the box).
@@ -33,7 +33,7 @@ OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 HUMAN_DATA_DIRS = {
     "stress": Path("/home/sunhaitong/ABX_human/english/data"),
     "pitch_accent": Path("/home/sunhaitong/ABX_human/japanese/data"),
-    "mandarin_tone": Path("/home/sunhaitong/ABX_human/mandarin/data"),
+    "tone": Path("/home/sunhaitong/ABX_human/mandarin/data"),
 }
 
 CATCH_THRESHOLD = 0.65
@@ -144,7 +144,7 @@ def human_error_and_bootstrap(
 
 
 def main():
-    tasks = ["stress", "pitch_accent", "mandarin_tone"]
+    tasks = ["stress", "pitch_accent", "tone"]
     tasks.reverse()
     labels = [DATASET_LABELS.get(t, t) for t in tasks]
 

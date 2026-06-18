@@ -66,7 +66,7 @@ def get_best_error(results_dict, model_name):
 def load_all_tasks():
     """Load results from all three main tasks."""
     tasks = {
-        "mandarin_tone": "Mandarin Tone",
+        "tone": "Mandarin Tone",
         "stress": "Stress",
         "pitch_accent": "Pitch Accent",
     }
@@ -103,7 +103,7 @@ def plot_cross_task_correlation_simple(all_results, output_dir):
 
     tasks = list(all_results.keys())
     task_labels = {
-        "mandarin_tone": "Tone (ZH)",
+        "tone": "Tone (ZH)",
         "stress": "Stress (EN)",
         "pitch_accent": "Pitch Accent (JA)",
     }
@@ -145,8 +145,8 @@ def plot_cross_task_correlation_simple(all_results, output_dir):
 
     # Create pairwise scatter plots
     task_pairs = [
-        ("mandarin_tone", "pitch_accent"),
-        ("mandarin_tone", "stress"),
+        ("tone", "pitch_accent"),
+        ("tone", "stress"),
         ("pitch_accent", "stress"),
     ]
 
@@ -396,7 +396,7 @@ def plot_cross_task_correlation(all_results, output_dir):
     Generates both combined and individual plots.
     """
     task_labels = {
-        "mandarin_tone": "Mandarin Tone",
+        "tone": "Mandarin Tone",
         "stress": "Stress",
         "pitch_accent": "Pitch Accent",
     }
@@ -436,8 +436,8 @@ def plot_cross_task_correlation(all_results, output_dir):
         return "tab:purple"
 
     task_pairs = [
-        ("mandarin_tone", "pitch_accent"),
-        ("mandarin_tone", "stress"),
+        ("tone", "pitch_accent"),
+        ("tone", "stress"),
         ("pitch_accent", "stress"),
     ]
 
@@ -566,9 +566,9 @@ def plot_finetune_effect_by_model(all_results, output_dir):
     Show how finetuning affects performance across all three tasks, stratified by base model.
     Each panel shows a pretrained model and its finetuned variants across the three tasks.
     """
-    tasks = ["mandarin_tone", "stress", "pitch_accent"]
+    tasks = ["tone", "stress", "pitch_accent"]
     task_labels = {
-        "mandarin_tone": "Mandarin\nTone",
+        "tone": "Mandarin\nTone",
         "stress": "Lexical\nStress",
         "pitch_accent": "Pitch\nAccent",
     }
@@ -759,7 +759,7 @@ def plot_cross_dataset_heatmap_4x4(all_results, output_dir):
 
     tasks = list(all_results.keys())
     task_labels = {
-        "mandarin_tone": "Mandarin Tone",
+        "tone": "Mandarin Tone",
         "stress": "Stress",
         "pitch_accent": "Pitch Accent",
     }
@@ -844,7 +844,7 @@ def plot_cross_dataset_heatmap_4x4(all_results, output_dir):
 
     # Human baseline error rates per task
     human_baselines = {
-        "mandarin_tone": 0.0188,
+        "tone": 0.0188,
         "stress": 0.2888,
         "pitch_accent": 0.1158,
     }

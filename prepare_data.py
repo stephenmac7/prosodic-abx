@@ -31,7 +31,6 @@ DATASETS = {
             "target_onset",
             "target_offset",
             "label",
-            "context_set",
             "lexical_category",
         ],
     },
@@ -252,14 +251,29 @@ def write_tone_metadata(csv_path: Path, audio_dir: Path, output_path: Path) -> N
 def main() -> None:
     parser = argparse.ArgumentParser(description="Prepare local Prosodic ABX data.")
     parser.add_argument(
+        "--stress",
+        action="store_true",
+        help="Prepare English lexical stress files in data/stress.",
+    )
+    parser.add_argument(
+        "--pitch-accent",
+        action="store_true",
+        help="Prepare Japanese pitch accent files in data/pitch_accent.",
+    )
+    parser.add_argument(
         "--tone",
         action="store_true",
         help="Prepare manually downloaded MCAE-monosyllable files in data/tone.",
     )
     args = parser.parse_args()
 
-    for name, spec in DATASETS.items():
-        prepare_dataset(name, spec)
+    if not any([args.stress, args.pitch_accent, args.tone]):
+        parser.error("Specify at least one dataset: --stress, --pitch-accent, or --tone.")
+
+    if args.stress:
+        prepare_dataset("stress", DATASETS["stress"])
+    if args.pitch_accent:
+        prepare_dataset("pitch_accent", DATASETS["pitch_accent"])
     if args.tone:
         prepare_tone()
 

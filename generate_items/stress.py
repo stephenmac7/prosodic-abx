@@ -10,7 +10,6 @@ The output item file uses:
   - phone_sequence: target word, used as the BY condition
   - accent_pattern: stress label, used as the ON condition
   - speaker: speaker ID
-  - context_set: carrier-sentence set
   - lexical_category: noun or verb
 """
 
@@ -92,7 +91,6 @@ def build_items(
                 "phone_sequence": target,
                 "accent_pattern": row["label"],
                 "speaker": row["speaker"],
-                "context_set": row["context_set"],
                 "lexical_category": row["lexical_category"],
             }
         )
@@ -113,7 +111,6 @@ def write_items(items: list[dict[str, object]], output_path: Path) -> None:
         "phone_sequence",
         "accent_pattern",
         "speaker",
-        "context_set",
         "lexical_category",
     ]
     with output_path.open("w", encoding="utf-8", newline="") as f:

@@ -160,7 +160,7 @@ def extract_features(
             print("Model source: HuggingFace Hub ID")
             hf_name = HF_MODELS[model_key_lower]
             hf_processor = AutoFeatureExtractor.from_pretrained(hf_name)
-            hf_model = AutoModel.from_pretrained(hf_name).to(device).eval()
+            hf_model = AutoModel.from_pretrained(hf_name).float().to(device).eval()
             expected_sr = getattr(hf_processor, "sampling_rate", MFCC_SAMPLE_RATE)
             use_hf = True
             model = None
@@ -175,7 +175,7 @@ def extract_features(
             )
             hf_model = AutoModel.from_pretrained(
                 local_path, local_files_only=True
-            ).to(device).eval()
+            ).float().to(device).eval()
             expected_sr = getattr(hf_processor, "sampling_rate", MFCC_SAMPLE_RATE)
             use_hf = True
             model = None

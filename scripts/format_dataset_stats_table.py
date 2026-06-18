@@ -12,8 +12,8 @@ Usage:
     --row "English" "Kokoro"    abx_items/stress_kokoro/items.csv \
     --row "Japanese" "Recording" abx_items/pitch_accent/items.csv \
     --row "Japanese" "G-TTS"    abx_items/pitch_accent_syn/items.csv \
-    --row "Mandarin" "MCAE"     abx_items/mandarin_tone/items.csv \
-    --row "Mandarin" "G-TTS"    abx_items/mandarin_tone_syn/items.csv
+    --row "Mandarin" "MCAE"     abx_items/tone/items.csv \
+    --row "Mandarin" "G-TTS"    abx_items/tone_syn/items.csv
 """
 
 from __future__ import annotations

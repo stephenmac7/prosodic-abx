@@ -5,7 +5,7 @@ Format a LaTeX table from synth proxy summary.json files.
 Usage:
   uv run python scripts/format_synth_proxy_table.py \
     --row "Japanese (S)" plots/synth_proxy_stats/pitch_accent_vs_pitch_accent_syn/summary.json \
-    --row "Mandarin (S)" plots/synth_proxy_stats/mandarin_tone_vs_mandarin_tone_syn/summary.json \
+    --row "Mandarin (S)" plots/synth_proxy_stats/tone_vs_tone_syn/summary.json \
     --row "English (S)" plots/synth_proxy_stats/stress_vs_stress_syn/summary.json \
     --row "English (K)" plots/synth_proxy_stats/stress_vs_stress_kokoro/summary.json \
     --label "tab:synth-proxy"

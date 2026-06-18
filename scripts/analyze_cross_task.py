@@ -11,9 +11,9 @@ Usage:
     python analyze_cross_task.py TASK_A TASK_B [--bootstrap 1000]
 
 Examples:
-    python analyze_cross_task.py pitch_accent mandarin_tone
+    python analyze_cross_task.py pitch_accent tone
     python analyze_cross_task.py pitch_accent stress
-    python analyze_cross_task.py stress mandarin_tone
+    python analyze_cross_task.py stress tone
 """
 
 import argparse
@@ -36,10 +36,10 @@ DATASET_LABELS = {
     "pitch_accent": "Pitch Accent",
     "stress": "Lexical Stress",
     "stress_kokoro": "Lexical Stress (Kokoro)",
-    "mandarin_tone": "Mandarin Tone",
+    "tone": "Mandarin Tone",
     "pitch_accent_syn": "Pitch Accent (Syn)",
     "stress_syn": "Lexical Stress (Syn)",
-    "mandarin_tone_syn": "Mandarin Tone (Syn)",
+    "tone_syn": "Mandarin Tone (Syn)",
 }
 
 
@@ -413,7 +413,7 @@ def main():
     )
     parser.add_argument(
         "task_b",
-        help="Second task/dataset name (e.g., mandarin_tone)",
+        help="Second task/dataset name (e.g., tone)",
     )
     parser.add_argument("--bootstrap", type=int, default=1000)
     parser.add_argument("--seed", type=int, default=42)

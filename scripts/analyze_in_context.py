@@ -35,7 +35,7 @@ DATASET_LABELS = {
     "pitch_accent": "Pitch Accent",
     "stress": "Lexical Stress",
     "stress_kokoro": "Lexical Stress (Kokoro)",
-    "mandarin_tone": "Mandarin Tone",
+    "tone": "Mandarin Tone",
 }
 
 

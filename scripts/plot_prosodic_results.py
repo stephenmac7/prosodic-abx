@@ -6,7 +6,7 @@ Stratifies by: pretraining language, model architecture, size, corpus size, and 
 Usage:
     python plot_prosodic_results.py [dataset]
 
-Where dataset is one of: pitch_accent, stress, mandarin_tone
+Where dataset is one of: pitch_accent, stress, tone
 Default is pitch_accent if not specified.
 """
 
@@ -20,7 +20,7 @@ from collections import defaultdict
 DATASET_LABELS = {
     "pitch_accent": "Pitch Accent (JA)",
     "stress": "Stress (EN)",
-    "mandarin_tone": "Tone (ZH)",
+    "tone": "Tone (ZH)",
 }
 
 # Model metadata: (pretrain_lang, architecture, size, corpus_size, finetuned, finetune_lang)
@@ -730,7 +730,7 @@ def main():
         "dataset",
         nargs="?",
         default="pitch_accent",
-        choices=["pitch_accent", "stress", "mandarin_tone"],
+        choices=["pitch_accent", "stress", "tone"],
         help="Dataset to analyze (default: pitch_accent)",
     )
     args = parser.parse_args()

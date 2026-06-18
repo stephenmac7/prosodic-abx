@@ -4,7 +4,7 @@
 """
 Box-and-whisker plot comparing SSL model performance to human baseline.
 
-For each task (pitch_accent, stress, mandarin_tone):
+For each task (pitch_accent, stress, tone):
   - Load per-model CSVs from results/<task>/.
   - For each model in MODEL_METADATA, take the best (min) error_rate.
   - Plot a boxplot across models (human baseline not included in the box).
@@ -29,7 +29,7 @@ OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 HUMAN_BASELINES = {
     "pitch_accent": 0.0943,
     "stress": 0.2888,
-    "mandarin_tone": 0.0188,
+    "tone": 0.0188,
 }
 
 
@@ -57,7 +57,7 @@ def load_best_errors(task: str) -> list[float]:
 
 
 def main():
-    tasks = ["pitch_accent", "stress", "mandarin_tone"]
+    tasks = ["pitch_accent", "stress", "tone"]
     labels = [DATASET_LABELS.get(t, t) for t in tasks]
 
     data = []
