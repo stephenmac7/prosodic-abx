@@ -16,10 +16,7 @@ METADATA_COLUMNS = [
     "id",
     "audio_file",
     "speaker",
-    "text",
     "target",
-    "target_onset",
-    "target_offset",
     "label",
     "lexical_category",
 ]
@@ -176,15 +173,13 @@ def main() -> None:
 
     for suffix, voice_name in VOICES.items():
         speaker = f"EN_TTS_{suffix}"
-        item_number = 1
-
         for word, forms in IPA_MAP.items():
             for lexical_category in ["noun", "verb"]:
                 ipa = forms[lexical_category]
                 if not ipa:
                     raise ValueError(f"IPA missing for {word} ({lexical_category})")
 
-                item_id = f"{speaker}_{item_number:03d}"
+                item_id = f"{speaker}_{word}_{lexical_category}"
                 wav_path = audio_dir / f"{item_id}.wav"
 
                 if not wav_path.exists():
@@ -205,15 +200,11 @@ def main() -> None:
                         "id": item_id,
                         "audio_file": f"audio/{item_id}.wav",
                         "speaker": speaker,
-                        "text": word,
                         "target": word,
-                        "target_onset": 0.0,
-                        "target_offset": get_duration_seconds(wav_path),
                         "label": LABELS[lexical_category],
                         "lexical_category": lexical_category,
                     }
                 )
-                item_number += 1
 
     write_metadata(metadata_rows, metadata_path)
     print(f"Wrote {len(metadata_rows)} metadata rows to {metadata_path}")

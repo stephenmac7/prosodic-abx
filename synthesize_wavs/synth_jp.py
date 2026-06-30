@@ -16,11 +16,8 @@ METADATA_COLUMNS = [
     "id",
     "audio_file",
     "speaker",
-    "text",
     "target",
     "surface_kana",
-    "target_onset",
-    "target_offset",
     "label",
     "context_id",
 ]
@@ -79,7 +76,7 @@ def load_items(input_csv: Path) -> list[dict[str, str]]:
 
 
 def write_metadata(rows: list[dict[str, object]], metadata_path: Path) -> None:
-    """Write metadata in the same shape as data/pitch_accent/metadata.csv."""
+    """Write metadata in the same shape as the released synthetic corpus."""
     metadata_path.parent.mkdir(parents=True, exist_ok=True)
     with metadata_path.open("w", encoding="utf-8", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=METADATA_COLUMNS)
@@ -128,7 +125,7 @@ def main() -> None:
 
         for suffix, voice_name in VOICES.items():
             speaker = f"JP_TTS_{suffix}"
-            item_id = f"{speaker}_{idx}"
+            item_id = f"{speaker}_{idx}_{kana}_{text}"
             wav_path = audio_dir / f"{item_id}.wav"
 
             if not wav_path.exists():
@@ -148,11 +145,8 @@ def main() -> None:
                     "id": item_id,
                     "audio_file": f"audio/{item_id}.wav",
                     "speaker": speaker,
-                    "text": text,
                     "target": text,
                     "surface_kana": kana,
-                    "target_onset": 0.0,
-                    "target_offset": get_duration_seconds(wav_path),
                     "label": label,
                     "context_id": context_id,
                 }

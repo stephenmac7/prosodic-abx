@@ -102,10 +102,7 @@ METADATA_COLUMNS = [
     "id",
     "audio_file",
     "speaker",
-    "text",
     "target",
-    "target_onset",
-    "target_offset",
     "label",
     "lexical_category",
 ]
@@ -268,14 +265,13 @@ def synthesize_raw_corpus(raw_dir: Path, seed: int) -> list[dict[str, str]]:
     raw_rows = []
 
     with tqdm(total=total, desc="Synthesizing") as pbar:
-        for suffix, voice_name in enumerate(VOICES, start=1):
-            speaker = f"EN_KOKORO_{suffix:02d}"
-            item_number = 1
+        for voice_name in VOICES:
+            speaker = f"EN_KOKORO_{voice_name}"
 
             for word, forms in IPA_MAP.items():
                 for lexical_category in ["noun", "verb"]:
                     ipa = forms[lexical_category]
-                    item_id = f"{speaker}_{item_number:03d}"
+                    item_id = f"{speaker}_{word}_{lexical_category}"
                     wav_path = raw_dir / f"{item_id}.wav"
                     lab_path = raw_dir / f"{item_id}.lab"
 
@@ -297,7 +293,6 @@ def synthesize_raw_corpus(raw_dir: Path, seed: int) -> list[dict[str, str]]:
                     )
 
                     pbar.update(1)
-                    item_number += 1
 
     return raw_rows
 
@@ -326,10 +321,7 @@ def build_clipped_data(
                 "id": item_id,
                 "audio_file": f"audio/{item_id}.wav",
                 "speaker": row["speaker"],
-                "text": row["text"],
                 "target": row["target"],
-                "target_onset": 0.0,
-                "target_offset": get_duration_seconds(clipped_wav),
                 "label": row["label"],
                 "lexical_category": row["lexical_category"],
             }

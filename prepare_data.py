@@ -49,6 +49,50 @@ DATASETS = {
             "context_id",
         ],
     },
+    "stress_syn": {
+        "parquet": "english_stress_syn/english_stress_syn.parquet",
+        "columns": [
+            "id",
+            "audio_file",
+            "speaker",
+            "target",
+            "label",
+            "lexical_category",
+        ],
+    },
+    "stress_kokoro": {
+        "parquet": "english_stress_kokoro/english_stress_kokoro.parquet",
+        "columns": [
+            "id",
+            "audio_file",
+            "speaker",
+            "target",
+            "label",
+            "lexical_category",
+        ],
+    },
+    "pitch_accent_syn": {
+        "parquet": "japanese_pitch_accent_syn/japanese_pitch_accent_syn.parquet",
+        "columns": [
+            "id",
+            "audio_file",
+            "speaker",
+            "target",
+            "surface_kana",
+            "label",
+            "context_id",
+        ],
+    },
+    "tone_syn": {
+        "parquet": "mandarin_tone_syn/mandarin_tone_syn.parquet",
+        "columns": [
+            "id",
+            "audio_file",
+            "speaker",
+            "target",
+            "label",
+        ],
+    },
 }
 
 
@@ -265,10 +309,43 @@ def main() -> None:
         action="store_true",
         help="Prepare manually downloaded MCAE-monosyllable files in data/tone.",
     )
+    parser.add_argument(
+        "--stress-syn",
+        action="store_true",
+        help="Prepare Google TTS English stress files in data/stress_syn.",
+    )
+    parser.add_argument(
+        "--stress-kokoro",
+        action="store_true",
+        help="Prepare Kokoro English stress files in data/stress_kokoro.",
+    )
+    parser.add_argument(
+        "--pitch-accent-syn",
+        action="store_true",
+        help="Prepare Google TTS Japanese pitch accent files in data/pitch_accent_syn.",
+    )
+    parser.add_argument(
+        "--tone-syn",
+        action="store_true",
+        help="Prepare Google TTS Mandarin tone files in data/tone_syn.",
+    )
     args = parser.parse_args()
 
-    if not any([args.stress, args.pitch_accent, args.tone]):
-        parser.error("Specify at least one dataset: --stress, --pitch-accent, or --tone.")
+    if not any(
+        [
+            args.stress,
+            args.pitch_accent,
+            args.tone,
+            args.stress_syn,
+            args.stress_kokoro,
+            args.pitch_accent_syn,
+            args.tone_syn,
+        ]
+    ):
+        parser.error(
+            "Specify at least one dataset: --stress, --pitch-accent, --tone, "
+            "--stress-syn, --stress-kokoro, --pitch-accent-syn, or --tone-syn."
+        )
 
     if args.stress:
         prepare_dataset("stress", DATASETS["stress"])
@@ -276,6 +353,14 @@ def main() -> None:
         prepare_dataset("pitch_accent", DATASETS["pitch_accent"])
     if args.tone:
         prepare_tone()
+    if args.stress_syn:
+        prepare_dataset("stress_syn", DATASETS["stress_syn"])
+    if args.stress_kokoro:
+        prepare_dataset("stress_kokoro", DATASETS["stress_kokoro"])
+    if args.pitch_accent_syn:
+        prepare_dataset("pitch_accent_syn", DATASETS["pitch_accent_syn"])
+    if args.tone_syn:
+        prepare_dataset("tone_syn", DATASETS["tone_syn"])
 
 
 if __name__ == "__main__":
