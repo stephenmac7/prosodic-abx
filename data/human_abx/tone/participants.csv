@@ -1,0 +1,16 @@
+participant,response_file,list_id,status,n_responses,n_catch_trials,catch_accuracy
+participant-058,responses_participant-058_participant_000_20260130_182058.csv,participant_000,COMPLETED,100,10,1.000000
+participant-059,responses_participant-059_participant_001_20260130_200520.csv,participant_001,COMPLETED,100,10,1.000000
+participant-060,responses_participant-060_participant_002_20260130_201315.csv,participant_002,COMPLETED,100,10,1.000000
+participant-061,responses_participant-061_participant_003_20260130_222639.csv,participant_003,COMPLETED,100,10,1.000000
+participant-062,responses_participant-062_participant_004_20260130_195517.csv,participant_004,COMPLETED,100,10,1.000000
+participant-063,responses_participant-063_participant_005_20260130_230024.csv,participant_005,COMPLETED,100,10,1.000000
+participant-064,responses_participant-064_participant_006_20260130_202039.csv,participant_006,COMPLETED,100,10,1.000000
+participant-065,responses_participant-065_participant_007_20260130_213230.csv,participant_007,COMPLETED,100,10,1.000000
+participant-066,responses_participant-066_participant_008_20260131_005542.csv,participant_008,COMPLETED,100,10,1.000000
+participant-067,responses_participant-067_participant_009_20260131_005853.csv,participant_009,COMPLETED,100,10,0.900000
+participant-068,responses_participant-068_participant_010_20260131_011412.csv,participant_010,COMPLETED,100,10,1.000000
+participant-069,responses_participant-069_participant_011_20260130_232732.csv,participant_011,COMPLETED,100,10,0.900000
+participant-070,responses_participant-070_participant_012_20260130_233440.csv,participant_012,COMPLETED,100,10,1.000000
+participant-071,responses_participant-071_participant_013_20260131_180202.csv,participant_013,COMPLETED,100,10,1.000000
+participant-072,responses_participant-072_participant_014_20260131_000339.csv,participant_014,COMPLETED,100,10,1.000000

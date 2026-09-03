@@ -1,6 +1,8 @@
 """Generate fastabx items for Kokoro English lexical stress.
 
-Run synthesize_wavs/synth_en_kokoro.py before this script. It reads clipped
+Run prepare_data.py --stress-kokoro before this script to use the fixed
+synthesized corpus released with the paper. Alternatively, regenerate the
+corpus with synthesize_wavs/synth_en_kokoro.py. This script reads clipped
 target-word WAV files and metadata from data/stress_kokoro/, arranges the audio
 under abx_items/stress_kokoro/audio/ by target word, and writes items.csv for
 extract_features.py and run_abx.py.

@@ -504,6 +504,11 @@ def main():
     parser.add_argument("--output-dir", type=Path, default=None)
     parser.add_argument("--bootstrap", type=int, default=1000)
     parser.add_argument("--seed", type=int, default=0)
+    parser.add_argument(
+        "--diagnostics",
+        action="store_true",
+        help="Also write per-model statistics and diagnostic plots.",
+    )
     args = parser.parse_args()
 
     nat_dir = RESULTS_DIR / args.natural_dataset
@@ -604,22 +609,25 @@ def main():
     out_dir = args.output_dir or (OUTPUT_DIR / f"{args.natural_dataset}_vs_{args.synth_dataset}")
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    stats_path = out_dir / "per_model_stats.csv"
-    stats_df.to_csv(stats_path, index=False)
+    if args.diagnostics:
+        stats_path = out_dir / "per_model_stats.csv"
+        stats_df.to_csv(stats_path, index=False)
+        print(f"Saved: {stats_path}")
 
-    plot_path = out_dir / "distributions.png"
-    plot_distributions(
-        stats_df,
-        global_regret,
-        model_uniform_global_regret,
-        within_model_random_regret,
-        plot_path,
-    )
+        plot_path = out_dir / "distributions.png"
+        plot_distributions(
+            stats_df,
+            global_regret,
+            model_uniform_global_regret,
+            within_model_random_regret,
+            plot_path,
+        )
+        print(f"Saved: {plot_path}")
 
-    if model_summary is not None and len(model_summary) >= 2:
-        bump_path = out_dir / "model_rank_bump.png"
-        plot_model_rank_bump(model_summary, model_rank_rho, bump_path)
-        print(f"Saved: {bump_path}")
+        if model_summary is not None and len(model_summary) >= 2:
+            bump_path = out_dir / "model_rank_bump.png"
+            plot_model_rank_bump(model_summary, model_rank_rho, bump_path)
+            print(f"Saved: {bump_path}")
 
     summary_path = out_dir / "summary.md"
     write_summary_table(
@@ -659,8 +667,6 @@ def main():
         summary_json_path,
     )
 
-    print(f"Saved: {stats_path}")
-    print(f"Saved: {plot_path}")
     print(f"Saved: {summary_path}")
     print(f"Saved: {summary_json_path}")
     if global_regret is not None:

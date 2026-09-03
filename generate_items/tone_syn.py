@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 """Generate fastabx items for synthesized Mandarin tone.
 
-Run synthesize_wavs/synth_zh.py before this script. It reads synthesized
-single-syllable WAV files and metadata from data/tone_syn/, arranges the audio
-under abx_items/tone_syn/audio/ by pinyin, and writes items.csv for
-extract_features.py and run_abx.py.
+Run prepare_data.py --tone-syn before this script to use the fixed synthesized
+corpus released with the paper. Alternatively, regenerate the corpus with
+synthesize_wavs/synth_zh.py. This script reads synthesized single-syllable WAV
+files and metadata from data/tone_syn/, arranges the audio under
+abx_items/tone_syn/audio/ by pinyin, and writes items.csv for extract_features.py
+and run_abx.py.
 
 The output item file uses:
   - #file: path relative to audio_path.txt, without extension

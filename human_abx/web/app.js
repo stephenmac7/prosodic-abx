@@ -16,11 +16,11 @@ const config = {
 const DEMO_FILES = {
   stress: { a: "demo_a_UMbrella.wav", b: "demo_b_umBRElla.wav" },
   pitch_accent: { a: "demo_a_ichien0.wav", b: "demo_b_ichien2.wav" },
-  mandarin_tone: { a: "demo_a_zhua1.wav", b: "demo_b_zhua3.wav" },
+  tone: { a: "demo_a_zhua1.wav", b: "demo_b_zhua3.wav" },
 };
 
 const STRINGS = {
-  mandarin_tone: {
+  tone: {
     autoSubmitFailed: "自动提交失败。请下载你的回答。", // machine-translated
     beginTask: "任务开始",
     bonusMessage: "<strong>太棒了！</strong> 你的高准确率为你赢得了额外奖励。", // machine-translated
@@ -323,7 +323,7 @@ function applyConfigFromParams() {
 }
 
 function inferDataset(listUrl) {
-  const datasets = ["stress", "pitch_accent", "mandarin_tone"];
+  const datasets = ["stress", "pitch_accent", "tone"];
   for (const ds of datasets) {
     if (listUrl.includes(`/${ds}/`) || listUrl.startsWith(`${ds}/`)) {
       return ds;

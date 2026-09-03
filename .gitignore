@@ -86,7 +86,9 @@ features/
 results/
 synth_data/
 plots/
-data/
+data/*
+!data/human_abx/
+!data/human_abx/**
 *.out
 
 # test scripts

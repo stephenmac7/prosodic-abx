@@ -12,6 +12,8 @@ Usage:
     python plot_cross_analysis.py
 """
 
+import argparse
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -197,16 +199,11 @@ def plot_cross_task_correlation_simple(all_results, output_dir):
         ax.set_xlabel(task_labels[task1], fontsize=12)
         ax.set_ylabel(task_labels[task2], fontsize=12)
         ax.tick_params(labelsize=9)
-        ax.set_title(f"{task_labels[task1]} vs {task_labels[task2]}")
         ax.set_box_aspect(1)
         ax.grid(True, alpha=0.3)
 
     plt.tight_layout(pad=0.3, w_pad=0.3, h_pad=0.3)
     plt.savefig(output_dir / "cross_task_correlation_simple.png", **SAVEFIG_KW)
-
-    # Remove titles for PDF
-    for ax in axes:
-        ax.set_title("")
     plt.savefig(output_dir / "cross_task_correlation_simple.pdf", **SAVEFIG_KW)
     plt.close()
 
@@ -1029,6 +1026,16 @@ def validate_results(all_results):
 
 
 def main():
+    parser = argparse.ArgumentParser(
+        description="Generate cross-task plots from natural-speech ABX results."
+    )
+    parser.add_argument(
+        "--diagnostics",
+        action="store_true",
+        help="Also write heatmaps, full correlation plots, and finetuning diagnostics.",
+    )
+    args = parser.parse_args()
+
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     print("Loading all task results...")
@@ -1037,12 +1044,12 @@ def main():
 
     print("\nGenerating cross-analysis plots...")
 
-    plot_cross_dataset_heatmap_4x4(all_results, OUTPUT_DIR)
-
-    plot_cross_task_correlation(all_results, OUTPUT_DIR)
     plot_cross_task_correlation_simple(all_results, OUTPUT_DIR)
 
-    plot_finetune_effect_by_model(all_results, OUTPUT_DIR)
+    if args.diagnostics:
+        plot_cross_dataset_heatmap_4x4(all_results, OUTPUT_DIR)
+        plot_cross_task_correlation(all_results, OUTPUT_DIR)
+        plot_finetune_effect_by_model(all_results, OUTPUT_DIR)
 
     print(f"\nAll plots saved to {OUTPUT_DIR}")
 

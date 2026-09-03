@@ -131,7 +131,7 @@ if (preg_match('/lists\/([^\/]+)\/(participant_\d+)\.csv/', $list_id, $matches))
 } elseif (preg_match('/^(participant_\d+)\.csv$/', $list_id, $matches)) {
     // Try to infer dataset from assignment files
     $list_name = $matches[1];
-    foreach (['stress', 'pitch_accent', 'mandarin_tone'] as $ds) {
+    foreach (['stress', 'pitch_accent', 'tone'] as $ds) {
         $af = "{$data_dir}/assignments_{$ds}.json";
         if (file_exists($af)) {
             $a = json_decode(file_get_contents($af), true) ?: [];

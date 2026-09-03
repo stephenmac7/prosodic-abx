@@ -19,21 +19,21 @@ import numpy as np
 from plot_prosodic_results import MODEL_METADATA, DATASET_LABELS
 import sys
 
-HUMAN_ABX_ANALYSIS_DIR = Path("/home/sunhaitong/prosody-abx/human_abx/analysis")
+SCRIPT_DIR = Path(__file__).resolve().parent
+HUMAN_ABX_ANALYSIS_DIR = SCRIPT_DIR.parent / "human_abx" / "analysis"
 sys.path.append(str(HUMAN_ABX_ANALYSIS_DIR))
 import compute_human_abx as human_abx
 
 
-SCRIPT_DIR = Path(__file__).resolve().parent
 RESULTS_DIR = SCRIPT_DIR.parent / "results"
 OUTPUT_DIR = SCRIPT_DIR.parent / "plots" / "human_ssl"
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 
 HUMAN_DATA_DIRS = {
-    "stress": Path("/home/sunhaitong/ABX_human/english/data"),
-    "pitch_accent": Path("/home/sunhaitong/ABX_human/japanese/data"),
-    "tone": Path("/home/sunhaitong/ABX_human/mandarin/data"),
+    "stress": SCRIPT_DIR.parent / "data" / "human_abx" / "stress",
+    "pitch_accent": SCRIPT_DIR.parent / "data" / "human_abx" / "pitch_accent",
+    "tone": SCRIPT_DIR.parent / "data" / "human_abx" / "tone",
 }
 
 CATCH_THRESHOLD = 0.65

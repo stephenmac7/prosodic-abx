@@ -2,7 +2,7 @@
 
 Run prepare_data.py --tone before this script. It reads selected MCAE
 Monosyllable audio and metadata from data/tone/ and writes
-abx_items/mandarin_tone/ for extract_features.py and run_abx.py.
+abx_items/tone/ for extract_features.py and run_abx.py.
 
 The ABX task is: ON tone, BY pinyin, ACROSS speaker
 - Discriminate tones for the same syllable (pinyin) across different speakers.

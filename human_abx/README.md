@@ -75,7 +75,7 @@ Correct answer is counterbalanced (~50% A, ~50% B).
 
 ```
 human_abx/
-├── DESIGN.md                  # This document
+├── README.md                  # This document
 ├── generate_human_abx.py      # Generation + audio materialization
 ├── deploy.py                  # Deploy to web server
 ├── .gitignore                 # Excludes generated files
@@ -110,29 +110,51 @@ Each CSV contains columns:
 
 ## Generating Lists and Audio
 
-```bash
-cd /home/smcintosh/fastabx
+The web app plays materialized WAV clips from `human_abx/web/audio/`.
+In this release, all three tasks use the prepared clipped items in `abx_items/`.
 
+From the repository root, first prepare the item files used by the human task:
+
+```bash
+python prepare_data.py \
+  --stress \
+  --pitch-accent \
+  --tone \
+  --stress-syn \
+  --pitch-accent-syn \
+  --tone-syn
+
+python generate_items/stress.py
+python generate_items/pitch_accent.py
+python generate_items/tone.py
+python generate_items/stress_syn.py
+python generate_items/pitch_accent_syn.py
+python generate_items/tone_syn.py
+```
+
+Then generate participant lists and materialize the web audio:
+
+```bash
 # English stress
-uv run python human_abx/generate_human_abx.py \
+python human_abx/generate_human_abx.py \
     --dataset stress \
     --trials-per-participant 70 \
     --min-responses-per-recording 2 \
     --materialize-audio
 
 # Japanese pitch accent
-uv run python human_abx/generate_human_abx.py \
+python human_abx/generate_human_abx.py \
     --dataset pitch_accent \
     --trials-per-participant 100 \
     --min-responses-per-recording 5 \
     --materialize-audio
 
 # Mandarin tone
-uv run python human_abx/generate_human_abx.py \
-    --dataset mandarin_tone \
+python human_abx/generate_human_abx.py \
+    --dataset tone \
     --trials-per-participant 100 \
     --min-responses-per-recording 1 \
-    --pinyin-freq-file metadata/junda_syllable_freq_without_tones.txt \
+    --pinyin-freq-file human_abx/metadata/junda_syllable_freq_without_tones.txt \
     --top-pinyins 50 \
     --materialize-audio
 ```
@@ -190,7 +212,7 @@ Responses are saved to `data/` within the deployment directory:
 
 | Parameter | Description |
 |-----------|-------------|
-| `dataset` | Dataset to assign from (stress, pitch_accent, mandarin_tone) |
+| `dataset` | Dataset to assign from (stress, pitch_accent, tone) |
 | `list` | Path to participant list CSV (direct access) |
 | `PROLIFIC_PID` | Prolific participant ID (passed by Prolific) |
 | `participant_id` | Generic participant ID (fallback if no Prolific PID) |

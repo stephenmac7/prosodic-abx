@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Generate fastabx items for synthesized Japanese pitch accent.
 
-Run synthesize_wavs/synth_jp.py before this script. It reads synthesized
+Run prepare_data.py --pitch-accent-syn before this script to use the fixed
+synthesized corpus released with the paper. Alternatively, regenerate the
+corpus with synthesize_wavs/synth_jp.py. This script reads synthesized
 single-word WAV files and metadata from data/pitch_accent_syn/, arranges the
 audio under abx_items/pitch_accent_syn/audio/ by surface_kana, and writes
 items.csv for extract_features.py and run_abx.py.

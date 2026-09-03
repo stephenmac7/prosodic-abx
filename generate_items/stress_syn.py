@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Generate fastabx items for synthesized English lexical stress.
 
-Run synthesize_wavs/synth_en.py before this script. It reads the synthesized
+Run prepare_data.py --stress-syn before this script to use the fixed
+synthesized corpus released with the paper. Alternatively, regenerate the
+corpus with synthesize_wavs/synth_en.py. This script reads the synthesized
 single-word WAV files and metadata from data/stress_syn/, arranges the audio
 under abx_items/stress_syn/audio/ by target word, and writes items.csv for
 extract_features.py and run_abx.py.

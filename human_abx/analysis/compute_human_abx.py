@@ -222,7 +222,7 @@ def main():
     parser.add_argument(
         "--dataset",
         type=str,
-        help="Filter to specific dataset (e.g., 'stress', 'pitch_accent', 'mandarin_tone')",
+        help="Filter to specific dataset (e.g., 'stress', 'pitch_accent', 'tone')",
     )
     parser.add_argument(
         "--catch-threshold",
@@ -290,7 +290,7 @@ def main():
                         # Japanese: has Japanese characters in file paths
                         if any(ord(c) > 127 for c in file_a):
                             matches = True
-                    elif args.dataset == "mandarin_tone":
+                    elif args.dataset == "tone":
                         # Mandarin: accent patterns are tone numbers (1-4, typically > 2 for disambiguation)
                         accent_a = row.get("accent_a", "")
                         if accent_a.isdigit():

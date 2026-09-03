@@ -678,7 +678,7 @@ def main():
         "--dataset",
         type=str,
         required=True,
-        help="Dataset name (e.g., stress, pitch_accent, mandarin_tone)",
+        help="Dataset name (e.g., stress, pitch_accent, tone)",
     )
     parser.add_argument(
         "--trials-per-participant",
@@ -740,16 +740,8 @@ def main():
 
     args = parser.parse_args()
 
-    # Load items
-    # Prefer in-context items for specific datasets to ensure correct file IDs (sentence files)
-    # are used throughout the pipeline.
-    datasets_using_context = {"stress", "pitch_accent"}
-    if args.dataset in datasets_using_context:
-        dataset_dir = f"{args.dataset}_in_context"
-    else:
-        dataset_dir = args.dataset
-
-    item_path = Path("abx_items") / dataset_dir / "items.csv"
+    # Load the prepared item file for the requested dataset.
+    item_path = Path("abx_items") / args.dataset / "items.csv"
     if not item_path.exists():
         raise FileNotFoundError(f"Item file not found: {item_path}")
 
@@ -788,7 +780,7 @@ def main():
             f"  Selected pinyins: {sorted(top_pinyins)[:10]}... ({len(top_pinyins)} total)"
         )
 
-        # Filter labels - phone_sequence is the pinyin for mandarin_tone
+        # Filter labels - phone_sequence is the pinyin for tone
         original_count = len(labels)
         labels = labels.filter(pl.col("phone_sequence").is_in(top_pinyins))
         print(f"  Filtered: {original_count} -> {len(labels)} items")
@@ -1000,40 +992,11 @@ def main():
         print("\nMaterializing audio clips...")
         web_audio_dir = args.output_dir / "web" / "audio"
 
-        # Determine if we should use in-context items (for boundary-centered fade)
-        # English (stress) and Japanese (pitch_accent) use in-context with fade
-        # Mandarin uses clean cuts without fade
-        datasets_with_fade = {"stress", "pitch_accent"}
-        use_in_context = args.dataset in datasets_with_fade
-        fade_duration = 0.02 if use_in_context else 0.0  # 20ms fade
-
-        if use_in_context:
-            # Use in-context items (sentence audio with word timestamps)
-            in_context_dataset = f"{args.dataset}_in_context"
-            in_context_item_path = Path("abx_items") / in_context_dataset / "items.csv"
-            if not in_context_item_path.exists():
-                raise FileNotFoundError(
-                    f"In-context items not found: {in_context_item_path}. "
-                    f"Run the generate script with --in-context first."
-                )
-            audio_root_main = Path(
-                (Path("abx_items") / in_context_dataset / "audio_path.txt")
-                .read_text()
-                .strip()
-            )
-            main_items_path = in_context_item_path
-            print(
-                f"  Using in-context items with {fade_duration*1000:.0f}ms boundary-centered fade"
-            )
-        else:
-            # Use regular items (clean cut)
-            audio_root_main = Path(
-                (Path("abx_items") / args.dataset / "audio_path.txt")
-                .read_text()
-                .strip()
-            )
-            main_items_path = item_path
-            print(f"  Using clean cuts (no fade)")
+        audio_root_main = Path(
+            (Path("abx_items") / args.dataset / "audio_path.txt").read_text().strip()
+        )
+        main_items_path = item_path
+        print("  Using prepared clipped items")
 
         main_items_files = set(
             pl.read_csv(main_items_path, columns=["#file"])["#file"]
@@ -1056,7 +1019,7 @@ def main():
             audio_root_main,
             main_output,
             used_files_main,
-            fade_duration,
+            fade_duration=0.0,
         )
         print(f"  Materialized {n_main} main clips to {main_output}")
 

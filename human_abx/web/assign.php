@@ -19,7 +19,7 @@ ini_set('display_errors', 0);
 $base_url = '';  // Auto-detect if empty
 $submit_url = ''; // Auto-detect if empty
 
-$valid_datasets = ['stress', 'pitch_accent', 'mandarin_tone'];
+$valid_datasets = ['stress', 'pitch_accent', 'tone'];
 $dataset_lists = [];  // dataset => [list_name, list_name, ...]
 foreach ($valid_datasets as $ds) {
     $dir = __DIR__ . "/lists/{$ds}";

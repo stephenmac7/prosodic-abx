@@ -572,6 +572,11 @@ def main():
     parser.add_argument("--bootstrap", type=int, default=1000)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--include-baselines", action="store_true")
+    parser.add_argument(
+        "--diagnostics",
+        action="store_true",
+        help="Also write per-model statistics and diagnostic plots.",
+    )
     args = parser.parse_args()
 
     dataset = args.dataset
@@ -628,25 +633,24 @@ def main():
 
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    # Save per-model stats
-    stats_df.to_csv(output_dir / "per_model_stats.csv", index=False)
-    print(f"Saved: {output_dir / 'per_model_stats.csv'}")
+    if args.diagnostics:
+        stats_df.to_csv(output_dir / "per_model_stats.csv", index=False)
+        print(f"Saved: {output_dir / 'per_model_stats.csv'}")
 
-    # Generate plots
-    plot_distributions(stats_df, output_dir / "distributions.png")
-    print(f"Saved: {output_dir / 'distributions.png'}")
+        plot_distributions(stats_df, output_dir / "distributions.png")
+        print(f"Saved: {output_dir / 'distributions.png'}")
 
-    plot_layerwise_comparison(all_merged, output_dir / "layerwise_comparison.png")
-    print(f"Saved: {output_dir / 'layerwise_comparison.png'}")
+        plot_layerwise_comparison(all_merged, output_dir / "layerwise_comparison.png")
+        print(f"Saved: {output_dir / 'layerwise_comparison.png'}")
 
-    plot_delta_by_layer(all_merged, output_dir / "delta_by_layer.png")
-    print(f"Saved: {output_dir / 'delta_by_layer.png'}")
+        plot_delta_by_layer(all_merged, output_dir / "delta_by_layer.png")
+        print(f"Saved: {output_dir / 'delta_by_layer.png'}")
 
-    plot_correlation_scatter(all_merged, output_dir / "correlation_scatter.png")
-    print(f"Saved: {output_dir / 'correlation_scatter.png'}")
+        plot_correlation_scatter(all_merged, output_dir / "correlation_scatter.png")
+        print(f"Saved: {output_dir / 'correlation_scatter.png'}")
 
-    plot_model_rank_bump(stats_df, output_dir / "model_rank_bump.png")
-    print(f"Saved: {output_dir / 'model_rank_bump.png'}")
+        plot_model_rank_bump(stats_df, output_dir / "model_rank_bump.png")
+        print(f"Saved: {output_dir / 'model_rank_bump.png'}")
 
     # Write summaries
     write_summary(stats_df, all_merged, args.bootstrap, rng, output_dir / "summary.md", dataset_label)
