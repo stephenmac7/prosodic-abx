@@ -63,29 +63,43 @@ python generate_items/tone_syn.py
 
 ## Run ABX
 
-To run the full set of tasks and models while keeping feature files on a
-temporary disk, use:
+For one task/model pair:
 
 ```bash
-FEATURE_ROOT=/localdisk/$USER/prosody-abx-features \
-bash scripts/run_abx_streaming.sh
+python extract_features.py abx_items/stress features --model HUBERT_BASE
+python run_abx.py abx_items/stress features --model HUBERT_BASE
 ```
 
-The script extracts features for one task/model pair, runs ABX, then removes
-those feature files after the result has been written.
+To run all models listed in `models_to_test.txt` for a task:
+
+```bash
+while IFS= read -r model; do
+  python extract_features.py abx_items/stress features --model "$model"
+  python run_abx.py abx_items/stress features --model "$model"
+done < models_to_test.txt
+```
+
+Replace `stress` with another item directory, such as `pitch_accent`, `tone`,
+`stress_syn`, `stress_kokoro`, `pitch_accent_syn`, `tone_syn`, or
+`pitch_accent_in_context`. For Mandarin tone, subsampling can be used to reduce
+the number of ABX triplets:
+
+```bash
+python run_abx.py abx_items/tone features --model HUBERT_BASE --max-size-group 3
+```
 
 ## Reproduce Paper Figures
 
-After ABX results have been generated, reproduce the paper-facing figures and
-tables with:
+After ABX results have been generated, run:
 
 ```bash
 bash scripts/reproduce_paper_figures.sh
 ```
 
-By default, the plotting scripts write only the core summaries or paper
-figures. Pass `--diagnostics` to the analysis scripts to also save intermediate
-plots and per-model statistics.
+## Human ABX
+
+Human ABX response data are included in `data/human_abx/`. The code for generating and deploying the browser-based human ABX experiment is in
+`human_abx/`; see `human_abx/README.md` for details.
 
 ## Synthesis Corpus
 
