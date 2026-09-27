@@ -22,7 +22,14 @@
     .authors { font-size: 1rem; margin: 0.2rem 0; }
     .authors a { color: #222; text-decoration: none; }
     .authors a:hover { text-decoration: underline; }
-    .affiliations { color: #555; font-size: 0.88rem; margin: 0.2rem 0 1.4rem; line-height: 1.5; }
+    .affiliations { color: #555; font-size: 0.88rem; margin: 0.2rem 0 0.9rem; line-height: 1.5; }
+    .links { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0 0 1.4rem; }
+    .links a {
+      padding: 0.35rem 0.9rem; border: 1px solid #0072B2; border-radius: 4px;
+      text-decoration: none; font-size: 0.95rem; line-height: 1.4;
+      transition: background 0.15s, color 0.15s;
+    }
+    .links a:hover { background: #0072B2; color: #fff; }
     .tabs { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
     .tab {
       padding: 0.4rem 1rem; border: 1px solid #bbb; border-radius: 4px;
@@ -54,7 +61,7 @@
 <h1>Prosodic ABX — Supplementary Material</h1>
 <p class="subtitle">
   <em>Prosodic ABX: A Language-Agnostic Method for Measuring Prosodic Contrast in Speech Representations</em><br>
-  Interspeech 2026
+  Presented at Interspeech 2026
 </p>
 <p class="authors">
   <a href="https://orcid.org/0009-0008-5134-1936">Haitong Sun</a><sup>1,*</sup>,
@@ -67,6 +74,11 @@
 <p class="affiliations">
   <sup>1</sup>&nbsp;The University of Tokyo, Japan &nbsp;&nbsp;&nbsp; <sup>2</sup>&nbsp;University of Texas at Austin, USA<br>
   <sup>*</sup>&nbsp;Equal contribution
+</p>
+<p class="links">
+  <a href="https://arxiv.org/abs/2604.02102">Paper (arXiv)</a>
+  <a href="https://github.com/stephenmac7/prosodic-abx">Code (GitHub)</a>
+  <a href="https://huggingface.co/datasets/HaitongSUN/prosodic-abx">Dataset (Hugging Face)</a>
 </p>
 
 <!-- ─── Layer-wise ────────────────────────────────────────────────────── -->

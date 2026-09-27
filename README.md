@@ -3,7 +3,11 @@
 Interactive supplementary material for:
 
 > *Prosodic ABX: A Language-Agnostic Method for Measuring Prosodic Contrast in Speech Representations*
-> Interspeech 2026
+> Presented at Interspeech 2026
+
+- Paper: <https://arxiv.org/abs/2604.02102>
+- Code: <https://github.com/stephenmac7/prosodic-abx>
+- Dataset: <https://huggingface.co/datasets/HaitongSUN/prosodic-abx>
 
 Hosted at: <https://stephenmac7.github.io/prosodic-abx/>
 
